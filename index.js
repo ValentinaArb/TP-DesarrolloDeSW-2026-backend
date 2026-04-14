@@ -1,17 +1,14 @@
 import express from "express";
+import healthcheckRoutes from "./routes/healthcheckRoutes.js";
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/healthcheck", (req,res)=>{
-    res.json({
-        status: "ok",
-    });
-});
+app.use("/healthcheck", healthcheckRoutes);
 
 const puerto = 3000;
 app.listen(puerto, ()=>{
-    console.log("El servidor arrancó correctamente en el puerto" + puerto);
+    console.log("El servidor arrancó correctamente en el puerto " + puerto);
 });
 
