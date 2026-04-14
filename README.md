@@ -2,3 +2,5 @@
 # 2026 1C - TP BACKEND
 
 [Enunciado](https://docs.google.com/document/d/1U5EYxgEFmlcIr6KldAwtHsrHBdGdVMfGUFunTRVTvwI/edit?usp=sharing)
+
+[Documentación](https://docs.google.com/document/d/1-Y5NLRbq00IKEb170zMGC2xshgzMZRxv2JrpVgHVAqQ/edit?usp=sharing)
