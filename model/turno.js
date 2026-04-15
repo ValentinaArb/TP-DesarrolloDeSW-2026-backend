@@ -9,13 +9,13 @@ class Turno{
     historialDeEstados;
     costo;
 
-    Turno(medico, fechaHora, paciente, practica, sede){
+    Turno(medico, fechaHora, practica, sede){
         this.medico = medico; 
         this.fechaHora = fechaHora;
-        this.paciente = paciente;
+        this.paciente = null;
         this.practica = practica;
         this.sede = sede;
-        this.estado = EstadoTurno.RESERVADO;
+        this.estado = EstadoTurno.DISPONIBLE;
         this.historialDeEstados = [this.estado];
         this.costo = null;
     }
@@ -25,10 +25,15 @@ class Turno{
         this.estado = nuevoEstado;
     }
 
-    asignarTurnoPara(paciente){
-        this.paciente = paciente;
-        modificarEstado(Reservado);
-    }
+    darAlta(paciente){
+        if(this.EstadoTurno.DISPONIBLE){            
+            this.paciente = paciente;
+            modificarEstado(Reservado);
+        }
+        else{
+            throw new Error("Whoops! El turno no está disponible.");
+        }
+}
 
     //TODO --> JUSTIFICACION DE DISEÑO. Dar de baja -> el estado vuelve a estar disponible.
     darBaja(){

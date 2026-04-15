@@ -7,7 +7,6 @@ turnos = [turno1]
 turno1 = Turno(
     medico1,
     Date("03-03-2005"),
-    paciente1, 
     practica1,
     "Belgrano"
     )
@@ -15,7 +14,6 @@ turno1 = Turno(
 turno2 = Turno(
     medico1,
     Date("2303-2005"),
-    paciente2, 
     practica1,
     "Lugano"
     )

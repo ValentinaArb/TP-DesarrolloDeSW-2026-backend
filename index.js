@@ -15,3 +15,18 @@ app.listen(puerto, ()=>{
 app.get("/turno", (req, res) => {
     res.json(turnos);
 });
+
+app.post("/turno", (req, res) => {
+    const { medico, fechaHora, practica, sede } = req.body;
+
+    if (!medico || !fechaHora || !practica || !sede) {
+        return res.status(400).json({ 
+            error: "Faltan datos obligatorios: medico, fecha, practica o sede" 
+        });
+    }
+
+    res.status(201).json({
+        mensaje: "Turno creado con éxito"
+    });
+})
+
