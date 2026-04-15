@@ -12,3 +12,6 @@ app.listen(puerto, ()=>{
     console.log("El servidor arrancó correctamente en el puerto " + puerto);
 });
 
+app.get("/turno", (req, res) => {
+    res.json(turnos);
+});
