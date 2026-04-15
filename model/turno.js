@@ -29,9 +29,11 @@ class Turno{
         if(this.EstadoTurno.DISPONIBLE){            
             this.paciente = paciente;
             modificarEstado(Reservado);
+            return true;
         }
         else{
-            throw new Error("Whoops! El turno no está disponible.");
+            console.error("Whoops! El turno no está disponible.");
+            return false;
         }
 }
 
@@ -40,9 +42,11 @@ class Turno{
         if((this.fechaHora - Date.now)/(1000 * 60 * 60) < 1){
             this.paciente = null;
             modificarEstado(EstadoTurno.DISPONIBLE);
+            return true;
         }
         else {
-            throw new Error("Whoops! Tenés que dar de baja el turno con una hora de antelanción como mínimo.");
+            console.error("Whoops! Tenés que dar de baja el turno con una hora de antelanción como mínimo.");
+            return false;
         }
     }
 
