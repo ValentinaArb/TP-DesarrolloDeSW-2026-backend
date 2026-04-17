@@ -20,13 +20,13 @@ class TurnoRepository {
     turnos = [];
 
     //CREATE (POST)
-    crearTurno(turno) {
+    create(turno) {
         this.turnos.push(turno);
         console.log("Turno creado correctamente.");
     }
 
     //DELETE (DELETE)
-    eliminarTurno(turnoId) {
+    delete(turnoId) {
         const indiceAEliminar = this._encontrarIndiceDeId(turnoId);
 
         if(indiceAEliminar !== -1) {
@@ -51,9 +51,9 @@ class TurnoRepository {
     }
 
     //UPDATE (PUT/PATCH)
-    actualizarTurno(nuevoTurno, idTurnoViejo) {
-        this.eliminarTurno(idTurnoViejo);
-        this.crearTurno(nuevoTurno);
+    update(nuevoTurno, idTurnoViejo) {
+        this.delete(idTurnoViejo);
+        this.create(nuevoTurno);
         console.log("Turno actualizado correctamente.");
     }
 
