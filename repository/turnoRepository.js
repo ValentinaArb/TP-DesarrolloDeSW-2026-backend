@@ -54,8 +54,10 @@ class TurnoRepository {
     actualizarTurno(nuevoTurno, idTurnoViejo) {
         this.eliminarTurno(idTurnoViejo);
         this.crearTurno(nuevoTurno);
+        console.log("Turno actualizado correctamente.");
     }
 
+    // MÉTODOS INTERNOS
     _encontrarIndiceDeId(turnoId) {
         return this.turnos.findIndex((turno)=>turno.id === turnoId);
     }
