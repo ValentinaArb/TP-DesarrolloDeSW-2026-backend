@@ -96,9 +96,7 @@ class Turno{
 
     actualizarEstado(nuevoEstado, usuario, motivo) {
         this._estado = nuevoEstado;
-
         const cambio = CambioEstadoTurno(Date.now(), nuevoEstado, this, usuario, motivo);
-
         this._historialDeEstados.push(cambio);
     }
 }

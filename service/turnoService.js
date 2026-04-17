@@ -1,14 +1,19 @@
-class TurnoService {
-    turnoRepository;
-    usuarioRepository;
+import { TurnoRepository } from '../repository/turnoRepository.js';
+import { UsuarioRepository } from '../repository/usuarioRepository.js';
+
+export class TurnoService {
+    constructor() {
+        this.turnoRepository = new TurnoRepository();
+        this.usuarioRepository = new UsuarioRepository();
+    }
 
     darDeBaja(turnoId, usuarioId, motivo) {
-        const usuario = null; // falta repository de usuario, pero acá va un findById con el usuarioId
+        const usuario = this.usuarioRepository.findById(usuarioId);
         const turno = this.turnoRepository.findById(turnoId);
 
         if(turno.fechaHora - Date.now() > (60 * 60 * 1000)) {
             turno.actualizarEstado(EstadoTurno.DISPONIBLE, usuario, motivo);
-            this.turnoRepository.update(turno, turnoId);
+            this.turnoRepository.updateTurno(turno, turnoId);
         }
         else {
             throw new Error("Whoops! Los turnos se deben cancelar con al menos una hora de antelación.");
@@ -20,12 +25,22 @@ class TurnoService {
         this.turnoRepository.create(nuevoTurno);
     }
 
-    eliminarTurno(turno) {
-        this.turnoRepository.delete(turno);
+    eliminarTurno(turnoId) {
+        const turnoAEliminar = this.turnoRepository.findById(turnoId)
+        this.turnoRepository.delete(turnoAEliminar);
     }
 
     obtenerTurno(turnoId) {
         return this.turnoRepository.findById(turnoId);
+    }
+
+    darDeAlta(turnoId, usuarioId){
+        const usuario = this.usuarioRepository.findById(usuarioId)
+        const turno = this.turnoRepository.findById(turnoId);
+        if(turno.estado() === EstadoTurno.DISPONIBLE) {
+            turno.actualizarEstado(EstadoTurno.RESERVADO, usuario, "ALTA")
+            this.turnoRepository.updateTurno(turno, turnoId);
+        }
     }
 
 }

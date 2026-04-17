@@ -1,21 +1,3 @@
-import Turno from "../model/turno.js";
-
-
-
-const turno1 = Turno(
-    medico1,
-    Date("03-03-2005"),
-    practica1,
-    "Belgrano"
-    )
-
-const turno2 = Turno(
-    medico1,
-    Date("2303-2005"),
-    practica1,
-    "Lugano"
-    )
-
 class TurnoRepository {
     turnos = [];
 
@@ -51,7 +33,7 @@ class TurnoRepository {
     }
 
     //UPDATE (PUT/PATCH)
-    update(nuevoTurno, idTurnoViejo) {
+    updateTurno(nuevoTurno, idTurnoViejo) {
         this.delete(idTurnoViejo);
         this.create(nuevoTurno);
         console.log("Turno actualizado correctamente.");
@@ -66,3 +48,4 @@ class TurnoRepository {
         return throw new Error("Whoops! El id buscado no existe.");
     }
 }
+export { TurnoRepository };

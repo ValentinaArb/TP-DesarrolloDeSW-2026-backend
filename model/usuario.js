@@ -1,8 +1,7 @@
-class Usuario{
+export class Usuario{
     _id;
     _nombre;
     _password;
-
 
     constructor(id = null, nombre, password) {
         this._id = id;
