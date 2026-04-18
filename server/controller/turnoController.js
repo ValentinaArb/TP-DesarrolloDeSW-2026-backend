@@ -5,6 +5,16 @@ class TurnoController{
         this.turnoService = new TurnoService();
     }
 
+    obtenerTodos(req,res){
+        try{
+            const turno = this.turnoService.obtenerTodos();
+            res.status(200).json(turno);
+        }
+        catch(error){
+            res.status(500).json({mensaje : error.message});
+        }
+    }
+
     //GET /turnos:id
     obtenerTurno(req,res){
         try{
@@ -63,5 +73,8 @@ class TurnoController{
         catch(error){
             res.status(400).json({mensaje: error.mensaje});
         }
-    }
+    }    
 }
+
+const turnoController = new TurnoController();
+export default turnoController;

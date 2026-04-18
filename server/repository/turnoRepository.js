@@ -1,5 +1,7 @@
 class TurnoRepository {
-    turnos = [];
+    constructor() {
+        this.turnos = []; // O con algunos datos de prueba
+    }
 
     //CREATE (POST)
     create(turno) {
@@ -18,6 +20,10 @@ class TurnoRepository {
         else {
             this._errorNoEncontrado();
         }
+    }
+
+    findAll(){
+        return this.turnos;
     }
 
     // READ (GET)
@@ -45,7 +51,7 @@ class TurnoRepository {
     }
 
     _errorNoEncontrado() {
-        return throw new Error("Whoops! El id buscado no existe.");
+        throw new Error("Whoops! El id buscado no existe.");
     }
 }
 export { TurnoRepository };

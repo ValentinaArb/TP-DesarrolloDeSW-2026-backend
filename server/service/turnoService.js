@@ -34,6 +34,10 @@ export class TurnoService {
         return this.turnoRepository.findById(turnoId);
     }
 
+    obtenerTodos() {
+        return this.turnoRepository.findAll();
+    }
+
     darDeAlta(turnoId, usuarioId){
         const usuario = this.usuarioRepository.findById(usuarioId)
         const turno = this.turnoRepository.findById(turnoId);
