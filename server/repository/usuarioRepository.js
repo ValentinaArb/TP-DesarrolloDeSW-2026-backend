@@ -1,0 +1,42 @@
+class UsuarioRepository {
+    constructor() {
+        this.usuarios = [];
+    }
+
+    //CREATE (POST)
+    create(usuario) {
+        this.usuarios.push(usuario);
+        console.log("Usuario creado correctamente.");
+    }
+
+    // READ (GET)
+    findById(usuarioId) {
+        const indiceBuscado = this._encontrarIndiceDeId(usuarioId);
+
+        if(indiceBuscado !== -1){
+            return this.usuarios[indiceBuscado];
+        }
+        else {
+            this._errorNoEncontrado();
+        }
+    }
+
+    findBy(nombre, password){
+        const usuario = this.usuarios.find(
+            u => u.nombre === nombre && u.password === password
+        );
+        if (!usuario) {
+            this._errorNoEncontrado();
+        }
+    }
+
+    // MÉTODOS INTERNOS
+    _encontrarIndiceDeId(usuarioId) {
+        return this.usuarios.findIndex((usuario)=> String(usuario.id) === String(usuarioId));
+    }
+
+    _errorNoEncontrado() {
+        throw new Error("Whoops! El id buscado no existe.");
+    }
+}
+export { UsuarioRepository };
