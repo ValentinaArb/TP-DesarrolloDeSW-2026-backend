@@ -26,8 +26,7 @@ export class TurnoService {
     }
 
     eliminarTurno(turnoId) {
-        const turnoAEliminar = this.turnoRepository.findById(turnoId)
-        this.turnoRepository.delete(turnoAEliminar);
+        this.turnoRepository.delete(turnoId);
     }
 
     obtenerTurno(turnoId) {

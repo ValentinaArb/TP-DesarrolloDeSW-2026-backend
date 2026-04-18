@@ -71,7 +71,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.mensaje});
+            res.status(400).json({mensaje: error.message});
         }
     }    
 }

@@ -32,7 +32,7 @@ class UsuarioRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(usuarioId) {
-        return this.usuarios.findIndex((usuario)=>usuario.id === usuarioId);
+        return this.usuarios.findIndex((usuario)=> String(usuario.id) === String(usuarioId));
     }
 
     _errorNoEncontrado() {
