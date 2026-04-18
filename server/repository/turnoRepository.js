@@ -1,8 +1,11 @@
+const turno1 = { id: "1", fecha: "2023-10-10", hora: "10:00", paciente: "paciente1" };
+const turno2 = { id: "2", fecha: "2023-10-11", hora: "11:00", paciente: "paciente2" };
+
 class TurnoRepository {
     constructor() {
-        this.turnos = []; // O con algunos datos de prueba
+        this.turnos = [turno1, turno2]; // O con algunos datos de prueba
     }
-
+    
     //CREATE (POST)
     create(turno) {
         this.turnos.push(turno);
@@ -47,7 +50,7 @@ class TurnoRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(turnoId) {
-        return this.turnos.findIndex((turno)=>turno.id === turnoId);
+        return this.turnos.findIndex((turno)=> turno.id === turnoId);
     }
 
     _errorNoEncontrado() {

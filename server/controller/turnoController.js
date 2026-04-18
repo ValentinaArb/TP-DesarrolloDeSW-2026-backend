@@ -20,7 +20,7 @@ class TurnoController{
         try{
             const { id } = req.params;
             const turno = this.turnoService.obtenerTurno(id);
-            rest.status(200).json(turno);
+            res.status(200).json(turno);
         }
         catch(error){
             res.status(404).json({mensaje : error.message});
