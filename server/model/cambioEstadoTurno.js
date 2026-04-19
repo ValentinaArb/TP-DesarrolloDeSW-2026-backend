@@ -55,3 +55,5 @@ class CambioEstadoTurno {
         this._motivo = value;
     }
 }
+
+export {CambioEstadoTurno}

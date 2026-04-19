@@ -1,5 +1,11 @@
-const turno1 = { id: "1", fecha: "2023-10-10", hora: "10:00", paciente: "paciente1" };
-const turno2 = { id: "2", fecha: "2023-10-11", hora: "11:00", paciente: "paciente2" };
+import {Turno} from "../model/turno.js"
+import { Paciente } from "../model/paciente.js";
+import {EstadoTurno} from "../model/estadoTurno.js";
+
+let paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
+
+let turno1 = new Turno(1, null, "2023-10-10", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+let turno2 = new Turno(2, null, "2023-10-10", paciente1, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
 
 class TurnoRepository {
     constructor() {

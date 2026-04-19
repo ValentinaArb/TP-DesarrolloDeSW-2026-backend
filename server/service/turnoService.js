@@ -1,18 +1,19 @@
 import { TurnoRepository } from '../repository/turnoRepository.js';
-import { UsuarioRepository } from '../repository/usuarioRepository.js';
+import { PacienteRepository } from '../repository/pacienteRepository.js';
+import {EstadoTurno} from "../model/estadoTurno.js";
 
 export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
-        this.usuarioRepository = new UsuarioRepository();
+        this.pacienteRepository = new PacienteRepository();
     }
 
-    darDeBaja(turnoId, usuarioId, motivo) {
-        const usuario = this.usuarioRepository.findById(usuarioId);
+    darDeBaja(turnoId, pacienteId, motivo) {
+        const paciente = this.pacienteRepository.findById(pacienteId);
         const turno = this.turnoRepository.findById(turnoId);
 
         if(turno.fechaHora - Date.now() > (60 * 60 * 1000)) {
-            turno.actualizarEstado(EstadoTurno.DISPONIBLE, usuario, motivo);
+            turno.actualizarEstado(EstadoTurno.DISPONIBLE, paciente, motivo);
             this.turnoRepository.updateTurno(turno, turnoId);
         }
         else {
@@ -37,12 +38,26 @@ export class TurnoService {
         return this.turnoRepository.findAll();
     }
 
-    darDeAlta(turnoId, usuarioId){
-        const usuario = this.usuarioRepository.findById(usuarioId)
+    darDeAlta(turnoId, pacienteId){
+        console.log(pacienteId) // 1
+        const paciente = this.pacienteRepository.findById(pacienteId)
         const turno = this.turnoRepository.findById(turnoId);
-        if(turno.estado() === EstadoTurno.DISPONIBLE) {
-            turno.actualizarEstado(EstadoTurno.RESERVADO, usuario, "ALTA")
+        console.log("llega service")
+
+        console.log(turno.estado)
+                console.log(EstadoTurno)
+
+        if(turno.estado === EstadoTurno.DISPONIBLE) {
+            console.log("llega 2")
+
+            turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
             this.turnoRepository.updateTurno(turno, turnoId);
+            console.log("turno disponible")
+
+        }
+        else{
+            throw new Error("Whoops! El turno no está disponible.");
+
         }
     }
 

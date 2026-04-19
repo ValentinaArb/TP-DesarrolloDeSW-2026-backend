@@ -5,3 +5,5 @@ const EstadoTurno = Object.freeze({
     CANCELADO: "cancelado",
     REALIZADO: "realizado"
 });
+
+export {EstadoTurno}

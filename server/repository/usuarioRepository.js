@@ -1,6 +1,10 @@
+import {Usuario} from "../model/usuario.js"
+
+let usuario1 = new Usuario(1, "Pepe", "holaquetal")
+
 class UsuarioRepository {
     constructor() {
-        this.usuarios = [];
+        this.usuarios = [usuario1];
     }
 
     //CREATE (POST)
@@ -12,12 +16,15 @@ class UsuarioRepository {
     // READ (GET)
     findById(usuarioId) {
         const indiceBuscado = this._encontrarIndiceDeId(usuarioId);
+        console.log("indice" + indiceBuscado) //-1
 
         if(indiceBuscado !== -1){
             return this.usuarios[indiceBuscado];
         }
         else {
-            this._errorNoEncontrado();
+                    console.log("error")
+            this._errorNoEncontrado(); //ver
+
         }
     }
 
@@ -32,6 +39,7 @@ class UsuarioRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(usuarioId) {
+
         return this.usuarios.findIndex((usuario)=> String(usuario.id) === String(usuarioId));
     }
 

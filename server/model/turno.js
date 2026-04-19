@@ -1,3 +1,5 @@
+import {CambioEstadoTurno} from "./cambioEstadoTurno"
+
 class Turno{
     _id;
     _medico;
@@ -96,7 +98,11 @@ class Turno{
 
     actualizarEstado(nuevoEstado, usuario, motivo) {
         this._estado = nuevoEstado;
-        const cambio = CambioEstadoTurno(Date.now(), nuevoEstado, this, usuario, motivo);
+        let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this, usuario, motivo);
         this._historialDeEstados.push(cambio);
+        console.log("estado cambiado")
+
     }
 }
+
+export { Turno };
