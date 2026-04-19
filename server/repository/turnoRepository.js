@@ -55,14 +55,8 @@ class TurnoRepository {
     }
 
     // MÉTODOS INTERNOS
-    _encontrarIndiceDeId(turnoId) {
-    console.log("--- DEBUG ELIMINAR ---");
-    console.log("ID que busco:", turnoId);
-    console.log("Contenido actual del array:", JSON.stringify(this.turnos, null, 2));
-    
+    _encontrarIndiceDeId(turnoId) {    
     const indice = this.turnos.findIndex((t) => String(t.id) === String(turnoId));
-    
-    console.log("Índice encontrado:", indice);
     return indice;
 }
 

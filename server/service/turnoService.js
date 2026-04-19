@@ -39,21 +39,14 @@ export class TurnoService {
     }
 
     darDeAlta(turnoId, pacienteId){
-        console.log(pacienteId) // 1
         const paciente = this.pacienteRepository.findById(pacienteId)
         const turno = this.turnoRepository.findById(turnoId);
-        console.log("llega service")
 
         console.log(turno.estado)
-                console.log(EstadoTurno)
-
         if(turno.estado === EstadoTurno.DISPONIBLE) {
-            console.log("llega 2")
-
             turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
-            this.turnoRepository.updateTurno(turno, turnoId);
+            //this.turnoRepository.updateTurno(turno, turnoId);
             console.log("turno disponible")
-
         }
         else{
             throw new Error("Whoops! El turno no está disponible.");

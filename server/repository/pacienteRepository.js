@@ -21,12 +21,10 @@ class PacienteRepository {
         const indiceBuscado = this._encontrarIndiceDeId(pacienteId);
 
         if(indiceBuscado !== -1){
-                    console.log("indice" + indiceBuscado) //-1
 
             return this.pacientes[indiceBuscado];
         }
         else {
-                    console.log("error")
             this._errorNoEncontrado(); //ver
 
         }

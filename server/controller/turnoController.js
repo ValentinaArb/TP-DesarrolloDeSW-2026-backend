@@ -44,7 +44,6 @@ class TurnoController{
             const { id } = req.params;
             const {pacienteId} = req.body;
             this.turnoService.darDeAlta(id, pacienteId);
-            console.log("Llega a dar de alta controller 2")
             res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
         }
         catch(error){

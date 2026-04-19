@@ -1,4 +1,4 @@
-import {CambioEstadoTurno} from "./cambioEstadoTurno"
+import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 
 class Turno{
     _id;
@@ -96,12 +96,11 @@ class Turno{
         this._costo = value;
     }
 
-    actualizarEstado(nuevoEstado, usuario, motivo) {
+    actualizarEstado(nuevoEstado, paciente, motivo) {
         this._estado = nuevoEstado;
-        let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this, usuario, motivo);
-        this._historialDeEstados.push(cambio);
-        console.log("estado cambiado")
-
+        this._paciente = paciente;
+        let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
+        this._historialDeEstados.push(cambio.estado);
     }
 }
 

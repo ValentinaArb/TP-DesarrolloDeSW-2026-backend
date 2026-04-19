@@ -1,15 +1,15 @@
 class CambioEstadoTurno {
     _fechaHoraIngreso;
     _estado;
-    _turno;
+    _turnoId; //VER -> antes era turno pero era un bucle porque turno llamaba a cambio de estado y cambio de estado a turno.
     _usuario;
     _motivo
 
 
-    constructor(fechaHoraIngreso, estado, turno, usuario, motivo) {
+    constructor(fechaHoraIngreso, estado, turnoId, usuario, motivo) {
         this._fechaHoraIngreso = fechaHoraIngreso;
         this._estado = estado;
-        this._turno = turno;
+        this._turnoId = turnoId;
         this._usuario = usuario;
         this._motivo = motivo;
     }

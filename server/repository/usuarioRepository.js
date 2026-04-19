@@ -16,15 +16,12 @@ class UsuarioRepository {
     // READ (GET)
     findById(usuarioId) {
         const indiceBuscado = this._encontrarIndiceDeId(usuarioId);
-        console.log("indice" + indiceBuscado) //-1
 
         if(indiceBuscado !== -1){
             return this.usuarios[indiceBuscado];
         }
         else {
-                    console.log("error")
-            this._errorNoEncontrado(); //ver
-
+            this._errorNoEncontrado();
         }
     }
 
