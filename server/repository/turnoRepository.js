@@ -5,7 +5,7 @@ import {EstadoTurno} from "../model/estadoTurno.js";
 let paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
 
 let turno1 = new Turno(1, null, "2023-10-10", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-let turno2 = new Turno(2, null, "2023-10-10", paciente1, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+let turno2 = new Turno(2, null, "2026-10-10", paciente1, null, null, EstadoTurno.RESERVADO, [EstadoTurno.RESERVADO], null);
 
 class TurnoRepository {
     constructor() {

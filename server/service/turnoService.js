@@ -8,13 +8,20 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
     }
 
-    darDeBaja(turnoId, pacienteId, motivo) {
-        const paciente = this.pacienteRepository.findById(pacienteId);
-        const turno = this.turnoRepository.findById(turnoId);
+    async darDeBaja(turnoId, pacienteId, motivo) {
+        const paciente = await this.pacienteRepository.findById(pacienteId);
+        const turno = await this.turnoRepository.findById(turnoId);
+        const fechaTurno = new Date(turno.fechaHora);
+        const ahora = new Date();
+        const diferencia = fechaTurno.getTime() - ahora.getTime();
+        const unaHoraEnMs = 60 * 60 * 1000;
 
-        if(turno.fechaHora - Date.now() > (60 * 60 * 1000)) {
+        console.log("DEBUG: Diferencia calculada:", diferencia);
+
+        if(diferencia > unaHoraEnMs) {
             turno.actualizarEstado(EstadoTurno.DISPONIBLE, paciente, motivo);
-            this.turnoRepository.updateTurno(turno, turnoId);
+
+            //this.turnoRepository.updateTurno(turno, turnoId);
         }
         else {
             throw new Error("Whoops! Los turnos se deben cancelar con al menos una hora de antelación.");
@@ -41,12 +48,9 @@ export class TurnoService {
     darDeAlta(turnoId, pacienteId){
         const paciente = this.pacienteRepository.findById(pacienteId)
         const turno = this.turnoRepository.findById(turnoId);
-
-        console.log(turno.estado)
         if(turno.estado === EstadoTurno.DISPONIBLE) {
             turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
             //this.turnoRepository.updateTurno(turno, turnoId);
-            console.log("turno disponible")
         }
         else{
             throw new Error("Whoops! El turno no está disponible.");

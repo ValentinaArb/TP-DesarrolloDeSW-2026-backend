@@ -41,7 +41,6 @@ class PacienteRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(pacienteId) {
-
         return this.pacientes.findIndex((paciente)=> String(paciente.id) === String(pacienteId));
     }
 

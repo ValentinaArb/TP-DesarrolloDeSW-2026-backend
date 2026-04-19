@@ -1,4 +1,5 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
+import { EstadoTurno } from "./estadoTurno.js";
 
 class Turno{
     _id;
@@ -97,10 +98,14 @@ class Turno{
     }
 
     actualizarEstado(nuevoEstado, paciente, motivo) {
-        this._estado = nuevoEstado;
-        this._paciente = paciente;
         let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
         this._historialDeEstados.push(cambio.estado);
+        this._estado = nuevoEstado;
+        this._paciente = paciente;
+        
+        if(nuevoEstado === EstadoTurno.DISPONIBLE) {
+            this._paciente = null;
+        }   
     }
 }
 
