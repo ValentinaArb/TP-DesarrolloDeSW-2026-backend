@@ -1,19 +1,27 @@
 import { TurnoRepository } from '../repository/turnoRepository.js';
-import { UsuarioRepository } from '../repository/usuarioRepository.js';
+import { PacienteRepository } from '../repository/pacienteRepository.js';
+import {EstadoTurno} from "../model/estadoTurno.js";
 
 export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
-        this.usuarioRepository = new UsuarioRepository();
+        this.pacienteRepository = new PacienteRepository();
     }
 
-    darDeBaja(turnoId, usuarioId, motivo) {
-        const usuario = this.usuarioRepository.findById(usuarioId);
-        const turno = this.turnoRepository.findById(turnoId);
+    async darDeBaja(turnoId, pacienteId, motivo) {
+        const paciente = await this.pacienteRepository.findById(pacienteId);
+        const turno = await this.turnoRepository.findById(turnoId);
+        const fechaTurno = new Date(turno.fechaHora);
+        const ahora = new Date();
+        const diferencia = fechaTurno.getTime() - ahora.getTime();
+        const unaHoraEnMs = 60 * 60 * 1000;
 
-        if(turno.fechaHora - Date.now() > (60 * 60 * 1000)) {
-            turno.actualizarEstado(EstadoTurno.DISPONIBLE, usuario, motivo);
-            this.turnoRepository.updateTurno(turno, turnoId);
+        console.log("DEBUG: Diferencia calculada:", diferencia);
+
+        if(diferencia > unaHoraEnMs) {
+            turno.actualizarEstado(EstadoTurno.DISPONIBLE, paciente, motivo);
+
+            //this.turnoRepository.updateTurno(turno, turnoId);
         }
         else {
             throw new Error("Whoops! Los turnos se deben cancelar con al menos una hora de antelación.");
@@ -37,12 +45,16 @@ export class TurnoService {
         return this.turnoRepository.findAll();
     }
 
-    darDeAlta(turnoId, usuarioId){
-        const usuario = this.usuarioRepository.findById(usuarioId)
+    darDeAlta(turnoId, pacienteId){
+        const paciente = this.pacienteRepository.findById(pacienteId)
         const turno = this.turnoRepository.findById(turnoId);
-        if(turno.estado() === EstadoTurno.DISPONIBLE) {
-            turno.actualizarEstado(EstadoTurno.RESERVADO, usuario, "ALTA")
-            this.turnoRepository.updateTurno(turno, turnoId);
+        if(turno.estado === EstadoTurno.DISPONIBLE) {
+            turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
+            //this.turnoRepository.updateTurno(turno, turnoId);
+        }
+        else{
+            throw new Error("Whoops! El turno no está disponible.");
+
         }
     }
 

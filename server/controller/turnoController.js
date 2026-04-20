@@ -42,8 +42,8 @@ class TurnoController{
     darDeAlta(req, res){
         try{
             const { id } = req.params;
-            const {usuarioId} = req.body;
-            this.turnoService.darDeAlta(id, usuarioId);
+            const {pacienteId} = req.body;
+            this.turnoService.darDeAlta(id, pacienteId);
             res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
         }
         catch(error){
@@ -51,12 +51,13 @@ class TurnoController{
         }
     }
     //PATCH turnos/:id/baja
-
     darDeBaja(req, res){
         try{
             const { id } = req.params;
-            const {usuarioId, motivo} = req.body;
-            this.turnoService.darDeBaja(id, usuarioId, motivo);
+            const {pacienteId, motivo} = req.body;
+            console.log("LOG:  TurnoController");
+
+            this.turnoService.darDeBaja(id, pacienteId, motivo);
             res.status(200).json({mensaje : "Turno fue dado de baja con exito"});
         }
         catch(error){

@@ -1,6 +1,10 @@
+import {Usuario} from "../model/usuario.js"
+
+let usuario1 = new Usuario(1, "Pepe", "holaquetal")
+
 class UsuarioRepository {
     constructor() {
-        this.usuarios = [];
+        this.usuarios = [usuario1];
     }
 
     //CREATE (POST)
@@ -32,6 +36,7 @@ class UsuarioRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(usuarioId) {
+
         return this.usuarios.findIndex((usuario)=> String(usuario.id) === String(usuarioId));
     }
 
