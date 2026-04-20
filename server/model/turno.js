@@ -106,6 +106,15 @@ class Turno{
         }
     }
 
+    darDeAlta(paciente) {
+        if(this._estado === EstadoTurno.DISPONIBLE) {
+            this._actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA");
+        }
+        else{
+            throw new Error("Whoops! El turno no está disponible.");
+        }
+    }
+
     _actualizarEstado(nuevoEstado, paciente, motivo) {
         let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
         this._historialDeEstados.push(cambio);

@@ -39,14 +39,13 @@ class TurnoController{
     }
 
     //PATCH turnos/:id/alta
-    darDeAlta(req, res){
-        try{
-            const { id } = req.params;
+    async darDeAlta(req, res) {
+        try {
+            const {id} = req.params;
             const {pacienteId} = req.body;
-            this.turnoService.darDeAlta(id, pacienteId);
-            res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
-        }
-        catch(error){
+            await this.turnoService.darDeAlta(id, pacienteId);
+            res.status(200).json({mensaje: "Turno fue dado de alta con exito"});
+        } catch (error) {
             res.status(400).json({mensaje: error.mensaje});
         }
     }

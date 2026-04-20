@@ -41,15 +41,17 @@ export class TurnoService {
         return this.turnoRepository.findAll();
     }
 
-    darDeAlta(turnoId, pacienteId){
-        const paciente = this.pacienteRepository.findById(pacienteId)
-        const turno = this.turnoRepository.findById(turnoId);
-        if(turno.estado === EstadoTurno.DISPONIBLE) {
-            turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
-            //this.turnoRepository.updateTurno(turno, turnoId); VER
+    async darDeAlta(turnoId, pacienteId){
+        try {
+            const paciente = this.pacienteRepository.findById(pacienteId)
+            const turno = this.turnoRepository.findById(turnoId);
+            turno.darDeAlta(paciente);
+            this.turnoRepository.updateTurno(turno, turnoId);
         }
-        else{
-            throw new Error("Whoops! El turno no está disponible.");
+        catch (error) {
+            console.error("Error al dar de alta el turno:", error);
+
+            throw error;
         }
     }
 
