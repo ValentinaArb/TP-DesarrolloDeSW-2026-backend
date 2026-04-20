@@ -1,3 +1,6 @@
+import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
+import { EstadoTurno } from "./estadoTurno.js";
+
 class Turno{
     _id;
     _medico;
@@ -94,9 +97,16 @@ class Turno{
         this._costo = value;
     }
 
-    actualizarEstado(nuevoEstado, usuario, motivo) {
+    actualizarEstado(nuevoEstado, paciente, motivo) {
+        let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
+        this._historialDeEstados.push(cambio.estado);
         this._estado = nuevoEstado;
-        const cambio = CambioEstadoTurno(Date.now(), nuevoEstado, this, usuario, motivo);
-        this._historialDeEstados.push(cambio);
+        this._paciente = paciente;
+        
+        if(nuevoEstado === EstadoTurno.DISPONIBLE) {
+            this._paciente = null;
+        }   
     }
 }
+
+export { Turno };

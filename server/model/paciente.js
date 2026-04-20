@@ -87,3 +87,5 @@ class Paciente{
         this._sexo = value;
     }
 }
+
+export { Paciente };
