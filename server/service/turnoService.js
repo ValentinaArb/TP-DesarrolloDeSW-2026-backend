@@ -8,23 +8,19 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
     }
 
-    async darDeBaja(turnoId, pacienteId, motivo) {
-        const paciente = await this.pacienteRepository.findById(pacienteId);
-        const turno = await this.turnoRepository.findById(turnoId);
-        const fechaTurno = new Date(turno.fechaHora);
-        const ahora = new Date();
-        const diferencia = fechaTurno.getTime() - ahora.getTime();
-        const unaHoraEnMs = 60 * 60 * 1000;
+    async darDeBaja(turnoId, motivo) {
+        try {
+            const turno = await this.turnoRepository.findById(turnoId);
 
-        console.log("DEBUG: Diferencia calculada:", diferencia);
+            turno.darDeBaja(motivo);
 
-        if(diferencia > unaHoraEnMs) {
-            turno.actualizarEstado(EstadoTurno.DISPONIBLE, paciente, motivo);
+            this.turnoRepository.updateTurno(turno, turnoId);
+            console.log(this.turnoRepository.turnos);
+            console.log(this.turnoRepository.turnos[1]._historialDeEstados[1].estado)
+        } catch(error) {
+            console.error("Error al dar de baja el turno:", error);
 
-            //this.turnoRepository.updateTurno(turno, turnoId);
-        }
-        else {
-            throw new Error("Whoops! Los turnos se deben cancelar con al menos una hora de antelación.");
+            throw error;
         }
     }
 
@@ -45,16 +41,17 @@ export class TurnoService {
         return this.turnoRepository.findAll();
     }
 
-    darDeAlta(turnoId, pacienteId){
-        const paciente = this.pacienteRepository.findById(pacienteId)
-        const turno = this.turnoRepository.findById(turnoId);
-        if(turno.estado === EstadoTurno.DISPONIBLE) {
-            turno.actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA")
-            //this.turnoRepository.updateTurno(turno, turnoId);
+    async darDeAlta(turnoId, pacienteId){
+        try {
+            const paciente = this.pacienteRepository.findById(pacienteId)
+            const turno = this.turnoRepository.findById(turnoId);
+            turno.darDeAlta(paciente);
+            this.turnoRepository.updateTurno(turno, turnoId);
         }
-        else{
-            throw new Error("Whoops! El turno no está disponible.");
+        catch (error) {
+            console.error("Error al dar de alta el turno:", error);
 
+            throw error;
         }
     }
 

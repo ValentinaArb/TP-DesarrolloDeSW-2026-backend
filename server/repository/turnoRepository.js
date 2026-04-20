@@ -1,15 +1,25 @@
 import {Turno} from "../model/turno.js"
-import { Paciente } from "../model/paciente.js";
+import { PacienteRepository } from "./pacienteRepository.js";
 import {EstadoTurno} from "../model/estadoTurno.js";
+import { CambioEstadoTurno } from "../model/cambioEstadoTurno.js";
 
-let paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
+const pacienteRepository = new PacienteRepository();
+const paciente1 = pacienteRepository.findById(1);
 
-let turno1 = new Turno(1, null, "2023-10-10", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-let turno2 = new Turno(2, null, "2026-10-10", paciente1, null, null, EstadoTurno.RESERVADO, [EstadoTurno.RESERVADO], null);
+let turno1 = new Turno(1, null, "2026-04-19T20:00:00", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+let turno2 = new Turno(2,
+    null,
+    "2026-03-10T15:30:00",
+    paciente1,
+    null,
+    null,
+    EstadoTurno.RESERVADO,
+    [new CambioEstadoTurno(Date.now(), EstadoTurno.RESERVADO, 2, null, "ALTA")],
+    null);
 
 class TurnoRepository {
     constructor() {
-        this.turnos = [turno1, turno2]; // O con algunos datos de prueba
+        this.turnos = [turno1, turno2];
     }
     
     //CREATE (POST)
@@ -56,9 +66,8 @@ class TurnoRepository {
 
     // MÉTODOS INTERNOS
     _encontrarIndiceDeId(turnoId) {    
-    const indice = this.turnos.findIndex((t) => String(t.id) === String(turnoId));
-    return indice;
-}
+        return this.turnos.findIndex((t) => String(t.id) === String(turnoId));
+    }
 
     _errorNoEncontrado() {
         throw new Error("Whoops! El id buscado no existe.");

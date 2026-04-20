@@ -1,9 +1,7 @@
 import {Paciente} from "../model/paciente.js"
 
-let paciente1;
-paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
-let paciente2;
-paciente2 = new Paciente("2","María", "Gómez", "87654321", "1985-05-15", "F");
+let paciente1 = new Paciente(1,"Juan", "Pérez", "12345678", "1990-01-01", "M");
+let paciente2 = new Paciente(2,"María", "Gómez", "87654321", "1985-05-15", "F");
 
 class PacienteRepository {
     constructor() {

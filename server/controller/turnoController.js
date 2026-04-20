@@ -39,28 +39,24 @@ class TurnoController{
     }
 
     //PATCH turnos/:id/alta
-    darDeAlta(req, res){
-        try{
-            const { id } = req.params;
+    async darDeAlta(req, res) {
+        try {
+            const {id} = req.params;
             const {pacienteId} = req.body;
-            this.turnoService.darDeAlta(id, pacienteId);
-            res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
-        }
-        catch(error){
+            await this.turnoService.darDeAlta(id, pacienteId);
+            res.status(200).json({mensaje: "Turno fue dado de alta con exito"});
+        } catch (error) {
             res.status(400).json({mensaje: error.mensaje});
         }
     }
     //PATCH turnos/:id/baja
-    darDeBaja(req, res){
-        try{
-            const { id } = req.params;
-            const {pacienteId, motivo} = req.body;
-            console.log("LOG:  TurnoController");
-
-            this.turnoService.darDeBaja(id, pacienteId, motivo);
-            res.status(200).json({mensaje : "Turno fue dado de baja con exito"});
-        }
-        catch(error){
+    async darDeBaja(req, res) {
+        try {
+            const {id} = req.params;
+            const {motivo} = req.body;
+            await this.turnoService.darDeBaja(id, motivo);
+            res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
+        } catch (error) {
             res.status(400).json({mensaje: error.mensaje});
         }
     }
