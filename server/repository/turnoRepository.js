@@ -1,15 +1,15 @@
 import {Turno} from "../model/turno.js"
-import { Paciente } from "../model/paciente.js";
+import { PacienteRepository } from "./pacienteRepository.js";
 import {EstadoTurno} from "../model/estadoTurno.js";
 
-let paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
+const paciente1 = PacienteRepository.findById(1);
 
-let turno1 = new Turno(1, null, "2023-10-10", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-let turno2 = new Turno(2, null, "2026-10-10", paciente1, null, null, EstadoTurno.RESERVADO, [EstadoTurno.RESERVADO], null);
+let turno1 = new Turno(1, null, "2026-04-19T20:00:00", null, null, null, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+let turno2 = new Turno(2, null, "2026-10-10T15:30:00", paciente1, null, null, EstadoTurno.RESERVADO, [EstadoTurno.RESERVADO], null);
 
 class TurnoRepository {
     constructor() {
-        this.turnos = [turno1, turno2]; // O con algunos datos de prueba
+        this.turnos = [turno1, turno2];
     }
     
     //CREATE (POST)

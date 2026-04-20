@@ -55,8 +55,6 @@ class TurnoController{
         try{
             const { id } = req.params;
             const {pacienteId, motivo} = req.body;
-            console.log("LOG:  TurnoController");
-
             this.turnoService.darDeBaja(id, pacienteId, motivo);
             res.status(200).json({mensaje : "Turno fue dado de baja con exito"});
         }

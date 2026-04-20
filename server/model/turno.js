@@ -102,10 +102,9 @@ class Turno{
         this._historialDeEstados.push(cambio.estado);
         this._estado = nuevoEstado;
         this._paciente = paciente;
-        
         if(nuevoEstado === EstadoTurno.DISPONIBLE) {
             this._paciente = null;
-        }   
+        }
     }
 }
 
