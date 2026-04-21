@@ -15,7 +15,7 @@ class Turno{
     constructor(id = null, medico, fechaHora, paciente = null, practica, sede, estado, estados, costo = null){
         this._id = id;
         this._medico = medico;
-        this._fechaHora = fechaHora;
+        this._fechaHora = fechaHora; 
         this._paciente = paciente;
         this._practica = practica;
         this._sede = sede;
@@ -23,7 +23,6 @@ class Turno{
         this._historialDeEstados = estados;
         this._costo = costo;
     }
-
 
     get id() {
         return this._id;
@@ -102,11 +101,13 @@ class Turno{
             this._actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
         }
         else {
-            throw new AppError(
+            /* throw new AppError(
             'VALIDATION_ERROR', 
             'Los turnos se deben cancelar con al menos una hora de antelación.', 
             400
-            );
+            ); */
+                        throw new Error("Los turnos se deben cancelar con al menos una hora de antelación.");
+
         }
     }
     

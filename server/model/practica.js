@@ -13,6 +13,9 @@ class Practica{
         this._costo = costo;
     }
 
+    get id() {
+        return this._id;
+    }
 
     get codigo() {
         return this._codigo;

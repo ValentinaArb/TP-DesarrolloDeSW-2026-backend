@@ -11,6 +11,9 @@ class Especialidad {
         this._costo = costo;
     }
 
+    get id() {
+        return this._id;
+    }
 
     get nombre() {
         return this._nombre;

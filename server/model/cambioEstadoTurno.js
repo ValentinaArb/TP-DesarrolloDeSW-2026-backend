@@ -14,7 +14,6 @@ class CambioEstadoTurno {
         this._motivo = motivo;
     }
 
-
     get fechaHoraIngreso() {
         return this._fechaHoraIngreso;
     }
