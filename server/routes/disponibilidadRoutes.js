@@ -8,6 +8,6 @@ router.get('/:id', (req, res) => disponibilidadController.obtenerDisponibilidad(
 router.post('/', (req, res) => disponibilidadController.crearDisponibilidad(req, res));
 router.delete('/:id', (req, res) => disponibilidadController.eliminarDisponibilidad(req, res));
 // innecesario
-router.put('/:id', (req, res) => disponibilidadController.actualizarDisponibilidad(req, res));
+//router.put('/:id', (req, res) => disponibilidadController.actualizarDisponibilidad(req, res));
 
 export default router;

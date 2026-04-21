@@ -1,4 +1,4 @@
-import {DisponibilidadHoraria} from "../model/disponibilidad.js";
+import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
 
 class DisponibilidadRepository {
     constructor() {
@@ -49,9 +49,8 @@ class DisponibilidadRepository {
     }
 
     // metodos internos
-    _encontrarIndiceDeId(disponibilidadId) {    
-        const indice = this.disponibilidades.findIndex((d) => String(d.id) === String(disponibilidadId));
-        return indice;
+    _encontrarIndiceDeId(disponibilidadId) {
+        return this.disponibilidades.findIndex((d) => String(d.id) === String(disponibilidadId));
     }
 
     _errorNoEncontrado() {

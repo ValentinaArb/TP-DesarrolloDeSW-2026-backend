@@ -30,8 +30,8 @@ class DisponibilidadController {
     // POST /disponibilidades
     crearDisponibilidad(req, res) {
         try {
-            const { medicoId, diaSemana, horaInicio, horaFin, sede } = req.body;
-            const nuevaDispo = this.disponibilidadService.crearDisponibilidad(medicoId, diaSemana, horaInicio, horaFin, sede);
+            const { diaSemana, horaInicio, horaFin } = req.body;
+            const nuevaDispo = this.disponibilidadService.crearDisponibilidad(diaSemana, horaInicio, horaFin);
             res.status(201).json({
                 mensaje: "Disponibilidad creada", data: nuevaDispo
             });
@@ -52,7 +52,7 @@ class DisponibilidadController {
     }    
 }
 
-    // no tiene sentido un PATCH/PUT --> lo hago para completar el CRUD
+    /* no tiene sentido un PATCH/PUT --> lo hago para completar el CRUD
     actualizarDisponibilidad(req, res) {
     try {
         const { id } = req.params; // El ID viejo viaja en la URL
@@ -63,7 +63,7 @@ class DisponibilidadController {
     } catch(error) {
         res.status(400).json({mensaje: error.message});
     }
-}
+}*/
 
 const disponibilidadController = new DisponibilidadController();
 export default disponibilidadController;

@@ -1,15 +1,18 @@
 import { DisponibilidadRepository } from '../repository/disponibilidadRepository.js';
+import {DisponibilidadHoraria} from '../model/disponibilidadHoraria.js';
+import {MedicoRepository} from '../repository/medicoRepository.js';
 
 export class DisponibilidadService {
     constructor() {
         // sino, se podria inyectar
         this.disponibilidadRepository = new DisponibilidadRepository();
+        this.medicoRepository = new MedicoRepository();
     }   
 
 // en realidad, todos estos metodos que interactuan con el repository deberian ser async --> como ahora es un array lo dejo para dsp
-    crearDisponibilidad(medicoId, diaSemana, horaInicio, horaFin, sede) {
-        const nuevaDisponibilidad = new Disponibilidad(id, medicoId, diaSemana, horaInicio, horaFin, sede);
-        this.disponibilidadRepository.create(nuevaDisponibilidad);
+    crearDisponibilidad(diaSemana, horaInicio, horaFin) {
+        const nuevaDisponibilidad = new DisponibilidadHoraria(diaSemana, horaInicio, horaFin);
+        return this.disponibilidadRepository.create(nuevaDisponibilidad);
     }
 
     eliminarDisponibilidad(disponibilidadId) {
@@ -31,12 +34,11 @@ export class DisponibilidadService {
     }
 
     estaDisponible(medicoId, fechaHora) {
-        const disponibilidades = this.disponibilidadRepository.findAll();
-        
-        // lógica para filtrar las disponibilidades del médico
-        // ver si la fecha/hora recibida cae dentro de sus horarios
-        const medicoDisponible = disponibilidades.filter(d => d.medicoId === medicoId);
-        
-        return medicoDisponible.length > 0; 
+        const fecha = new Date(fechaHora);
+        const medico = this.medicoRepository.findById(medicoId);
+        const disponibilidadesMedico = medico.disponibilidades;
+
+
+        disponibilidadesMedico.some((disponibilidad) => {disponibilidad.abarca(fecha)})
     }
 }
