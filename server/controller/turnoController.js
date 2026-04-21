@@ -11,7 +11,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(500).json({mensaje : error.message});
+            throw ERRORES.SERVER_ERROR;
         }
     }
 
@@ -23,7 +23,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(404).json({mensaje : error.message});
+            throw ERRORES.NOT_FOUND_TURNO;
         }
     }
     //POST /turnos
@@ -34,7 +34,7 @@ class TurnoController{
             res.status(201).json({mensaje: "Turno creado exitosamente."})
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            throw ERRORES.BAD_REQUEST;
         }
     }
 
@@ -47,7 +47,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.mensaje});
+            throw ERRORES.BAD_REQUEST;
         }
     }
     //PATCH turnos/:id/baja
@@ -58,7 +58,7 @@ class TurnoController{
             await this.turnoService.darDeBaja(id, motivo);
             res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
         } catch (error) {
-            res.status(400).json({mensaje: error.mensaje});
+            throw ERRORES.BAD_REQUEST;
         }
     }
     //DELETE turnos/:id
@@ -69,7 +69,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            throw ERRORES.BAD_REQUEST;
         }
     }    
 }
