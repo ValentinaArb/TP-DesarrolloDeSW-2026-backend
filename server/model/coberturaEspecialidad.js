@@ -8,7 +8,6 @@ class CoberturaEspecialidad{
         this._nivel = nivel;
     }
 
-
     get especialidad() {
         return this._especialidad;
     }

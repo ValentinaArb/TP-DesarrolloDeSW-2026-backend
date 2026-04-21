@@ -10,21 +10,21 @@ export class DisponibilidadService {
     }
 
 // en realidad, todos estos metodos que interactuan con el repository deberian ser async --> como ahora es un array lo dejo para dsp
-    crearDisponibilidad(diaSemana, horaInicio, horaFin) {
+    async crearDisponibilidad(diaSemana, horaInicio, horaFin) {
         const nuevaDisponibilidad = new DisponibilidadHoraria(diaSemana, horaInicio, horaFin);
-        return this.disponibilidadRepository.create(nuevaDisponibilidad);
+        return await this.disponibilidadRepository.create(nuevaDisponibilidad);
     }
 
-    eliminarDisponibilidad(disponibilidadId) {
-        this.disponibilidadRepository.delete(disponibilidadId);
+    async eliminarDisponibilidad(disponibilidadId) {
+        return await this.disponibilidadRepository.delete(disponibilidadId);
     }
 
-    obtenerDisponibilidad(disponibilidadId) {
-        return this.disponibilidadRepository.findById(disponibilidadId);
+    async obtenerDisponibilidad(disponibilidadId) {
+        return await this.disponibilidadRepository.findById(disponibilidadId);
     }
 
-    obtenerTodas() {
-        return this.disponibilidadRepository.findAll();
+    async obtenerTodas() {
+        return await this.disponibilidadRepository.findAll();
     }
 
     // innecesario

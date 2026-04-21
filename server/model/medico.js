@@ -22,6 +22,9 @@ class Medico {
         this._disponibilidades = disponibilidades;
     }
 
+    get id() {
+        return this._id;
+    }
 
     get usuario() {
         return this._usuario;
@@ -86,8 +89,6 @@ class Medico {
     set disponibilidades(value) {
         this._disponibilidades = value;
     }
-
-    definirDisponibilidad(disponibilidad) { // No es lo mismo que el setter?
-
-    }
 }
+
+export {Medico}

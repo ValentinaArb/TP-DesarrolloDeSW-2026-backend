@@ -7,9 +7,9 @@ class DisponibilidadController {
     }
 
     // GET /disponibilidades
-    obtenerTodas(req, res) {
+    async obtenerTodas(req, res) {
         try {
-            const disponibilidades = this.disponibilidadService.obtenerTodas();
+            const disponibilidades = await this.disponibilidadService.obtenerTodas();
             res.status(200).json(disponibilidades);
         } catch(error) {
             res.status(500).json({mensaje : error.message});
@@ -17,10 +17,10 @@ class DisponibilidadController {
     }
 
     // GET /disponibilidades/:id
-    obtenerDisponibilidad(req, res) {
+    async obtenerDisponibilidad(req, res) {
         try {
             const { id } = req.params;
-            const disponibilidad = this.disponibilidadService.obtenerDisponibilidad(id);
+            const disponibilidad = await this.disponibilidadService.obtenerDisponibilidad(id);
             res.status(200).json(disponibilidad);
         } catch(error) {
             res.status(404).json({mensaje : error.message});
@@ -28,10 +28,10 @@ class DisponibilidadController {
     }
 
     // POST /disponibilidades
-    crearDisponibilidad(req, res) {
+    async crearDisponibilidad(req, res) {
         try {
             const { diaSemana, horaInicio, horaFin } = req.body;
-            const nuevaDispo = this.disponibilidadService.crearDisponibilidad(diaSemana, horaInicio, horaFin);
+            const nuevaDispo = await this.disponibilidadService.crearDisponibilidad(diaSemana, horaInicio, horaFin);
             res.status(201).json({
                 mensaje: "Disponibilidad creada", data: nuevaDispo
             });
@@ -41,10 +41,10 @@ class DisponibilidadController {
     }
 
     // DELETE /disponibilidades/:id
-    eliminarDisponibilidad(req, res) {
+    async eliminarDisponibilidad(req, res) {
         try {
             const { id } = req.params;
-            this.disponibilidadService.eliminarDisponibilidad(id);
+            await this.disponibilidadService.eliminarDisponibilidad(id);
             res.status(200).json({mensaje : "Disponibilidad eliminada"});
         } catch(error) {
             res.status(400).json({mensaje: error.message});

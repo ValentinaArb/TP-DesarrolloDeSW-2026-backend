@@ -5,9 +5,9 @@ class TurnoController{
         this.turnoService = new TurnoService();
     }
 
-    obtenerTodos(req,res){
+    async obtenerTodos(req,res){
         try{
-            const turno = this.turnoService.obtenerTodos();
+            const turno = await this.turnoService.obtenerTodos();
             res.status(200).json(turno);
         }
         catch(error){
@@ -16,10 +16,10 @@ class TurnoController{
     }
 
     //GET /turnos:id
-    obtenerTurno(req,res){
+    async obtenerTurno(req,res){
         try{
             const { id } = req.params;
-            const turno = this.turnoService.obtenerTurno(id);
+            const turno = await this.turnoService.obtenerTurno(id);
             res.status(200).json(turno);
         }
         catch(error){
@@ -27,11 +27,11 @@ class TurnoController{
         }
     }
     //POST /turnos
-    crearTurno(req, res){
+    async crearTurno(req, res){
         try{
-            const {medico, fechaHora, practica, sede} = req.body
-            this.turnoService.crearTurno(medico, fechaHora, practica, sede);
-            res.status(201).json({mensaje: "Turno creado exitosamente."})
+            const {medicoId, fechaHora, practica, sede} = req.body
+            const turnoCreado = await this.turnoService.crearTurno(medicoId, fechaHora, practica, sede);
+            res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
         catch(error){
             res.status(400).json({mensaje: error.message});
@@ -61,10 +61,10 @@ class TurnoController{
         }
     }
     //DELETE turnos/:id
-    eliminarTurno(req,res){
+    async eliminarTurno(req,res){
         try{
             const {id} = req.params;
-            this.turnoService.eliminarTurno(id);
+            await this.turnoService.eliminarTurno(id);
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){

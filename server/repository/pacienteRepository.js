@@ -9,13 +9,13 @@ class PacienteRepository {
     }
 
     //CREATE (POST)
-    create(paciente) {
+    async create(paciente) {
         this.pacientes.push(paciente);
         console.log("paciente creado correctamente.");
     }
 
     // READ (GET)
-    findById(pacienteId) {
+    async findById(pacienteId) {
         const indiceBuscado = this._encontrarIndiceDeId(pacienteId);
 
         if(indiceBuscado !== -1){
@@ -28,13 +28,14 @@ class PacienteRepository {
         }
     }
 
-    findBy(nombre, password){
+    async findBy(nombre, password){
         const paciente = this.pacientes.find(
             u => u.nombre === nombre && u.password === password
         );
         if (!paciente) {
             this._errorNoEncontrado();
         }
+        return paciente;
     }
 
     // MÉTODOS INTERNOS

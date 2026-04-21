@@ -8,19 +8,17 @@ export class MedicoService {
         this.turnoRepository = new TurnoRepository();
     }
 
-    estaDisponible(medicoId, fechaHora) {
+    async estaDisponible(medicoId, fechaHora) {
         const fecha = new Date(fechaHora);
-        const medico = this.medicoRepository.findById(medicoId);
+        const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
 
-
-        return disponibilidadesMedico.some((disponibilidad) => {disponibilidad.abarca(fecha)})
+        return disponibilidadesMedico.some((d) => d.abarca(fecha));
     }
 
-    yaTieneTurno(medicoId, fechaHora) {
-        const fecha = new Date(fechaHora);
-        const medico = this.medicoRepository.findById(medicoId);
-        const turnos = this.turnoRepository.findAll();
+    async yaTieneTurno(medicoId, fechaHora) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        const turnos = await this.turnoRepository.findAll();
 
         return turnos.some((turno) => (turno.medico === medico) && (turno.fechaHora === fechaHora));
     }

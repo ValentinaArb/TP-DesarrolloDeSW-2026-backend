@@ -1,19 +1,22 @@
 import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
 
+let disponibilidad1 = new DisponibilidadHoraria(1, 2, new Date(0, 0, 0, 8, 0), new Date(0, 0, 0, 12, 0));
+let disponibilidad2 = new DisponibilidadHoraria(2, 4, new Date(0, 0, 0, 14, 0), new Date(0, 0, 0, 18, 0));
+
 class DisponibilidadRepository {
     constructor() {
         // array vacio por ahora
-        this.disponibilidades = []; 
+        this.disponibilidades = [disponibilidad1, disponibilidad2]; 
     }
     
     // CREATE (POST)
-    create(disponibilidad) {
+    async create(disponibilidad) {
         this.disponibilidades.push(disponibilidad);
         console.log("Disponibilidad creada");
     }
 
     // DELETE (DELETE)
-    delete(disponibilidadId) {
+    async delete(disponibilidadId) {
         const indiceAEliminar = this._encontrarIndiceDeId(disponibilidadId);
 
         if(indiceAEliminar !== -1) {
@@ -26,12 +29,12 @@ class DisponibilidadRepository {
 
     // READ (GET)
     // all
-    findAll() {
+    async findAll() {
         return this.disponibilidades;
     }
 
     // by ID
-    findById(disponibilidadId) {
+    async findById(disponibilidadId) {
         const indiceBuscado = this._encontrarIndiceDeId(disponibilidadId);
 
         if(indiceBuscado !== -1){
@@ -42,9 +45,9 @@ class DisponibilidadRepository {
     }
 
     // UPDATE (PUT/PATCH)
-    update(nuevaDisponibilidad, idDispoVieja) {
-        this.delete(idDispoVieja);
-        this.create(nuevaDisponibilidad);
+    async update(nuevaDisponibilidad, idDispoVieja) {
+        await this.delete(idDispoVieja);
+        await this.create(nuevaDisponibilidad);
         console.log("Disponibilidad actualizada correctamente.");
     }
 
