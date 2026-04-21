@@ -9,5 +9,6 @@ router.get('/:id', (req, res) => turnoController.obtenerTurno(req, res));
 router.delete('/:id', (req, res) => turnoController.eliminarTurno(req, res));
 router.patch('/:id/darAlta', (req, res) => turnoController.darDeAlta(req, res));
 router.patch('/:id/darBaja', (req, res) => turnoController.darDeBaja(req, res));
+router.put('/crear', (req, res) => turnoController.crearTurno(req, res));
 
 export default router;

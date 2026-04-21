@@ -102,16 +102,11 @@ class Turno{
             this._actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
         }
         else {
-            throw new Error("Whoops! Los turnos se deben cancelar con al menos una hora de antelación.");
-        }
-    }
-
-    darDeAlta(paciente) {
-        if(this._estado === EstadoTurno.DISPONIBLE) {
-            this._actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA");
-        }
-        else{
-            throw new Error("Whoops! El turno no está disponible.");
+            throw new AppError(
+            'VALIDATION_ERROR', 
+            'Los turnos se deben cancelar con al menos una hora de antelación.', 
+            400
+            );
         }
     }
 

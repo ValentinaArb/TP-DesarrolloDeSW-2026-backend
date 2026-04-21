@@ -24,6 +24,7 @@ class TurnoRepository {
     
     //CREATE (POST)
     create(turno) {
+        turno.id = this.turnos.length + 1;
         this.turnos.push(turno);
         console.log("Turno creado correctamente.");
     }
