@@ -24,6 +24,12 @@ export class DisponibilidadService {
         return this.disponibilidadRepository.findAll();
     }
 
+    // innecesario
+    actualizarDisponibilidad(idVieja, datosNuevos) {
+    // se podria validar que los datos nuevos estén bien
+    this.disponibilidadRepository.update(datosNuevos, idVieja);
+    }
+
     estaDisponible(medicoId, fechaHora) {
         const disponibilidades = this.disponibilidadRepository.findAll();
         
