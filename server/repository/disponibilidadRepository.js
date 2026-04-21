@@ -11,8 +11,10 @@ class DisponibilidadRepository {
     
     // CREATE (POST)
     async create(disponibilidad) {
+        disponibilidad.id = this.disponibilidades.length + 1;
         this.disponibilidades.push(disponibilidad);
         console.log("Disponibilidad creada");
+        return disponibilidad;
     }
 
     // DELETE (DELETE)

@@ -16,6 +16,10 @@ export class DisponibilidadHoraria{
         return this._id;
     }
 
+    set id(value) {
+        this._id = value;
+    }
+
     get diaSemana() {
         return this._diaSemana;
     }
