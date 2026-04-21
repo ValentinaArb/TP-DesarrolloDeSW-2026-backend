@@ -46,7 +46,7 @@ class TurnoController{
             await this.turnoService.darDeAlta(id, pacienteId);
             res.status(200).json({mensaje: "Turno fue dado de alta con exito"});
         } catch (error) {
-            res.status(400).json({mensaje: error.mensaje});
+            res.status(400).json({error: error.message});
         }
     }
     //PATCH turnos/:id/baja
@@ -57,7 +57,7 @@ class TurnoController{
             await this.turnoService.darDeBaja(id, motivo);
             res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
         } catch (error) {
-            res.status(400).json({mensaje: error.mensaje});
+            res.status(400).json({error: error.message});
         }
     }
     //DELETE turnos/:id
@@ -68,7 +68,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            res.status(400).json({error: error.message});
         }
     }    
 }

@@ -1,6 +1,7 @@
 import { TurnoRepository } from '../repository/turnoRepository.js';
 import { PacienteRepository } from '../repository/pacienteRepository.js';
 import {EstadoTurno} from "../model/estadoTurno.js";
+import {Turno} from "../model/turno.js";
 
 export class TurnoService {
     constructor() {
@@ -25,7 +26,7 @@ export class TurnoService {
     }
 
     crearTurno(medico, fechaHora, practica, sede) {
-        const nuevoTurno = Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         this.turnoRepository.create(nuevoTurno);
     }
 
