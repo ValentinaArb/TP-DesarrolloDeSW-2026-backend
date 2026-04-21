@@ -28,17 +28,8 @@ export class DisponibilidadService {
     }
 
     // innecesario
-    actualizarDisponibilidad(idVieja, datosNuevos) {
+    //actualizarDisponibilidad(idVieja, datosNuevos) {
     // se podria validar que los datos nuevos estén bien
-    this.disponibilidadRepository.update(datosNuevos, idVieja);
-    }
-
-    estaDisponible(medicoId, fechaHora) {
-        const fecha = new Date(fechaHora);
-        const medico = this.medicoRepository.findById(medicoId);
-        const disponibilidadesMedico = medico.disponibilidades;
-
-
-        disponibilidadesMedico.some((disponibilidad) => {disponibilidad.abarca(fecha)})
-    }
+    //this.disponibilidadRepository.update(datosNuevos, idVieja);
+    //}
 }

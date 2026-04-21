@@ -1,5 +1,6 @@
 import { TurnoRepository } from '../repository/turnoRepository.js';
 import { PacienteRepository } from '../repository/pacienteRepository.js';
+import {MedicoService} from './medicoService.js';
 import {EstadoTurno} from "../model/estadoTurno.js";
 import {Turno} from "../model/turno.js";
 
@@ -7,6 +8,7 @@ export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
         this.pacienteRepository = new PacienteRepository();
+        this.medicoService = new MedicoService();
     }
 
     async darDeBaja(turnoId, motivo) {
@@ -27,7 +29,10 @@ export class TurnoService {
 
     crearTurno(medico, fechaHora, practica, sede) {
         const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-        this.turnoRepository.create(nuevoTurno);
+        if(this.medicoService.estaDisponible(medico.id, fechaHora) && this.medicoService.yaTieneTurno(medico.id, fechaHora)) {
+            this.turnoRepository.create(nuevoTurno);
+        }
+
     }
 
     eliminarTurno(turnoId) {
