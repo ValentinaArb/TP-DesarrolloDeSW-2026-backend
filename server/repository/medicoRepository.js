@@ -1,6 +1,5 @@
 import {Medico} from "../model/medico.js"
 import {DisponibilidadRepository} from "./disponibilidadRepository.js";
-import {UsuarioRepository} from "./usuarioRepository.js";
 
 const disponibilidad = new DisponibilidadRepository();
 const disponibilidad1 = await disponibilidad.findById(1);

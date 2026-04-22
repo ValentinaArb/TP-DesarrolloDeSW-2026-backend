@@ -1,4 +1,5 @@
 import { TurnoService } from '../service/turnoService.js';
+import { ERRORES} from '../error/erroresUtilities.js';
 
 class TurnoController{
     constructor() {
@@ -11,7 +12,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(500).json({mensaje : error.message});
+            res.status(ERRORES.SERVER_ERROR.status).json({ mensaje: ERRORES.SERVER_ERROR.mensaje });
         }
     }
 
@@ -23,7 +24,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(404).json({mensaje : error.message});
+            res.status(ERRORES.NOT_FOUND_TURNO.status).json({ mensaje: ERRORES.NOT_FOUND_TURNO.mensaje });
         }
     }
     //POST /turnos
@@ -34,7 +35,7 @@ class TurnoController{
             res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 
@@ -43,10 +44,11 @@ class TurnoController{
         try {
             const {id} = req.params;
             const {pacienteId} = req.body;
-            await this.turnoService.darDeAlta(id, pacienteId);
-            res.status(200).json({mensaje: "Turno fue dado de alta con exito"});
-        } catch (error) {
-            res.status(400).json({error: error.message});
+            this.turnoService.darDeAlta(id, pacienteId);
+            res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
+        }
+        catch(error){
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //PATCH turnos/:id/baja
@@ -57,7 +59,7 @@ class TurnoController{
             await this.turnoService.darDeBaja(id, motivo);
             res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
         } catch (error) {
-            res.status(400).json({error: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //DELETE turnos/:id
@@ -68,7 +70,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            res.status(400).json({error: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }    
 }

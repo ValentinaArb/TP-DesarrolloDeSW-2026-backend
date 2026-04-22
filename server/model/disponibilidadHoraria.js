@@ -44,10 +44,6 @@ export class DisponibilidadHoraria{
         this._horaHasta = value;
     }
 
-    get id() {
-        return this._id;
-    }
-
     abarca(fecha) {
         const fechaDisponibilidad = new Date()
         console.log("Fecha a verificar:", fecha);
