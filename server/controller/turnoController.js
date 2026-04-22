@@ -1,4 +1,5 @@
 import { TurnoService } from '../service/turnoService.js';
+import { ERRORES, ErrorApp } from '../error/erroresUtilities.js';
 
 class TurnoController{
     constructor() {
@@ -11,7 +12,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            throw ERRORES.SERVER_ERROR;
+            res.status(ERRORES.SERVER_ERROR.status).json({ mensaje: ERRORES.SERVER_ERROR.mensaje });
         }
     }
 
@@ -23,7 +24,7 @@ class TurnoController{
             res.status(200).json(turno);
         }
         catch(error){
-            throw ERRORES.NOT_FOUND_TURNO;
+            res.status(ERRORES.NOT_FOUND_TURNO.status).json({ mensaje: ERRORES.NOT_FOUND_TURNO.mensaje });
         }
     }
     //POST /turnos
@@ -34,7 +35,7 @@ class TurnoController{
             res.status(201).json({mensaje: "Turno creado exitosamente."})
         }
         catch(error){
-            throw ERRORES.BAD_REQUEST;
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 
@@ -47,7 +48,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
         }
         catch(error){
-            throw ERRORES.BAD_REQUEST;
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //PATCH turnos/:id/baja
@@ -58,7 +59,7 @@ class TurnoController{
             await this.turnoService.darDeBaja(id, motivo);
             res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
         } catch (error) {
-            throw ERRORES.BAD_REQUEST;
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //DELETE turnos/:id
@@ -69,7 +70,7 @@ class TurnoController{
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            throw ERRORES.BAD_REQUEST;
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }    
 }
