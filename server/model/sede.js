@@ -10,6 +10,10 @@ class Sede{
         this._direccion = direccion;
     }
 
+    get id() {
+        return this._id;
+    }
+
     get nombre() {
         return this._nombre;
     }

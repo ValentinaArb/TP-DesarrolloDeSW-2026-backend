@@ -1,2 +1,1 @@
-let practica1 = practica(tipoPracticas.CATARATAS, TiposEspecialidad.OFTALMOLOGIA);
-    
+let practica1 = new Practica(tipoPracticas.CATARATAS, TiposEspecialidad.OFTALMOLOGIA);

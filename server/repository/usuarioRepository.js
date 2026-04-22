@@ -1,9 +1,11 @@
 import {Usuario} from "../model/usuario.js"
 
-let usuario1 = new Usuario(1, "Pepe", "holaquetal")
+
+
 
 class UsuarioRepository {
     constructor() {
+        const usuario1 = new Usuario(1, "Pepe", "holaquetal");
         this.usuarios = [usuario1];
     }
 
@@ -14,7 +16,7 @@ class UsuarioRepository {
     }
 
     // READ (GET)
-    findById(usuarioId) {
+    async findById(usuarioId) {
         const indiceBuscado = this._encontrarIndiceDeId(usuarioId);
 
         if(indiceBuscado !== -1){

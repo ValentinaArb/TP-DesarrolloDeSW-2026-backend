@@ -9,6 +9,10 @@ export class Usuario{
         this._password = password;
     }
 
+    get id() {
+        return this._id;
+    }
+
     get nombre() {
         return this._nombre;
     }

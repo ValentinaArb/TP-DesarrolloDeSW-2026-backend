@@ -22,6 +22,9 @@ class Paciente{
         this._sexo = sexo;
     }
 
+    get id() {
+        return this._id;
+    }
 
     get usuario() {
         return this._usuario;
