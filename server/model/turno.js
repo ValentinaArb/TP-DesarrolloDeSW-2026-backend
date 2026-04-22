@@ -15,7 +15,7 @@ class Turno{
     constructor(id = null, medico, fechaHora, paciente = null, practica, sede, estado, estados, costo = null){
         this._id = id;
         this._medico = medico;
-        this._fechaHora = fechaHora;
+        this._fechaHora = fechaHora; 
         this._paciente = paciente;
         this._practica = practica;
         this._sede = sede;
@@ -23,7 +23,6 @@ class Turno{
         this._historialDeEstados = estados;
         this._costo = costo;
     }
-
 
     get id() {
         return this._id;
@@ -97,15 +96,49 @@ class Turno{
         this._costo = value;
     }
 
-    actualizarEstado(nuevoEstado, paciente, motivo) {
+    darDeBaja(motivo) {
+        if(this._verificarBaja()) {
+            this._actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
+        }
+        else {
+            /* throw new AppError(
+            'VALIDATION_ERROR', 
+            'Los turnos se deben cancelar con al menos una hora de antelación.', 
+            400
+            ); */
+                        throw new Error("Los turnos se deben cancelar con al menos una hora de antelación.");
+
+        }
+    }
+    
+    darDeAlta(paciente) {
+        if(this._estado === EstadoTurno.DISPONIBLE) {
+            this._actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA");
+        }
+        else{
+            throw new Error("Whoops! El turno no está disponible.");
+        }
+    }
+
+    _actualizarEstado(nuevoEstado, paciente, motivo) {
         let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
-        this._historialDeEstados.push(cambio.estado);
+        this._historialDeEstados.push(cambio);
         this._estado = nuevoEstado;
         this._paciente = paciente;
-        
         if(nuevoEstado === EstadoTurno.DISPONIBLE) {
             this._paciente = null;
-        }   
+        }
+    }
+
+    _verificarBaja() {
+        const ahora = new Date();
+        const horaTurno = new Date(this._fechaHora);
+        //console.log("DEBUG: Fecha y hora del turno:" + this._fechaHora);
+        //console.log("DEBUG: Fecha y hora actual:" + ahora);
+        const tiempoQueFaltaParaTurno = horaTurno - ahora;
+        const unaHora = 60 * 60 * 1000;
+        //console.log("DEBUG: Diferencia calculada:" + tiempoQueFaltaParaTurno); // VER - chequear que pasa si el turno ya pasó.
+        return tiempoQueFaltaParaTurno >= unaHora;
     }
 }
 

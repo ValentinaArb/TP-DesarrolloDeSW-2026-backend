@@ -1,9 +1,7 @@
 import {Paciente} from "../model/paciente.js"
 
-let paciente1;
-paciente1 = new Paciente("1","Juan", "Pérez", "12345678", "1990-01-01", "M");
-let paciente2;
-paciente2 = new Paciente("2","María", "Gómez", "87654321", "1985-05-15", "F");
+let paciente1 = new Paciente(1,"Juan", "Pérez", "12345678", "1990-01-01", "M");
+let paciente2 = new Paciente(2,"María", "Gómez", "87654321", "1985-05-15", "F");
 
 class PacienteRepository {
     constructor() {
@@ -11,13 +9,13 @@ class PacienteRepository {
     }
 
     //CREATE (POST)
-    create(paciente) {
+    async create(paciente) {
         this.pacientes.push(paciente);
         console.log("paciente creado correctamente.");
     }
 
     // READ (GET)
-    findById(pacienteId) {
+    async findById(pacienteId) {
         const indiceBuscado = this._encontrarIndiceDeId(pacienteId);
 
         if(indiceBuscado !== -1){
@@ -30,13 +28,14 @@ class PacienteRepository {
         }
     }
 
-    findBy(nombre, password){
+    async findBy(nombre, password){
         const paciente = this.pacientes.find(
             u => u.nombre === nombre && u.password === password
         );
         if (!paciente) {
             this._errorNoEncontrado();
         }
+        return paciente;
     }
 
     // MÉTODOS INTERNOS

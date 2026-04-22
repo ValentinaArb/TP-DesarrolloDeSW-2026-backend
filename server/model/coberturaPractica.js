@@ -2,12 +2,10 @@ class CoberturaPractica{
     _practica;
     _nivel;
 
-
     constructor(practica, nivel) {
         this._practica = practica;
         this._nivel = nivel;
     }
-
 
     get practica() {
         return this._practica;

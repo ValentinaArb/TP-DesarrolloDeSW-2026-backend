@@ -12,6 +12,10 @@ class Plan{
         this._coberturasPractica = coberturasPractica;
     }
 
+    get id() { 
+        return this._id;
+    }
+
     get nombre() {
         return this._nombre;
     }

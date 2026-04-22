@@ -1,78 +1,76 @@
 import { TurnoService } from '../service/turnoService.js';
+import { ERRORES} from '../error/erroresUtilities.js';
 
 class TurnoController{
     constructor() {
         this.turnoService = new TurnoService();
     }
 
-    obtenerTodos(req,res){
+    async obtenerTodos(req,res){
         try{
-            const turno = this.turnoService.obtenerTodos();
+            const turno = await this.turnoService.obtenerTodos();
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(500).json({mensaje : error.message});
+            res.status(ERRORES.SERVER_ERROR.status).json({ mensaje: ERRORES.SERVER_ERROR.mensaje });
         }
     }
 
     //GET /turnos:id
-    obtenerTurno(req,res){
+    async obtenerTurno(req,res){
         try{
             const { id } = req.params;
-            const turno = this.turnoService.obtenerTurno(id);
+            const turno = await this.turnoService.obtenerTurno(id);
             res.status(200).json(turno);
         }
         catch(error){
-            res.status(404).json({mensaje : error.message});
+            res.status(ERRORES.NOT_FOUND_TURNO.status).json({ mensaje: ERRORES.NOT_FOUND_TURNO.mensaje });
         }
     }
     //POST /turnos
-    crearTurno(req, res){
+    async crearTurno(req, res){
         try{
-            const {medico, fechaHora, practica, sede} = req.body
-            this.turnoService.crearTurno(medico, fechaHora, practica, sede);
-            res.status(201).json({mensaje: "Turno creado exitosamente."})
+            const {medicoId, fechaHora, practica, sede} = req.body
+            const turnoCreado = await this.turnoService.crearTurno(medicoId, fechaHora, practica, sede);
+            res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 
     //PATCH turnos/:id/alta
-    darDeAlta(req, res){
-        try{
-            const { id } = req.params;
+    async darDeAlta(req, res) {
+        try {
+            const {id} = req.params;
             const {pacienteId} = req.body;
             this.turnoService.darDeAlta(id, pacienteId);
             res.status(200).json({mensaje : "Turno fue dado de alta con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.mensaje});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //PATCH turnos/:id/baja
-    darDeBaja(req, res){
-        try{
-            const { id } = req.params;
-            const {pacienteId, motivo} = req.body;
-            console.log("LOG:  TurnoController");
-
-            this.turnoService.darDeBaja(id, pacienteId, motivo);
-            res.status(200).json({mensaje : "Turno fue dado de baja con exito"});
-        }
-        catch(error){
-            res.status(400).json({mensaje: error.mensaje});
+    async darDeBaja(req, res) {
+        try {
+            const {id} = req.params;
+            const {motivo} = req.body;
+            await this.turnoService.darDeBaja(id, motivo);
+            res.status(200).json({mensaje: "Turno fue dado de baja con exito"});
+        } catch (error) {
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
     //DELETE turnos/:id
-    eliminarTurno(req,res){
+    async eliminarTurno(req,res){
         try{
             const {id} = req.params;
-            this.turnoService.eliminarTurno(id);
+            await this.turnoService.eliminarTurno(id);
             res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
         }
         catch(error){
-            res.status(400).json({mensaje: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }    
 }
