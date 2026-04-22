@@ -26,6 +26,10 @@ class Medico {
         return this._id;
     }
 
+    set id(value) {
+        this._id = value;
+    }
+
     get usuario() {
         return this._usuario;
     }

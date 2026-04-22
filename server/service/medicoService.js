@@ -1,5 +1,6 @@
 import {MedicoRepository} from "../repository/medicoRepository.js";
 import {TurnoRepository} from "../repository/TurnoRepository.js";
+import {Medico} from "../model/medico.js";
 
 export class MedicoService {
 
@@ -21,5 +22,34 @@ export class MedicoService {
         const turnos = await this.turnoRepository.findAll();
 
         return turnos.some((turno) => (turno.medico === medico) && (turno.fechaHora === fechaHora));
+    }
+
+    async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+        try{const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+        return await this.medicoRepository.create(nuevoMedico);}
+        catch(error) {
+            console.error(error)
+            throw error;
+        }
+    }
+
+    async eliminarMedico(medicoId) {
+        return await this.medicoRepository.delete(medicoId);
+    }
+
+    async obtenerMedico(medicoId) {
+        return await this.medicoRepository.findById(medicoId);
+    }
+    
+    async eliminarMedico(medicoId) {
+        return await this.medicoRepository.delete(medicoId);
+    }
+
+    async obtenerMedico(medicoId) {
+        return await this.medicoRepository.findById(medicoId);
+    }
+
+    async obtenerTodos() {
+        return await this.medicoRepository.findAll();
     }
 }

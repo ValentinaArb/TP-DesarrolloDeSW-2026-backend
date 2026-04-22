@@ -14,6 +14,9 @@ export class MedicoRepository {
 
     // CREATE (POST)
     async create(medico) {
+        const indice = this.medicos.length - 1;
+        const ultimoId = this.medicos[indice].id;
+        medico.id = ultimoId + 1;
         this.medicos.push(medico);
         console.log("Médico creado");
     }
@@ -31,7 +34,6 @@ export class MedicoRepository {
     }
 
     // READ (GET)
-    // all
     async findAll() {
         return this.medicos;
     }

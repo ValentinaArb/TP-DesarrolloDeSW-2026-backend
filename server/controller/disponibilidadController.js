@@ -53,18 +53,5 @@ class DisponibilidadController {
     }    
 }
 
-    /* no tiene sentido un PATCH/PUT --> lo hago para completar el CRUD
-    actualizarDisponibilidad(req, res) {
-    try {
-        const { id } = req.params; // El ID viejo viaja en la URL
-        const datosNuevos = req.body; // Los datos nuevos viajan en el cuerpo
-
-        this.disponibilidadService.actualizarDisponibilidad(id, datosNuevos);
-        res.status(200).json({mensaje : "Disponibilidad actualizada con éxito"});
-    } catch(error) {
-        res.status(400).json({mensaje: error.message});
-    }
-}*/
-
 const disponibilidadController = new DisponibilidadController();
 export default disponibilidadController;
