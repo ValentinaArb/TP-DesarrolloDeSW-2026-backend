@@ -1,4 +1,5 @@
 import { DisponibilidadService } from '../service/disponibilidadService.js';
+import {ERRORES} from "../error/erroresUtilities.js";
 
 class DisponibilidadController {
     constructor() {
@@ -12,7 +13,7 @@ class DisponibilidadController {
             const disponibilidades = await this.disponibilidadService.obtenerTodas();
             res.status(200).json(disponibilidades);
         } catch(error) {
-            res.status(500).json({mensaje : error.message});
+            res.status(ERRORES.SERVER_ERROR.status).json({ mensaje: ERRORES.SERVER_ERROR.mensaje });
         }
     }
 
@@ -23,20 +24,20 @@ class DisponibilidadController {
             const disponibilidad = await this.disponibilidadService.obtenerDisponibilidad(id);
             res.status(200).json(disponibilidad);
         } catch(error) {
-            res.status(404).json({mensaje : error.message});
+            res.status(ERRORES.NOT_FOUND.status).json({ mensaje: ERRORES.NOT_FOUND.mensaje });
         }
     }
 
     // POST /disponibilidades
     async crearDisponibilidad(req, res) {
         try {
-            const { diaSemana, horaInicio, horaFin } = req.body;
-            const nuevaDispo = await this.disponibilidadService.crearDisponibilidad(diaSemana, horaInicio, horaFin);
+            const { diaSemana, horaDesde, horaHasta } = req.body;
+            const nuevaDispo = await this.disponibilidadService.crearDisponibilidad(diaSemana, horaDesde, horaHasta);
             res.status(201).json({
                 mensaje: "Disponibilidad creada", data: nuevaDispo
             });
         } catch(error) {
-            res.status(400).json({mensaje: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 
@@ -47,7 +48,7 @@ class DisponibilidadController {
             await this.disponibilidadService.eliminarDisponibilidad(id);
             res.status(200).json({mensaje : "Disponibilidad eliminada"});
         } catch(error) {
-            res.status(400).json({mensaje: error.message});
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }    
 }
