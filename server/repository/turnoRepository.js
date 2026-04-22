@@ -16,7 +16,9 @@ class TurnoRepository {
     
     //CREATE (POST)
     async create(turno) {
-        turno.id = this.turnos.length + 1;
+        const indice = this.turnos.length - 1  
+        const ultimoId = this.turnos[indice].id;
+        turno.id = ultimoId + 1;
         this.turnos.push(turno);
         console.log("Turno creado correctamente.");
         return turno;

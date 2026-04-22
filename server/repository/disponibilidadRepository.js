@@ -11,7 +11,9 @@ class DisponibilidadRepository {
     
     // CREATE (POST)
     async create(disponibilidad) {
-        disponibilidad.id = this.disponibilidades.length + 1;
+        const indice = this.disponibilidades.length - 1  
+        const ultimoId = this.disponibilidades[indice].id;
+        disponibilidad.id = ultimoId + 1;
         this.disponibilidades.push(disponibilidad);
         console.log("Disponibilidad creada");
         return disponibilidad;
