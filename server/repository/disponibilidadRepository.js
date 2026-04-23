@@ -1,15 +1,16 @@
 import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
+import {Repository} from "./repository.js";
 
 let disponibilidad1 = new DisponibilidadHoraria(1, 2, new Date(0, 0, 0, 8, 0), new Date(0, 0, 0, 12, 0));
 let disponibilidad2 = new DisponibilidadHoraria(2, 4, new Date(0, 0, 0, 14, 0), new Date(0, 0, 0, 18, 0));
 
-class DisponibilidadRepository {
+class DisponibilidadRepository extends Repository {
     constructor() {
-        // array vacio por ahora
-        this.disponibilidades = [disponibilidad1, disponibilidad2]; 
+        super();
+        this.objetos = [disponibilidad1, disponibilidad2]; 
     }
     
-    // CREATE (POST)
+    /* // CREATE (POST)
     async create(disponibilidad) {
         const indice = this.disponibilidades.length - 1  
         const ultimoId = this.disponibilidades[indice].id;
@@ -62,7 +63,7 @@ class DisponibilidadRepository {
 
     _errorNoEncontrado() {
         throw new Error("Whoops! El id de disponibilidad buscado no existe");
-    }
+    } */
 }
 
 export { DisponibilidadRepository };

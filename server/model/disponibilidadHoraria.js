@@ -45,17 +45,7 @@ export class DisponibilidadHoraria{
     }
 
     abarca(fecha) {
-        const fechaDisponibilidad = new Date()
-        console.log("Fecha a verificar:", fecha);
-
-        console.log("fecha.getDay()", fecha.getDay());
-        console.log("this._diaSemana:", this._diaSemana);
-
-        console.log("fecha.getTime()", fecha.getHours());
-        console.log("this._horaHasta:", this._horaHasta);
-
-        console.log("fecha.getTime()", fecha.getHours());
-        console.log("this._horaDesde:", this._horaDesde);
+        const fechaDisponibilidad = new Date();
         
         return (fecha.getDay() === this._diaSemana) &&
             (fecha.getHours() <= this._horaHasta.getHours()) &&

@@ -113,7 +113,7 @@ class Turno{
     
     darDeAlta(paciente) {
         if(this._estado === EstadoTurno.DISPONIBLE) {
-            this._actualizarEstado(EstadoTurno.RESERVADO, paciente, "ALTA");
+            this._actualizarEstado(EstadoTurno.RESERVADO, paciente);
         }
         else{
             throw new Error("Whoops! El turno no está disponible.");
@@ -133,11 +133,10 @@ class Turno{
     _verificarBaja() {
         const ahora = new Date();
         const horaTurno = new Date(this._fechaHora);
-        //console.log("DEBUG: Fecha y hora del turno:" + this._fechaHora);
-        //console.log("DEBUG: Fecha y hora actual:" + ahora);
+
         const tiempoQueFaltaParaTurno = horaTurno - ahora;
         const unaHora = 60 * 60 * 1000;
-        //console.log("DEBUG: Diferencia calculada:" + tiempoQueFaltaParaTurno); // VER - chequear que pasa si el turno ya pasó.
+        
         return tiempoQueFaltaParaTurno >= unaHora;
     }
 }

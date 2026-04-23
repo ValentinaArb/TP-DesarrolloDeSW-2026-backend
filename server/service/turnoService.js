@@ -17,7 +17,7 @@ export class TurnoService {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
             turno.darDeBaja(motivo);
-            await this.turnoRepository.updateTurno(turno, turnoId);
+            await this.turnoRepository.update(turno, turnoId);
         } catch(error) {
             console.error("Error al dar de baja el turno:", error);
             throw error;
@@ -29,7 +29,7 @@ export class TurnoService {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
             turno.darDeAlta(paciente);
-            await this.turnoRepository.updateTurno(turno, turnoId);
+            await this.turnoRepository.update(turno, turnoId);
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
@@ -37,7 +37,7 @@ export class TurnoService {
         }
     }
 
-    async crearTurno(medicoId, fechaHora, practica, sede) {
+    async crearTurno({medicoId, fechaHora, practica, sede}) {
         const medico = await this.medicoRepository.findById(medicoId);
         const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         const estaDisponible = await this.medicoService.estaDisponible(medicoId, fechaHora);

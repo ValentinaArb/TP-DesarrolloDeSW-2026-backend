@@ -40,14 +40,6 @@ export class MedicoService {
     async obtenerMedico(medicoId) {
         return await this.medicoRepository.findById(medicoId);
     }
-    
-    async eliminarMedico(medicoId) {
-        return await this.medicoRepository.delete(medicoId);
-    }
-
-    async obtenerMedico(medicoId) {
-        return await this.medicoRepository.findById(medicoId);
-    }
 
     async obtenerTodos() {
         return await this.medicoRepository.findAll();
