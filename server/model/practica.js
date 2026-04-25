@@ -49,3 +49,5 @@ class Practica{
         this._costo = value;
     }
 }
+
+export { Practica };

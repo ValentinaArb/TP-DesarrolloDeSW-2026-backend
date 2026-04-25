@@ -1,7 +1,7 @@
 import { Practica } from "../model/practica.js";
 import { Repository } from "./repository.js";
 
-let practica1 = new Practica(tipoPracticas.CATARATAS, TiposEspecialidad.OFTALMOLOGIA);
+let practica1 = new Practica(1, "1234","Operación", 60, 0);
 
 class PracticaRepository extends Repository {
     constructor() {
@@ -11,3 +11,4 @@ class PracticaRepository extends Repository {
 }
 
 export { PracticaRepository };
+
