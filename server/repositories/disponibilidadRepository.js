@@ -1,4 +1,4 @@
-import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
+import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {Repository} from "./repository.js";
 
 let disponibilidad1 = new DisponibilidadHoraria(1, 2, new Date(0, 0, 0, 8, 0), new Date(0, 0, 0, 12, 0));

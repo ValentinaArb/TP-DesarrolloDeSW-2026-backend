@@ -1,6 +1,6 @@
-import {MedicoRepository} from "../repository/medicoRepository.js";
-import {TurnoRepository} from "../repository/TurnoRepository.js";
-import {Medico} from "../model/medico.js";
+import {MedicoRepository} from "../repositories/medicoRepository.js";
+import {TurnoRepository} from "../repositories/TurnoRepository.js";
+import {Medico} from "../domain/medico.js";
 
 export class MedicoService {
 

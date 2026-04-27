@@ -1,5 +1,5 @@
-import { TurnoService } from '../service/turnoService.js';
-import { ERRORES} from '../error/erroresUtilities.js';
+import { TurnoService } from '../services/turnoService.js';
+import { ERRORES} from '../errors/erroresUtilities.js';
 
 class TurnoController{
     constructor() {

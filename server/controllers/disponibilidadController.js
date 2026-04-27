@@ -1,5 +1,5 @@
-import { DisponibilidadService } from '../service/disponibilidadService.js';
-import {ERRORES} from "../error/erroresUtilities.js";
+import { DisponibilidadService } from '../services/disponibilidadService.js';
+import {ERRORES} from "../errors/erroresUtilities.js";
 
 class DisponibilidadController {
     constructor() {

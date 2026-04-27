@@ -1,5 +1,5 @@
 import { Router } from "express";
-import turnoController from "../controller/turnoController.js";
+import turnoController from "../controllers/turnoController.js";
 
 const router = Router();
 

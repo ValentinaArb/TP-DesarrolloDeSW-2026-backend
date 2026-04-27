@@ -1,4 +1,4 @@
-import {Medico} from "../model/medico.js"
+import {Medico} from "../domain/medico.js"
 import {DisponibilidadRepository} from "./disponibilidadRepository.js";
 import { Repository } from "./repository.js";
 

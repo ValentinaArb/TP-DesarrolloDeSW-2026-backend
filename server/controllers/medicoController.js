@@ -1,5 +1,5 @@
-import { MedicoService } from '../service/medicoService.js';
-import {ERRORES} from "../error/erroresUtilities.js";
+import { MedicoService } from '../services/medicoService.js';
+import {ERRORES} from "../errors/erroresUtilities.js";
 
 class MedicoController {
     constructor() {

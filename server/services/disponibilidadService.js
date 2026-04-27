@@ -1,6 +1,6 @@
-import { DisponibilidadRepository } from '../repository/disponibilidadRepository.js';
-import {DisponibilidadHoraria} from '../model/disponibilidadHoraria.js';
-import {MedicoRepository} from '../repository/medicoRepository.js';
+import { DisponibilidadRepository } from '../repositories/disponibilidadRepository.js';
+import {DisponibilidadHoraria} from '../domain/disponibilidadHoraria.js';
+import {MedicoRepository} from '../repositories/medicoRepository.js';
 
 export class DisponibilidadService {
     constructor() {

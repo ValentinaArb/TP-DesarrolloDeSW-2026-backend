@@ -1,4 +1,4 @@
-import {Usuario} from "../model/usuario.js"
+import {Usuario} from "../domain/usuario.js"
 import { Repository } from "./repository.js";
 
 const usuario1 = new Usuario(1, "Pepe", "holaquetal");

@@ -1,9 +1,9 @@
-import { TurnoRepository } from '../repository/turnoRepository.js';
-import { PacienteRepository } from '../repository/pacienteRepository.js';
-import { MedicoRepository } from '../repository/medicoRepository.js';
+import { TurnoRepository } from '../repositories/turnoRepository.js';
+import { PacienteRepository } from '../repositories/pacienteRepository.js';
+import { MedicoRepository } from '../repositories/medicoRepository.js';
 import {MedicoService} from './medicoService.js';
-import {EstadoTurno} from "../model/estadoTurno.js";
-import {Turno} from "../model/turno.js";
+import {EstadoTurno} from "../domain/estadoTurno.js";
+import {Turno} from "../domain/turno.js";
 
 export class TurnoService {
     constructor() {
