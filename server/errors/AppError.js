@@ -4,7 +4,7 @@ class AppError extends Error{
         this.name = this.constructor.name
         this.statusCode = statusCode
         this.status = statusCode >= 500 ? "error" : "fail"
-        this.timeStamp = new Date().toISOString();
+        this.timestamp = new Date().toISOString();
     }
 }
 
@@ -23,7 +23,5 @@ export class ConflictError extends AppError{
 export class UnprocessableEntityError extends AppError{
     constructor(message) {super(message,422)}
 }
-
-//HASTA MIN 49
 
 export { AppError};

@@ -1,5 +1,4 @@
 import { MedicoService } from '../services/medicoService.js';
-import {ERRORES} from "../errors/erroresUtilities.js";
 
 class MedicoController {
     constructor() {
@@ -7,46 +6,46 @@ class MedicoController {
     }
 
     // GET /medicos
-    async obtenerTodos(req, res) {
+    async obtenerTodos(req, res,next) {
         try {
             const medicos = await this.medicoService.obtenerTodos();
             res.status(200).json(medicos);
         } catch(error) {
-            res.status(ERRORES.SERVER_ERROR.status).json({ mensaje: ERRORES.SERVER_ERROR.mensaje });
+            return next(error);
         }
     }
 
     // GET /medicos/:id
-    async obtenerMedico(req, res) {
+    async obtenerMedico(req, res,next) {
         try {
             const { id } = req.params;
             const medico = await this.medicoService.obtenerMedico(id);
             res.status(200).json(medico);
         } catch(error) {
-            res.status(ERRORES.NOT_FOUND.status).json({ mensaje: ERRORES.NOT_FOUND.mensaje });
+            return next(error);
         }
     }
 
     // POST /medicos
-    async crearMedico(req, res) {
+    async crearMedico(req, res,next) {
         try {
             const { usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades } = req.body;
             const nuevoMedico = await this.medicoService.crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
             res.status(201).json({mensaje: "Médico creado", data: nuevoMedico});
         } 
         catch(error) {
-            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);
         }
     }
 
     // DELETE /medicos/:id
-    async eliminarMedico(req, res) {
+    async eliminarMedico(req, res,next) {
         try {
             const { id } = req.params;
             await this.medicoService.eliminarMedico(id);
             res.status(200).json({mensaje : "Médico eliminado"});
         } catch(error) {
-            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);
         }
     }    
 }
