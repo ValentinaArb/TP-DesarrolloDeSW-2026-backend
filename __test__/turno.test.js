@@ -2,6 +2,8 @@ import { describe, test, expect } from '@jest/globals';
 import { Turno } from '../server/model/turno.js';
 import { EstadoTurno } from '../server/model/estadoTurno.js';
 
+const unaHora = 60 * 60 * 1000;
+
 describe('Turno', () => {
   test('darDeAlta debería poder reservar el turno si está disponible', () => {
     const paciente = { id: 1, nombre: 'Walter' };
@@ -9,7 +11,7 @@ describe('Turno', () => {
     const turno = new Turno(
       1,
       { id: 100, nombre: 'Jaime' },
-      new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      new Date(Date.now() + 2 * unaHora).toISOString(),
       null,
       'Cardiología',
       'Sede Central',
@@ -33,7 +35,7 @@ test('darDeAlta debería poder fallar si el turno no está disponiblr', () => {
   const turno = new Turno(
     2,
     { id: 100, nombre: 'Jaime' },
-    new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    new Date(Date.now() + 2 * unaHora).toISOString(),
     null,
     'Cardiología',
     'Sede Central',
@@ -55,7 +57,7 @@ test('darDeBaja debería dejar el turno disponible si faltan más de 60 minutos'
   const turno = new Turno(
     3,
     { id: 100, nombre: 'Jaime' },
-    new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    new Date(Date.now() + 2 * unaHora).toISOString(),
     paciente,
     'Cardiología',
     'Sede Central',
@@ -79,7 +81,7 @@ test('darDeBaja debería fallar si faltan menos de 60 minutos', () => {
   const turno = new Turno(
     4,
     { id: 100, nombre: 'Jaime' },
-    new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    new Date(Date.now() + unaHora/2).toISOString(),
     paciente,
     'Cardiología',
     'Sede Central',
