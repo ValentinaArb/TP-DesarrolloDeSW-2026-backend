@@ -1,3 +1,5 @@
+import { NotFoundError } from "../errors/AppError.js";
+
 class Repository {
     objetos = [];
     
@@ -55,7 +57,7 @@ class Repository {
     }
 
     _errorNoEncontrado() {
-        throw new Error("Whoops! El id buscado no existe");
+        throw new NotFoundError("Whoops! El id buscado no existe");
     }
 }
 

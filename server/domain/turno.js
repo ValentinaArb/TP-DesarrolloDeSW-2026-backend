@@ -1,5 +1,6 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 import { EstadoTurno } from "./estadoTurno.js";
+import { ConflictError } from "../errors/AppError.js";
 
 class Turno{
     _id;
@@ -101,13 +102,7 @@ class Turno{
             this._actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
         }
         else {
-            /* throw new AppError(
-            'VALIDATION_ERROR', 
-            'Los turnos se deben cancelar con al menos una hora de antelación.', 
-            400
-            ); */
-                        throw new Error("Los turnos se deben cancelar con al menos una hora de antelación.");
-
+            throw new ConflictError("Los turnos se deben cancelar con al menos una hora de antelación.");
         }
     }
     
@@ -116,7 +111,7 @@ class Turno{
             this._actualizarEstado(EstadoTurno.RESERVADO, paciente);
         }
         else{
-            throw new Error("Whoops! El turno no está disponible.");
+            throw new ConflictError("Whoops! El turno no está disponible.");
         }
     }
 
