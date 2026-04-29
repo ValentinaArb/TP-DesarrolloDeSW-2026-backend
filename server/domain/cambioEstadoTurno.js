@@ -13,15 +13,6 @@ class CambioEstadoTurno {
         this._paciente = paciente;
         this._motivo = motivo;
     }
-
-    get fechaHoraIngreso() {
-        return this._fechaHoraIngreso;
-    }
-
-    set fechaHoraIngreso(value) {
-        this._fechaHoraIngreso = value;
-    }
-
     get estado() {
         return this._estado;
     }

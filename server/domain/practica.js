@@ -16,38 +16,6 @@ class Practica{
     get id() {
         return this._id;
     }
-
-    get codigo() {
-        return this._codigo;
-    }
-
-    set codigo(value) {
-        this._codigo = value;
-    }
-
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    get duracionEnMins() {
-        return this._duracionEnMins;
-    }
-
-    set duracionEnMins(value) {
-        this._duracionEnMins = value;
-    }
-
-    get costo() {
-        return this._costo;
-    }
-
-    set costo(value) {
-        this._costo = value;
-    }
 }
 
 export { Practica };

@@ -16,30 +16,6 @@ class Plan{
         return this._id;
     }
 
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    get coberturasEspecialidad() {
-        return this._coberturasEspecialidad;
-    }
-
-    set coberturasEspecialidad(value) {
-        this._coberturasEspecialidad = value;
-    }
-
-    get coberturasPractica() {
-        return this._coberturasPractica;
-    }
-
-    set coberturasPractica(value) {
-        this._coberturasPractica = value;
-    }
-
     _obtenerNivelDeLista(lista, propiedad, valorBuscado) {
         const cobertura = lista.find((item) => item[propiedad] === valorBuscado);
         return cobertura?.nivel || null;

@@ -65,14 +65,6 @@ class Turno{
         this._practica = value;
     }
 
-    get sede() {
-        return this._sede;
-    }
-
-    set sede(value) {
-        this._sede = value;
-    }
-
     get estado() {
         return this._estado;
     }
@@ -87,14 +79,6 @@ class Turno{
 
     set historialDeEstados(value) {
         this._historialDeEstados = value;
-    }
-
-    get costo() {
-        return this._costo;
-    }
-
-    set costo(value) {
-        this._costo = value;
     }
 
     darDeBaja(motivo) {

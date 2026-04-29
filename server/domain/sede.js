@@ -13,20 +13,6 @@ class Sede{
     get id() {
         return this._id;
     }
+    
 
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    get direccion() {
-        return this._direccion;
-    }
-
-    set direccion(value) {
-        this._direccion = value;
-    }
 }

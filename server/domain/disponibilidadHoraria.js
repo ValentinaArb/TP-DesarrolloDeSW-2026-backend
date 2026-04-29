@@ -20,39 +20,13 @@ export class DisponibilidadHoraria{
         this._id = value;
     }
 
-    get diaSemana() {
-        return this._diaSemana;
-    }
-
-    set diaSemana(value) {
-        this._diaSemana = value;
-    }
-
-    get horaDesde() {
-        return this._horaDesde;
-    }
-
-    set horaDesde(value) {
-        this._horaDesde = value;
-    }
-
-    get horaHasta() {
-        return this._horaHasta;
-    }
-
-    set horaHasta(value) {
-        this._horaHasta = value;
-    }
-
     abarca(fecha) {
-        const fechaDisponibilidad = new Date();
-        
         return (fecha.getDay() === this._diaSemana) &&
             (fecha.getHours() <= this._horaHasta.getHours()) &&
             (fecha.getHours() >= this._horaDesde.getHours());
     }
 
-    comparFecha(fechaMedico, fechaTurno) {
+    comparFecha() {
                 // 1. Convertir la fecha que recibes a minutos del día
         const minutosFecha = (fecha.getHours() * 60) + fecha.getMinutes();
 

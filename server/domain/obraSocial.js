@@ -13,19 +13,4 @@ class ObraSocial{
         return this._id;
     }
 
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    get planes() {
-        return this._planes;
-    }
-
-    set planes(value) {
-        this._planes = value;
-    }
 }

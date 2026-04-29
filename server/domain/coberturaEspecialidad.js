@@ -2,7 +2,6 @@ class CoberturaEspecialidad{
     _especialidad;
     _nivel;
 
-
     constructor(especialidad, nivel) {
         this._especialidad = especialidad;
         this._nivel = nivel;
