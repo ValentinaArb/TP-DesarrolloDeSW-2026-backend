@@ -1,12 +1,39 @@
 import {MedicoRepository} from "../repository/medicoRepository.js";
 import {TurnoRepository} from "../repository/TurnoRepository.js";
 import {Medico} from "../model/medico.js";
+import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
+import {DisponibilidadRepository} from "../repository/disponibilidadRepository.js";
 
 export class MedicoService {
 
     constructor() {
         this.medicoRepository = new MedicoRepository();
         this.turnoRepository = new TurnoRepository();
+        this.disponibilidadRepository = new DisponibilidadRepository();
+    }
+
+    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
+        const medico = await this.medicoRepository.findById(id);
+        console.log("medico")
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        console.log("nuevadispo")
+        await this.disponibilidadRepository.create(nuevaDisponibilidad);
+        console.log("createdispo")
+
+        medico.agregarDisponibilidad(nuevaDisponibilidad);
+        console.log("agregarDisponibilidad");
+
+        return await this.medicoRepository.update(medico, medico.id);
+    }
+
+    async eliminarDisponibilidad(idMedico, idDisponibilidad) {
+        const medico = await this.medicoRepository.findById(idMedico);
+        const disponibilidad = await this.disponibilidadRepository.findById(idDisponibilidad);
+
+        medico.eliminarDisponibilidad(disponibilidad);
+        await this.disponibilidadRepository.delete(idDisponibilidad);
+
+        return await this.medicoRepository.update(medico, medico.id);
     }
 
     async estaDisponible(medicoId, fechaHora) {
