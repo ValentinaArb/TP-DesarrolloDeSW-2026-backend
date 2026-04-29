@@ -93,6 +93,17 @@ class Medico {
     set disponibilidades(value) {
         this._disponibilidades = value;
     }
+
+    agregarDisponibilidad(disponibilidad) {
+        this._disponibilidades.push(disponibilidad);
+        console.log("agregarDisponibilidadDominio");
+    }
+
+    eliminarDisponibilidad(disponibilidad) {
+        const indice = this._disponibilidades.indexOf(disponibilidad);
+
+        this._disponibilidades.splice(indice, 1);
+    }
 }
 
 export {Medico}
