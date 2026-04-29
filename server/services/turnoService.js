@@ -61,7 +61,31 @@ export class TurnoService {
         return await this.turnoRepository.findById(turnoId);
     }
 
-    async obtenerTodos() {
-        return await this.turnoRepository.findAll();
+    async obtenerTodos({pagina = 1, limitePorPagina = 10} = {}) {
+        if(this.validarPaginacion(pagina, limitePorPagina)){
+            const {objetos: turno, totalObjetos: totalTurno} = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
+            console.log("turno total turno")
+            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+            console.log("totalpaginas")
+
+            return {
+                turno,
+                pagina,
+                limitePorPagina,
+                totalPaginas,
+                totalTurno
+            }
+        }
+        else {
+            throw new Error("Paginación errónea");
+        }
+
+    }
+
+    validarPaginacion(pagina, limitePagina) {
+        return Number.isInteger(pagina) &&
+                pagina > 0 &&
+                Number.isInteger(limitePagina) &&
+                limitePagina > 0;
     }
 }

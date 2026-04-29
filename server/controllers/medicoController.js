@@ -47,7 +47,37 @@ class MedicoController {
         } catch(error) {
             return next(error);
         }
-    }    
+    }
+
+    // POST /medicos/:id/disponibilidad
+    async agregarDisponibilidad(req, res) {
+        try{
+            const { id } = req.params;
+            console.log("id")
+            const { diaSemana, horaDesde, horaHasta } = req.body;
+            console.log("body")
+
+            const nuevoMedico = await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta);
+            console.log("agregarDisponibilidad");
+            res.status(200).json({mensaje: "Horario actualizado"});
+        }
+        catch(error) {
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+        }
+    }
+
+    // DELETE /medicos/:id/disponibilidad
+    async eliminarDisponibilidad(req, res) {
+        try{
+            const { id, idDisponibilidad } = req.params;
+
+            const nuevoMedico = await this.medicoService.eliminarDisponibilidad(id, idDisponibilidad);
+            res.status(200).json({mensaje: "Horario actualizado"});
+        }
+        catch(error) {
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+        }
+    }
 }
 
 const medicoController = new MedicoController();

@@ -3,11 +3,11 @@ import medicoController from "../controllers/medicoController.js";
 
 const router = Router();
 
-router.get('/', async (req, res, next) => await medicoController.obtenerTodos(req, res, next));
-router.get('/:id', async (req, res, next) => await medicoController.obtenerMedico(req, res, next));
-router.post('/', async (req, res, next) => await medicoController.crearMedico(req, res, next));
-router.delete('/:id', async (req, res, next) => await medicoController.eliminarMedico(req, res, next));
-router.patch('/:id/altaDisponibilidad', async (req, res, next) => await medicoController.altaDisponibilidad(req, res));
-router.patch('/:id/bajaDisponibilidad', async (req, res, next) => await medicoController.bajaDisponibilidad(req, res));
+router.get('/', async (req, res) => await medicoController.obtenerTodos(req, res));
+router.get('/:id', async (req, res) => await medicoController.obtenerMedico(req, res));
+router.post('/', async (req, res) => await medicoController.crearMedico(req, res));
+router.delete('/:id', async (req, res) => await medicoController.eliminarMedico(req, res));
+router.post('/:id/disponibilidad', async (req, res) => await medicoController.agregarDisponibilidad(req, res));
+router.delete('/:id/disponibilidad/:idDisponibilidad', async (req, res) => await medicoController.eliminarDisponibilidad(req, res));
 
 export default router;

@@ -29,6 +29,20 @@ class Repository {
         return this.objetos;
     }
 
+    async findPaginated(pagina, limitePorPagina) {
+        const todosLosObjetos = Object.values(this.objetos);
+        console.log("todoslosobjetos")
+        const inicio = (pagina - 1) * limitePorPagina;
+        console.log("inicio")
+        const fin = inicio + limitePorPagina;
+        console.log("fin")
+
+        return {
+            objetos: todosLosObjetos.slice(inicio, fin),
+            totalObjetos: todosLosObjetos.length
+        }
+    }
+
     // by ID
     async findById(objetoId) {
         const indiceBuscado = this._encontrarIndiceDeId(objetoId);

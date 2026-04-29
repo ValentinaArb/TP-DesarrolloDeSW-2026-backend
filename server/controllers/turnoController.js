@@ -7,12 +7,33 @@ class TurnoController{
 
     async obtenerTodos(req,res,next){
         try{
-            const turno = await this.turnoService.obtenerTodos();
-            res.status(200).json(turno);
+            const paginacion = this.extraerPaginacion(req.query);
+            console.log("paginacion")
+            const resultado = await this.turnoService.obtenerTodos(paginacion);
+            console.log("turno")
+            res.status(200).json({
+                status: 'success',
+                data: resultado.turno,
+                paginacion: {
+                    numeroPagina: resultado.pagina,
+                    limitePorPagina: resultado.limitePorPagina,
+                    totalPaginas: resultado.totalPaginas,
+                    totalTurnos: resultado.totalTurno
+                }
+            });
         }
         catch(error){
             return next(error);
         }
+
+
+    }
+
+    extraerPaginacion(query){
+        const pagina = query?.page === undefined ? 1 : Number(query.page);
+        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit);
+
+        return {pagina, limitePorPagina};
     }
 
     //GET /turnos:id
