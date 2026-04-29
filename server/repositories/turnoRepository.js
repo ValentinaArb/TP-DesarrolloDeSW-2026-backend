@@ -1,7 +1,7 @@
-import {Turno} from "../model/turno.js"
+import {Turno} from "../domain/turno.js"
 import {PacienteRepository} from "./pacienteRepository.js";
-import {EstadoTurno} from "../model/estadoTurno.js";
-import {CambioEstadoTurno} from "../model/cambioEstadoTurno.js";
+import {EstadoTurno} from "../domain/estadoTurno.js";
+import {CambioEstadoTurno} from "../domain/cambioEstadoTurno.js";
 import { Repository } from "./repository.js";
 
 const pacienteRepository = new PacienteRepository();
