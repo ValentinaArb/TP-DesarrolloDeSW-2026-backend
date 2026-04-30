@@ -17,7 +17,11 @@ class TurnoRepository extends Repository {
     }
 
     turnosDe(medicoId){
-        return this.objetos.filter(tur => tur._medicoId = medicoId)
+        return this.objetos.filter(tur => tur._medicoId = medicoId);
+    }
+
+    turnosPara(paciente){
+        return this.objetos.filter(tur => tur._paciente = paciente);
     }
 
 

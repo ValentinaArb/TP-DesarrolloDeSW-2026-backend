@@ -28,8 +28,11 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            turno.darDeAlta(paciente);
-            await this.turnoRepository.update(turno, turnoId);
+            const listaTurnos = this.turnoRepository.turnosPara(paciente);
+            if(!listaTurnos.some(t => this.seSuperponen(t._fechaHora, t._fechaFinal, turno._fechaHora))) {
+                turno.darDeAlta(paciente);
+                await this.turnoRepository.update(turno, turnoId);
+            }
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
@@ -49,7 +52,6 @@ export class TurnoService {
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
-
         return await this.turnoRepository.create(nuevoTurno);
     }
 
@@ -79,7 +81,6 @@ export class TurnoService {
         else {
             throw new Error("Paginación errónea");
         }
-
     }
 
     validarPaginacion(pagina, limitePagina) {
@@ -92,6 +93,7 @@ export class TurnoService {
     filtrarPor(medicoId){
         return this.turnoRepository.turnosDe(medicoId);
     }
+
 
     seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2){
         return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 < fechaFinalTurno1
