@@ -75,4 +75,9 @@ export class MedicoService {
     async obtenerTodos() {
         return await this.medicoRepository.findAll();
     }
+
+    async perteneceASede(medicoId, sede){
+        const medico = this.medicoRepository.findById(medicoId);
+        return medico._sedes.some(s => s === sede);
+    }
 }

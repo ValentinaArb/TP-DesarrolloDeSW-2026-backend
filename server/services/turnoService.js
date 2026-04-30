@@ -16,6 +16,9 @@ export class TurnoService {
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
+            if(!turno._estado === EstadoTurno.RESERVADO){
+                console.error("El turno no esta reservado")
+            }
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
         } catch(error) {
@@ -42,16 +45,22 @@ export class TurnoService {
 
     async crearTurno({medicoId, fechaHora, practica, sede}) {
         const medico = await this.medicoRepository.findById(medicoId);
-        const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         const estaDisponible = await this.medicoService.estaDisponible(medicoId, fechaHora);
+        const perteneceASede = await this.medicoService.perteneceASede(medicoId, sede)
         if (!estaDisponible) {
             throw new Error("El medico no esta disponible en la fecha y hora indicada.");
         }
-
+        if (!this.servicioPerteneceAMedico(medicoId, practica)){
+            throw new Error("El medico no realiza esa practica especifica");
+        }
+        if(!perteneceASede){
+            throw new Error("El medico no pertenece a esa sede");
+        }
         const yaTieneTurno = await this.medicoService.yaTieneTurno(medicoId, fechaHora);
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
+        const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         return await this.turnoRepository.create(nuevoTurno);
     }
 
@@ -94,9 +103,13 @@ export class TurnoService {
         return this.turnoRepository.turnosDe(medicoId);
     }
 
-
     seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2){
         return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 < fechaFinalTurno1
+    }
+
+    servicioPerteneceAMedico(medicoId, practica){ //que el médico brinde la práctica por la cual quieren usarlo
+        const medico = this.medicoRepository.findById(medicoId);
+        return medico._practicas.some(p => p === practica)
     }
 
 }
