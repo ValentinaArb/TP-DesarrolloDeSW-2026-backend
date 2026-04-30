@@ -15,3 +15,4 @@ class Especialidad {
         return this._id;
     }
 }
+export {Especialidad}

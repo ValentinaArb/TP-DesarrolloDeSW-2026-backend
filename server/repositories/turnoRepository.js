@@ -15,5 +15,11 @@ class TurnoRepository extends Repository {
         super();
         this.objetos = [turno1, turno2];
     }
+
+    turnosDe(medicoId){
+        return this.objetos.filter(tur => tur._medicoId = medicoId)
+    }
+
+
 }
 export { TurnoRepository };

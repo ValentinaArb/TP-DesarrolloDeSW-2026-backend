@@ -4,7 +4,7 @@ import {MedicoRepository} from '../repositories/medicoRepository.js';
 
 export class DisponibilidadService {
     constructor() {
-        // sino, se podria inyectar
+        // si no, se podría inyectar
         this.disponibilidadRepository = new DisponibilidadRepository();
         this.medicoRepository = new MedicoRepository();
     }
@@ -32,8 +32,8 @@ export class DisponibilidadService {
     }
 
     // innecesario
-    //actualizarDisponibilidad(idVieja, datosNuevos) {
-    // se podria validar que los datos nuevos estén bien
+    //actualizarDisponibilidad(idVieja, datosNuevos)
+    // se podría validar que los datos nuevos estén bien
     //this.disponibilidadRepository.update(datosNuevos, idVieja);
     //}
 }

@@ -26,7 +26,7 @@ export class DisponibilidadHoraria{
             (fecha.getHours() >= this._horaDesde.getHours());
     }
 
-    comparFecha() {
+    compararFecha() {
                 // 1. Convertir la fecha que recibes a minutos del día
         const minutosFecha = (fecha.getHours() * 60) + fecha.getMinutes();
 

@@ -6,6 +6,7 @@ class Turno{
     _id;
     _medico;
     _fechaHora;
+    _fechaFinal;
     _paciente;
     _practica;
     _sede;
@@ -13,10 +14,11 @@ class Turno{
     _historialDeEstados;
     _costo;
 
-    constructor(id = null, medico, fechaHora, paciente = null, practica, sede, estado, estados, costo = null){
+    constructor(id = null, medico, fechaHora, fechaFinal = null, paciente = null, practica, sede, estado, estados, costo = null){
         this._id = id;
         this._medico = medico;
-        this._fechaHora = fechaHora; 
+        this._fechaHora = fechaHora;
+        this._fechaFinal = fechaHora.getMinutes() + practica._duracionEnMins
         this._paciente = paciente;
         this._practica = practica;
         this._sede = sede;

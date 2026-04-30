@@ -66,7 +66,7 @@ export class TurnoService {
             const {objetos: turno, totalObjetos: totalTurno} = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
             console.log("turno total turno")
             const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-            console.log("totalpaginas")
+            console.log("totalPaginas")
 
             return {
                 turno,
@@ -88,4 +88,13 @@ export class TurnoService {
                 Number.isInteger(limitePagina) &&
                 limitePagina > 0;
     }
+
+    filtrarPor(medicoId){
+        return this.turnoRepository.turnosDe(medicoId);
+    }
+
+    seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2){
+        return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 < fechaFinalTurno1
+    }
+
 }

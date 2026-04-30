@@ -1,8 +1,10 @@
-import {MedicoRepository} from "../repository/medicoRepository.js";
-import {TurnoRepository} from "../repository/TurnoRepository.js";
-import {Medico} from "../model/medico.js";
-import {DisponibilidadHoraria} from "../model/disponibilidadHoraria.js";
-import {DisponibilidadRepository} from "../repository/disponibilidadRepository.js";
+import {MedicoRepository} from "../repositories/medicoRepository.js";
+import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {Medico} from "../domain/medico.js";
+import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
+import {DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
+import {TurnoService} from "./turnoService.js";
+
 
 export class MedicoService {
 
@@ -10,15 +12,16 @@ export class MedicoService {
         this.medicoRepository = new MedicoRepository();
         this.turnoRepository = new TurnoRepository();
         this.disponibilidadRepository = new DisponibilidadRepository();
+        this.turnoService = new TurnoService()
     }
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
         const medico = await this.medicoRepository.findById(id);
         console.log("medico")
         const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
-        console.log("nuevadispo")
+        console.log("nuevaDispo")
         await this.disponibilidadRepository.create(nuevaDisponibilidad);
-        console.log("createdispo")
+        console.log("createDispo")
 
         medico.agregarDisponibilidad(nuevaDisponibilidad);
         console.log("agregarDisponibilidad");
@@ -40,8 +43,9 @@ export class MedicoService {
         const fecha = new Date(fechaHora);
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-
-        return disponibilidadesMedico.some((d) => d.abarca(fecha));
+        const turnosYaDados = this.turnoRepository.filtrarPor(medicoId);
+        return disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t => this.turnoService.seSuperponen(t._fechaHora,t._fechaFinal, fechaHora)))
+        // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
     }
 
     async yaTieneTurno(medicoId, fechaHora) {
