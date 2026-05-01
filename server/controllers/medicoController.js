@@ -62,7 +62,7 @@ class MedicoController {
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
-            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);        
         }
     }
 
@@ -75,7 +75,7 @@ class MedicoController {
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
-            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);
         }
     }
 }
