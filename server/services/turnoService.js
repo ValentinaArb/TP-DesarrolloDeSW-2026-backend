@@ -45,10 +45,7 @@ export class TurnoService {
 
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
-        console.log("fecha : ", fechaInicio);
-        console.log("fecha time: ", fechaInicio.getTime());
         const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
-        console.log("fecha final: ", fechaFinal);
         
         const estaDisponible = await medicoService.estaDisponible(medicoId, fechaInicio, this, fechaFinal);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
@@ -81,9 +78,7 @@ export class TurnoService {
     async obtenerTodos({pagina = 1, limitePorPagina = 10} = {}) {
         if(this.validarPaginacion(pagina, limitePorPagina)){
             const {objetos: turno, totalObjetos: totalTurno} = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
-            console.log("turno total turno")
             const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-            console.log("totalPaginas")
 
             return {
                 turno,
@@ -106,14 +101,10 @@ export class TurnoService {
     }
 
     filtrarPor(medicoId){
-        console.log("turnos de: " + medicoId + this.turnoRepository.turnosDe(medicoId))
         return this.turnoRepository.turnosDe(medicoId);
     }
 
     seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2, fechaFinTurno2 ){
-        console.log("validacion 1" + fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 > fechaFinalTurno1);
-        console.log("validacion 2" + fechaInicioTurno2 < fechaInicioTurno1 && fechaFinTurno2 < fechaFinalTurno1);
-
         return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 > fechaFinalTurno1 || fechaInicioTurno2 < fechaInicioTurno1 && fechaFinTurno2 < fechaFinalTurno1
     }
 

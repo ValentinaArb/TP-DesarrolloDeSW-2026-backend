@@ -24,7 +24,6 @@ export class Medico {
 
     agregarDisponibilidad(disponibilidad) {
         this.disponibilidades.push(disponibilidad);
-        console.log("agregarDisponibilidadDominio");
     }
 
     eliminarDisponibilidad(disponibilidad) {

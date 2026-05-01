@@ -12,14 +12,9 @@ export class MedicoService {
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
         const medico = await this.medicoRepository.findById(id);
-        console.log("medico")
         const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
-        console.log("nuevaDispo")
         await this.disponibilidadRepository.create(nuevaDisponibilidad);
-        console.log("createDispo")
-
         medico.agregarDisponibilidad(nuevaDisponibilidad);
-        console.log("agregarDisponibilidad");
 
         return await this.medicoRepository.update(medico, medico.id);
     }
@@ -40,11 +35,7 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
         const turnosYaDados = turnoService.filtrarPor(medicoId); //VER DEVUELVE LISTA VACIA
-
-        console.log("turnos ya dados: ", turnosYaDados);
-        console.log("DISPONIBILIDADES: ", disponibilidadesMedico);
-        console.log("RESULTADO ABARCA: ", !disponibilidadesMedico.some((d) => d.abarca(fecha)));
-        console.log("RESULTADO YA DADOS: ", !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal)));
+        
         return !disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal));
         // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
     }
@@ -79,9 +70,6 @@ export class MedicoService {
 
     async perteneceASede(medicoId, sedeId){
         const medico = await this.medicoRepository.findById(medicoId);
-        console.log("medico completo:", medico);
-        console.log("medico.sedes:", medico.sedes);
-        console.log("sede buscada:", sedeId);
         return medico.sedes.some(s => s.id == sedeId);
     }
 }

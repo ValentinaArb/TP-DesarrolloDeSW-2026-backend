@@ -51,15 +51,12 @@ class MedicoController {
     }
 
     // POST /medicos/:id/disponibilidad
-    async agregarDisponibilidad(req, res) {
+    async agregarDisponibilidad(req, res, next) {
         try{
             const { id } = req.params;
-            console.log("id")
             const { diaSemana, horaDesde, horaHasta } = req.body;
-            console.log("body")
 
             const nuevoMedico = await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta);
-            console.log("agregarDisponibilidad");
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
@@ -68,7 +65,7 @@ class MedicoController {
     }
 
     // DELETE /medicos/:id/disponibilidad
-    async eliminarDisponibilidad(req, res) {
+    async eliminarDisponibilidad(req, res, next) {
         try{
             const { id, idDisponibilidad } = req.params;
 

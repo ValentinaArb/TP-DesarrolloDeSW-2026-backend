@@ -35,8 +35,6 @@ export class TurnoRepository extends Repository {
     }
 
     turnosDe(medicoId){
-        console.log("medicoId: ", medicoId);
-        console.log(this.objetos);
         return this.objetos.filter(tur => tur.medico.id === medicoId);
     }
 

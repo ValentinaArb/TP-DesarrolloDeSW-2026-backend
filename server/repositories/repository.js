@@ -9,17 +9,17 @@ export class Repository {
         const ultimoId = this.objetos[indice].id;
         objeto.id = ultimoId + 1;
         this.objetos.push(objeto);
-        console.log("Creado " , objeto.constructor.name);
+        console.info("Creado " , objeto.constructor.name);
         return objeto;
     }
 
     // DELETE (DELETE)
     async delete(objetoId) {
         const indiceAEliminar = this.encontrarIndiceDeId(objetoId);
+        const objeto = this.objetos[indiceAEliminar]
         if(indiceAEliminar !== -1) {
-            const nombreEliminado = this.objetos[indiceAEliminar].constructor.name
             this.objetos.splice(indiceAEliminar, 1);
-            console.log("Eliminado ", nombreEliminado);
+            console.info("Eliminado ", objeto.constructor.name);
         } else {
             this.errorNoEncontrado();
         }
@@ -33,11 +33,8 @@ export class Repository {
 
     async findPaginated(pagina, limitePorPagina) {
         const todosLosObjetos = Object.values(this.objetos);
-        console.log("todosLosObjetos")
         const inicio = (pagina - 1) * limitePorPagina;
-        console.log("inicio")
         const fin = inicio + limitePorPagina;
-        console.log("fin")
 
         return {
             objetos: todosLosObjetos.slice(inicio, fin),
@@ -62,7 +59,7 @@ export class Repository {
 
         this.objetos[indice] = nuevoObjeto;
         
-        console.log("Correctamente actualizado ", nuevoObjeto.constructor.name);
+        console.info("Actualizado ", nuevoObjeto.constructor.name);
     }
 
     // methods internos
