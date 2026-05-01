@@ -40,9 +40,12 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
         const turnosYaDados = turnoService.filtrarPor(medicoId); //VER DEVUELVE LISTA VACIA
+
         console.log("turnos ya dados: ", turnosYaDados);
         console.log("DISPONIBILIDADES: ", disponibilidadesMedico);
-        return disponibilidadesMedico.some((d) => !d.abarca(fecha)) && !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal));
+        console.log("RESULTADO ABARCA: ", !disponibilidadesMedico.some((d) => d.abarca(fecha)));
+        console.log("RESULTADO YA DADOS: ", !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal)));
+        return !disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal));
         // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
     }
 

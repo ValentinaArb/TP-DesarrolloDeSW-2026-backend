@@ -14,11 +14,11 @@ class Turno{
     historialDeEstados;
     costo;
 
-    constructor(id = null, medico, fechaInicio, fechaFinal = null, paciente = null, practica, sede, estado, estados, costo = null){
+    constructor(id = null, medico, fechaInicio, fechaFinal, paciente = null, practica, sede, estado, estados, costo = null){
         this.id = id;
         this.medico = medico;
         this.fechaInicio = fechaInicio instanceof Date ? fechaInicio : new Date(fechaInicio);
-        this.fechaFinal = new Date(this.fechaInicio.getTime() + practica.duracionEnMins * 60000);
+        this.fechaFinal = fechaFinal instanceof Date ? fechaFinal : new Date(fechaFinal);
         this.paciente = paciente;
         this.practica = practica;
         this.sede = sede;
@@ -64,6 +64,7 @@ class Turno{
         
         return tiempoQueFaltaParaTurno >= unaHora;
     }
+
 }
 
 export { Turno };

@@ -45,7 +45,10 @@ export class TurnoService {
 
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
+        console.log("fecha : ", fechaInicio);
+        console.log("fecha time: ", fechaInicio.getTime());
         const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
+        console.log("fecha final: ", fechaFinal);
         
         const estaDisponible = await medicoService.estaDisponible(medicoId, fechaInicio, this, fechaFinal);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
@@ -63,7 +66,7 @@ export class TurnoService {
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
-        const nuevoTurno = new Turno(null, medico, fechaInicio, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         return await this.turnoRepository.create(nuevoTurno);
     }
 
@@ -116,7 +119,7 @@ export class TurnoService {
 
     async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo
         const medico = await this.medicoRepository.findById(medicoId);
-        return medico.practicas.some(p => p.id == practicaId)
+        return medico.practicas.some(p => p.id === practicaId)
     }
 
 }
