@@ -40,6 +40,7 @@ class TurnoController{
     }
 
     //PATCH turnos/:id/alta
+    // ya no sirve :(
     async darDeAlta(req, res) {
         try {
             const {id} = req.params;
@@ -52,6 +53,7 @@ class TurnoController{
         }
     }
     //PATCH turnos/:id/baja
+    // ya no sirve :(
     async darDeBaja(req, res) {
         try {
             const {id} = req.params;
@@ -62,6 +64,38 @@ class TurnoController{
             res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
+
+async modificarEstado(req, res) {
+    try {
+        const { id } = req.params;
+        // pacienteId y motivo para extraerlos del body
+        const { operacion, estado, pacienteId, motivo } = req.body; 
+
+        if (operacion === 'alta' || estado === 'activo') {
+            // nos deben mandar si o si el pacienteId
+            if (!pacienteId) {
+                return res.status(400).json({ error: 'Falta el pacienteId para dar de alta' });
+            }
+            await this.turnoService.darDeAlta(id, pacienteId);
+            return res.status(200).json({ mensaje: "Turno fue dado de alta con éxito" });
+
+        } else if (operacion === 'baja' || estado === 'inactivo') {
+            // nos deben mandar si o si el motivo
+            if (!motivo) {
+                return res.status(400).json({ error: 'Falta el motivo para dar de baja' });
+            }
+            await this.turnoService.darDeBaja(id, motivo);
+            return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
+
+        } else {
+            return res.status(400).json({ error: 'Operación no válida' });
+        }
+
+    } catch (error) {
+        res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+    }
+}
+
     //DELETE turnos/:id
     async eliminarTurno(req,res){
         try{
