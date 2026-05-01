@@ -33,7 +33,7 @@ class Repository {
 
     async findPaginated(pagina, limitePorPagina) {
         const todosLosObjetos = Object.values(this.objetos);
-        console.log("todoslosobjetos")
+        console.log("todosLosObjetos")
         const inicio = (pagina - 1) * limitePorPagina;
         console.log("inicio")
         const fin = inicio + limitePorPagina;
@@ -62,10 +62,10 @@ class Repository {
 
         this.objetos[indice] = nuevoObjeto;
         
-        console.log("Correctament actualizado ", nuevoObjeto.constructor.name);
+        console.log("Correctamente actualizado ", nuevoObjeto.constructor.name);
     }
 
-    // metodos internos
+    // methods internos
     _encontrarIndiceDeId(objetoId) {
         return this.objetos.findIndex((o) => String(o.id) === String(objetoId));
     }

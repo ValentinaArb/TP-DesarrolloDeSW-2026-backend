@@ -13,15 +13,4 @@ export class Usuario{
         return this._id;
     }
 
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    set password(value) {
-        this._password = value;
-    }
 }

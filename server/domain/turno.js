@@ -1,11 +1,12 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
-import { EstadoTurno } from "./estadoTurno.js";
-import { ConflictError } from "../errors/AppError.js";
+import {EstadoTurno} from "./estadoTurno.js";
+import {ConflictError} from "../errors/AppError.js";
 
 class Turno{
     _id;
     _medico;
     _fechaHora;
+    _fechaFinal;
     _paciente;
     _practica;
     _sede;
@@ -13,10 +14,11 @@ class Turno{
     _historialDeEstados;
     _costo;
 
-    constructor(id = null, medico, fechaHora, paciente = null, practica, sede, estado, estados, costo = null){
+    constructor(id = null, medico, fechaHora, fechaFinal = null, paciente = null, practica, sede, estado, estados, costo = null){
         this._id = id;
         this._medico = medico;
-        this._fechaHora = fechaHora; 
+        this._fechaHora = fechaHora instanceof Date ? fechaHora : new Date(fechaHora);
+        this._fechaFinal = fechaHora instanceof Date ? fechaHora : new Date(fechaHora);
         this._paciente = paciente;
         this._practica = practica;
         this._sede = sede;
@@ -65,14 +67,6 @@ class Turno{
         this._practica = value;
     }
 
-    get sede() {
-        return this._sede;
-    }
-
-    set sede(value) {
-        this._sede = value;
-    }
-
     get estado() {
         return this._estado;
     }
@@ -87,14 +81,6 @@ class Turno{
 
     set historialDeEstados(value) {
         this._historialDeEstados = value;
-    }
-
-    get costo() {
-        return this._costo;
-    }
-
-    set costo(value) {
-        this._costo = value;
     }
 
     darDeBaja(motivo) {

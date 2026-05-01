@@ -1,4 +1,4 @@
-import { Especialidad } from "../model/especialidad.js";
+import { Especialidad } from "../domain/especialidad.js";
 import { Repository } from "./repository.js";
 
 let especialidad1 = new Especialidad(1, "odontologia", 60, 0);

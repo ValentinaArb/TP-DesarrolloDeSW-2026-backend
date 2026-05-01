@@ -30,62 +30,6 @@ class Medico {
         this._id = value;
     }
 
-    get usuario() {
-        return this._usuario;
-    }
-
-    set usuario(value) {
-        this._usuario = value;
-    }
-
-    get matricula() {
-        return this._matricula;
-    }
-
-    set matricula(value) {
-        this._matricula = value;
-    }
-
-    get nombre() {
-        return this._nombre;
-    }
-
-    set nombre(value) {
-        this._nombre = value;
-    }
-
-    get apellido() {
-        return this._apellido;
-    }
-
-    set apellido(value) {
-        this._apellido = value;
-    }
-
-    get especialidades() {
-        return this._especialidades;
-    }
-
-    set especialidades(value) {
-        this._especialidades = value;
-    }
-
-    get practicas() {
-        return this._practicas;
-    }
-
-    set practicas(value) {
-        this._practicas = value;
-    }
-
-    get sedes() {
-        return this._sedes;
-    }
-
-    set sedes(value) {
-        this._sedes = value;
-    }
-
     get disponibilidades() {
         return this._disponibilidades;
     }

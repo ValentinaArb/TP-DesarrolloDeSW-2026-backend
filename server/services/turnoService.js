@@ -1,7 +1,6 @@
-import { TurnoRepository } from '../repositories/turnoRepository.js';
-import { PacienteRepository } from '../repositories/pacienteRepository.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
-import {MedicoService} from './medicoService.js';
+import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {PacienteRepository} from "../repositories/pacienteRepository.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {Turno} from "../domain/turno.js";
 
@@ -9,13 +8,15 @@ export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
         this.pacienteRepository = new PacienteRepository();
-        this.medicoService = new MedicoService();
         this.medicoRepository = new MedicoRepository();
     }
 
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
+            if(!turno._estado === EstadoTurno.RESERVADO){
+                console.error("El turno no esta reservado")
+            }
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
         } catch(error) {
@@ -28,8 +29,11 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            turno.darDeAlta(paciente);
-            await this.turnoRepository.update(turno, turnoId);
+            const listaTurnos = this.turnoRepository.turnosPara(paciente);
+            if(!listaTurnos.some(t => this.seSuperponen(t._fechaHora, t._fechaFinal, turno._fechaHora))) {
+                turno.darDeAlta(paciente);
+                await this.turnoRepository.update(turno, turnoId);
+            }
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
@@ -37,19 +41,24 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({medicoId, fechaHora, practica, sede}) {
+    async crearTurno({medicoId, fechaHora, practica, sede}, medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
-        const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-        const estaDisponible = await this.medicoService.estaDisponible(medicoId, fechaHora);
+        const estaDisponible = await medicoService.estaDisponible(medicoId, fechaHora, this);
+        const perteneceASede = await medicoService.perteneceASede(medicoId, sede)
         if (!estaDisponible) {
             throw new Error("El medico no esta disponible en la fecha y hora indicada.");
         }
-
-        const yaTieneTurno = await this.medicoService.yaTieneTurno(medicoId, fechaHora);
+        if (!await this.servicioPerteneceAMedico(medicoId, practica)){
+            throw new Error("El medico no realiza esa practica especifica");
+        }
+        if(!perteneceASede){
+            throw new Error("El medico no pertenece a esa sede");
+        }
+        const yaTieneTurno = await medicoService.yaTieneTurno(medicoId, fechaHora);
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
-
+        const nuevoTurno = new Turno(null, medico, fechaHora, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         return await this.turnoRepository.create(nuevoTurno);
     }
 
@@ -66,7 +75,7 @@ export class TurnoService {
             const {objetos: turno, totalObjetos: totalTurno} = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
             console.log("turno total turno")
             const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-            console.log("totalpaginas")
+            console.log("totalPaginas")
 
             return {
                 turno,
@@ -79,7 +88,6 @@ export class TurnoService {
         else {
             throw new Error("Paginación errónea");
         }
-
     }
 
     validarPaginacion(pagina, limitePagina) {
@@ -88,4 +96,18 @@ export class TurnoService {
                 Number.isInteger(limitePagina) &&
                 limitePagina > 0;
     }
+
+    filtrarPor(medicoId){
+        return this.turnoRepository.turnosDe(medicoId);
+    }
+
+    seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2){
+        return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 < fechaFinalTurno1
+    }
+
+    async servicioPerteneceAMedico(medicoId, practica) { //que el médico brinde la práctica por la cual quieren usarlo
+        const medico = await this.medicoRepository.findById(medicoId);
+        return medico._practicas.some(p => p === practica)
+    }
+
 }
