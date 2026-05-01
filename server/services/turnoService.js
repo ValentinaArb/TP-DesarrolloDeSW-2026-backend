@@ -3,12 +3,14 @@ import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {PacienteRepository} from "../repositories/pacienteRepository.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {Turno} from "../domain/turno.js";
+import { MedicoService } from './medicoService.js';
 
 export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
         this.pacienteRepository = new PacienteRepository();
         this.medicoRepository = new MedicoRepository();
+        this.medicoService = new MedicoService(this.medicoRepository);
     }
 
     async darDeBaja(turnoId, motivo) {
@@ -30,7 +32,7 @@ export class TurnoService {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
             const listaTurnos = this.turnoRepository.turnosPara(paciente);
-            if(!listaTurnos.some(t => this.seSuperponen(t.fechaInicio, t.fechaFinal, turno.fechaInicio))) {
+            if(listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
                 turno.darDeAlta(paciente);
                 await this.turnoRepository.update(turno, turnoId);
             }
@@ -41,13 +43,14 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({medicoId, fechaInicio, practica, sede}, medicoService) {
-
+    async crearTurno({medicoId, fechaInicio, practica, sede}, medicoService = this.medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
         const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
         
-        const estaDisponible = await medicoService.estaDisponible(medicoId, fechaInicio, this, fechaFinal);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        
+        const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno, this);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
@@ -59,11 +62,11 @@ export class TurnoService {
         if(!perteneceASede){
             throw new Error("El medico no pertenece a esa sede");
         }
-        const yaTieneTurno = await medicoService.yaTieneTurno(medicoId, fechaInicio);
+        const yaTieneTurno = await medicoService.yaTieneTurno(medicoId, nuevoTurno, this);
+        
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         return await this.turnoRepository.create(nuevoTurno);
     }
 
@@ -104,8 +107,8 @@ export class TurnoService {
         return this.turnoRepository.turnosDe(medicoId);
     }
 
-    seSuperponen(fechaInicioTurno1, fechaFinalTurno1, fechaInicioTurno2, fechaFinTurno2 ){
-        return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 > fechaFinalTurno1 || fechaInicioTurno2 < fechaInicioTurno1 && fechaFinTurno2 < fechaFinalTurno1
+    noSeSuperponen(turno1, turno2){
+        return turno2.fechaFin < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFin 
     }
 
     async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo

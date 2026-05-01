@@ -29,24 +29,46 @@ export class MedicoService {
         return await this.medicoRepository.update(medico, medico.id);
     }
 
-    async estaDisponible(medicoId, fechaInicio, turnoService, fechaFinal) {
-        
-        const fecha = new Date(fechaInicio); //VER
+
+
+
+
+
+
+
+
+
+//!!VER
+    async estaDisponible(medicoId, turno, turnoService) {
+        const fechaInicio = turno.fechaInicio;
+        const fechaFinal = turno.fechaFinal;
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-        const turnosYaDados = turnoService.filtrarPor(medicoId); //VER DEVUELVE LISTA VACIA
+        const turnosYaDados = turnoService.filtrarPor(medicoId);
+        return !disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal)) && turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turno));
+    }
+
+    //!!VER
+    async yaTieneTurno(medicoId, turnoChequear, turnoService) {
+        const turnos = await this.turnoRepository.turnosDe(medicoId);
         
-        return !disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal));
-        // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
+        console.log("[DEBUG] ----------------- turnosService del médico:", turnos);
+        console.log("[DEBUG] ----------------------------turnoChequear:", turnoChequear);
+
+        return turnos.every((turno) => turnoService.noSeSuperponen(turno, turnoChequear));
     }
 
-    async yaTieneTurno(medicoId, fechaInicio) {
-        const medico = await this.medicoRepository.findById(medicoId);
-        const turnos = await this.turnoRepository.findAll();
-
-        return turnos.some((turno) => (turno.medico === medico) && (turno.fechaInicio === fechaInicio));
-    }
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
         try{const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
         return await this.medicoRepository.create(nuevoMedico);}

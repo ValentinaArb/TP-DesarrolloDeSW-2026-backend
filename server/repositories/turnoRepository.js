@@ -35,10 +35,13 @@ export class TurnoRepository extends Repository {
     }
 
     turnosDe(medicoId){
-        return this.objetos.filter(tur => tur.medico.id === medicoId);
+        console.log("[DEBUG] Obteniendo turnos para el médico con ID:", medicoId);
+        console.log("[DEBUG] turnos :", this.objetos.filter(tur => tur.medico.id == medicoId)); //IMPORTANTE VER NO ESTÁ GUARDANDO LOS TURNOS. 
+
+        return this.objetos.filter(tur => tur.medico.id == medicoId);
     }
 
     turnosPara(paciente){
-        return this.objetos.filter(tur => tur.paciente === paciente);
+        return this.objetos.filter(tur => tur.paciente == paciente);
     }
 }
