@@ -35,7 +35,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"medicoId\": 1,\r\n    \"fechaHora\": \"2026-04-28T14:16:48.000Z\",\r\n    \"practica\": \"Odontologia\",\r\n    \"sede\": \"Belgrano\"\r\n}",
+              "raw": "{\r\n    \"medicoId\": 1,\r\n    \"fechaInicio\": \"2026-04-28T14:16:48.000Z\",\r\n    \"practica\": \"Odontologia\",\r\n    \"sede\": \"Belgrano\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"

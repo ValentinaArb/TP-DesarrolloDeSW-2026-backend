@@ -1,12 +1,12 @@
 import { Router } from "express";
-import turnoController from "../controller/turnoController.js";
+import turnoController from "../controllers/turnoController.js";
 
 const router = Router();
 
-router.get('/', async (req, res) => await turnoController.obtenerTodos(req, res));
-router.get('/:id', async (req, res) => await turnoController.obtenerTurno(req, res));
-router.delete('/:id', async (req, res) => await turnoController.eliminarTurno(req, res));
-router.patch('/:id', async (req, res) => await turnoController.modificarEstado(req, res));
-router.post('/', async (req, res) => await turnoController.crearTurno(req, res));
+router.get('/', async (req, res,next) => await turnoController.obtenerTodos(req, res,next));
+router.get('/:id', async (req, res,next) => await turnoController.obtenerTurno(req, res,next));
+router.delete('/:id', async (req, res,next) => await turnoController.eliminarTurno(req, res,next));
+router.patch('/:id', async (req, res,next) => await turnoController.modificarEstado(req, res,next));
+router.post('/', async (req, res,next) => await turnoController.crearTurno(req, res,next));
 
 export default router;
