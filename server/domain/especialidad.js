@@ -1,4 +1,4 @@
-class Especialidad {
+export class Especialidad {
     id;
     nombre;
     duracionTurno;
@@ -12,4 +12,3 @@ class Especialidad {
     }
 
 }
-export {Especialidad}

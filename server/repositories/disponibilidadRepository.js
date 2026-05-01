@@ -7,11 +7,9 @@ let disponibilidad3 = new DisponibilidadHoraria(3, 4, new Date(2026,6,8,9,0), ne
 let disponibilidad4 = new DisponibilidadHoraria(4, 5, new Date(2026,6,9,9,0), new Date(2026,6,9,16,0));
 
 
-class DisponibilidadRepository extends Repository {
+export class DisponibilidadRepository extends Repository {
     constructor() {
         super();
         this.objetos = [disponibilidad1, disponibilidad2, disponibilidad3, disponibilidad4];
     }
 }
-
-export { DisponibilidadRepository };

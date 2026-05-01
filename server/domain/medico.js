@@ -1,4 +1,4 @@
-class Medico {
+export class Medico {
     id
     usuario
     matricula
@@ -33,5 +33,3 @@ class Medico {
         this.disponibilidades.splice(indice, 1);
     }
 }
-
-export {Medico}

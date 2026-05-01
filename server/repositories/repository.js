@@ -1,6 +1,6 @@
 import { NotFoundError } from "../errors/AppError.js";
 
-class Repository {
+export class Repository {
     objetos = [];
     
     // CREATE (POST)
@@ -74,5 +74,3 @@ class Repository {
         throw new NotFoundError("Whoops! El id buscado no existe");
     }
 }
-
-export { Repository };

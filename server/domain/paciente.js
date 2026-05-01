@@ -1,4 +1,4 @@
-class Paciente {
+export class Paciente {
     id
     usuario
     nombre
@@ -21,5 +21,3 @@ class Paciente {
         this.sexo = sexo;
     }
 }
-
-export { Paciente };

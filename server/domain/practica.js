@@ -1,4 +1,4 @@
-class Practica{
+export class Practica{
     id
     codigo
     nombre
@@ -13,5 +13,3 @@ class Practica{
         this.costo = costo;
     }
 }
-
-export { Practica };

@@ -28,7 +28,7 @@ const medico3 = await medicoRepository.findById(3);
 let turno1 = new Turno(1, medico1, "2026-04-19T20:00:00", null, paciente1, practica1,sede1, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
 let turno2 = new Turno(2, medico3, "2027-03-10T15:30:00", null , null, practica1,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(Date.now(), EstadoTurno.RESERVADO, 2, null, "ALTA")], null);
 
-class TurnoRepository extends Repository {
+export class TurnoRepository extends Repository {
     constructor() {
         super();
         this.objetos = [turno1, turno2];
@@ -44,4 +44,3 @@ class TurnoRepository extends Repository {
         return this.objetos.filter(tur => tur.paciente === paciente);
     }
 }
-export { TurnoRepository };

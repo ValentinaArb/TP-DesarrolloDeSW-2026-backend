@@ -2,7 +2,7 @@ import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 import {EstadoTurno} from "./estadoTurno.js";
 import {ConflictError} from "../errors/AppError.js";
 
-class Turno{
+export class Turno{
     id;
     medico;
     fechaInicio;
@@ -64,7 +64,4 @@ class Turno{
         
         return tiempoQueFaltaParaTurno >= unaHora;
     }
-
 }
-
-export { Turno };
