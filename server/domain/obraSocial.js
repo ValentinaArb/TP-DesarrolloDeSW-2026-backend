@@ -1,16 +1,11 @@
 class ObraSocial{
-    _id;
-    _nombre;
-    _planes;
+    id;
+    nombre;
+    planes;
 
     constructor(id = null, nombre, planes) {
-        this._id = id;
-        this._nombre = nombre;
-        this._planes = planes;
+        this.id = id;
+        this.nombre = nombre;
+        this.planes = planes;
     }
-
-    get id() {
-        return this._id;
-    }
-
 }

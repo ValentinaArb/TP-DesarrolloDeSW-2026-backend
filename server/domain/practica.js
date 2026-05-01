@@ -1,20 +1,16 @@
 class Practica{
-    _id
-    _codigo
-    _nombre
-    _duracionEnMins
-    _costo
+    id
+    codigo
+    nombre
+    duracionEnMins
+    costo
 
     constructor(id = null, codigo, nombre, duracionEnMins, costo) {
-        this._id = id;
-        this._codigo = codigo;
-        this._nombre = nombre;
-        this._duracionEnMins = duracionEnMins;
-        this._costo = costo;
-    }
-
-    get id() {
-        return this._id;
+        this.id = id;
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.duracionEnMins = duracionEnMins;
+        this.costo = costo;
     }
 }
 

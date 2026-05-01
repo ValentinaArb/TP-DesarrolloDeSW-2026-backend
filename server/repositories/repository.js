@@ -15,13 +15,13 @@ class Repository {
 
     // DELETE (DELETE)
     async delete(objetoId) {
-        const indiceAEliminar = this._encontrarIndiceDeId(objetoId);
+        const indiceAEliminar = this.encontrarIndiceDeId(objetoId);
         if(indiceAEliminar !== -1) {
             const nombreEliminado = this.objetos[indiceAEliminar].constructor.name
             this.objetos.splice(indiceAEliminar, 1);
             console.log("Eliminado ", nombreEliminado);
         } else {
-            this._errorNoEncontrado();
+            this.errorNoEncontrado();
         }
     }
 
@@ -47,18 +47,18 @@ class Repository {
 
     // by ID
     async findById(objetoId) {
-        const indiceBuscado = this._encontrarIndiceDeId(objetoId);
+        const indiceBuscado = this.encontrarIndiceDeId(objetoId);
 
         if(indiceBuscado !== -1){
             return this.objetos[indiceBuscado];
         } else {
-            this._errorNoEncontrado();
+            this.errorNoEncontrado();
         }
     }
 
     // UPDATE (PUT/PATCH)
     async update(nuevoObjeto, idObjetoViejo) {
-        const indice = this._encontrarIndiceDeId(idObjetoViejo);
+        const indice = this.encontrarIndiceDeId(idObjetoViejo);
 
         this.objetos[indice] = nuevoObjeto;
         
@@ -66,11 +66,11 @@ class Repository {
     }
 
     // methods internos
-    _encontrarIndiceDeId(objetoId) {
+    encontrarIndiceDeId(objetoId) {
         return this.objetos.findIndex((o) => String(o.id) === String(objetoId));
     }
 
-    _errorNoEncontrado() {
+    errorNoEncontrado() {
         throw new NotFoundError("Whoops! El id buscado no existe");
     }
 }

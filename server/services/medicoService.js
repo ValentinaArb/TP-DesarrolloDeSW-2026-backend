@@ -34,20 +34,23 @@ export class MedicoService {
         return await this.medicoRepository.update(medico, medico.id);
     }
 
-    async estaDisponible(medicoId, fechaHora, turnoService) {
-        const fecha = new Date(fechaHora);
+    async estaDisponible(medicoId, fechaInicio, turnoService, fechaFinal) {
+        
+        const fecha = new Date(fechaInicio); //VER
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-        const turnosYaDados = turnoService.filtrarPor(medicoId);
-        return disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t => turnoService.seSuperponen(t._fechaHora,t._fechaFinal, fechaHora)))
+        const turnosYaDados = turnoService.filtrarPor(medicoId); //VER DEVUELVE LISTA VACIA
+        console.log("turnos ya dados: ", turnosYaDados);
+        console.log("DISPONIBILIDADES: ", disponibilidadesMedico);
+        return disponibilidadesMedico.some((d) => !d.abarca(fecha)) && !turnosYaDados.some((t) => turnoService.seSuperponen(t.fechaInicio, t.fechaFinal, fechaInicio, fechaFinal));
         // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
     }
 
-    async yaTieneTurno(medicoId, fechaHora) {
+    async yaTieneTurno(medicoId, fechaInicio) {
         const medico = await this.medicoRepository.findById(medicoId);
         const turnos = await this.turnoRepository.findAll();
 
-        return turnos.some((turno) => (turno.medico === medico) && (turno.fechaHora === fechaHora));
+        return turnos.some((turno) => (turno.medico === medico) && (turno.fechaInicio === fechaInicio));
     }
 
     async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
@@ -71,11 +74,11 @@ export class MedicoService {
         return await this.medicoRepository.findAll();
     }
 
-    async perteneceASede(medicoId, sede){
+    async perteneceASede(medicoId, sedeId){
         const medico = await this.medicoRepository.findById(medicoId);
         console.log("medico completo:", medico);
-        console.log("medico._sedes:", medico._sedes);
-        console.log("sede buscada:", sede);
-        return medico._sedes.some(s => s._nombre === sede);
+        console.log("medico.sedes:", medico.sedes);
+        console.log("sede buscada:", sedeId);
+        return medico.sedes.some(s => s.id == sedeId);
     }
 }

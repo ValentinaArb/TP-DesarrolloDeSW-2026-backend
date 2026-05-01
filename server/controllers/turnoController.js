@@ -53,7 +53,7 @@ class TurnoController{
     //POST /turnos
     async crearTurno(req, res,next){
         try{
-            //const {medicoId, fechaHora, practica, sede} = req.body
+            //const {medicoId, fechaInicio, practica, sede} = req.body
             const turnoCreado = await this.turnoService.crearTurno(req.body, this.medicoService);
             res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }

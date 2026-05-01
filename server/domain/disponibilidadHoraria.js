@@ -1,28 +1,28 @@
 export class DisponibilidadHoraria{
-    _id
-    _diaSemana;
-    _horaDesde;
-    _horaHasta;
-
+    id
+    diaSemana;
+    horaDesde;
+    horaHasta;
 
     constructor(id=null, diaSemana, horaDesde, horaHasta) {
-        this._id = id;
-        this._diaSemana = diaSemana;
-        this._horaDesde = new Date(horaDesde);
-        this._horaHasta = new Date(horaHasta);
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    set id(value) {
-        this._id = value;
+        this.id = id;
+        this.diaSemana = diaSemana;
+        this.horaDesde = new Date(horaDesde);
+        this.horaHasta = new Date(horaHasta);
     }
 
     abarca(fecha) {
-        return (fecha.getDay() === this._diaSemana) &&
-            (fecha.getHours() <= this._horaHasta.getHours()) &&
-            (fecha.getHours() >= this._horaDesde.getHours());
+        console.log("diaSemana disponibilidad:", this.diaSemana);
+        console.log("diaSemana fecha:", fecha.getDay());
+        console.log("horaDesde:", this.horaDesde.getHours());
+        console.log("horaHasta:", this.horaHasta.getHours());
+        console.log("hora fecha:", fecha.getHours());
+
+        console.log("primero:", fecha.getDay() === this.diaSemana);
+        console.log("segundo:", fecha.getHours() <= this.horaHasta.getHours());
+        console.log("tercero:", fecha.getHours() >= this.horaDesde.getHours());
+        return (fecha.getDay() === this.diaSemana) &&
+            (fecha.getHours() <= this.horaHasta.getHours()) &&
+            (fecha.getHours() >= this.horaDesde.getHours());
     }
 }

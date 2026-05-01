@@ -1,16 +1,11 @@
 export class Usuario{
-    _id;
-    _nombre;
-    _password;
+    id;
+    nombre;
+    password;
 
     constructor(id = null, nombre, password) {
-        this._id = id;
-        this._nombre = nombre;
-        this._password = password;
+        this.id = id;
+        this.nombre = nombre;
+        this.password = password;
     }
-
-    get id() {
-        return this._id;
-    }
-
 }

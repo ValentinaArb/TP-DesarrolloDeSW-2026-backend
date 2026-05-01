@@ -12,9 +12,9 @@ class AgendaService {
         const medicoId = medico.getId();
         try{
             if(sedesMedico.includes(sede)){
-                for(const fechaHora of disponibilidadesMedico){
-                    if(!medico.yaTieneTurno(medicoId, fechaHora)){
-                       TurnoService.crearTurno({medico,fechaHora,servicio,sede});
+                for(const fechaInicio of disponibilidadesMedico){
+                    if(!medico.yaTieneTurno(medicoId, fechaInicio)){
+                       TurnoService.crearTurno({medico,fechaInicio,servicio,sede});
                     }
                 }
             }else{
@@ -31,7 +31,7 @@ class AgendaService {
         try {
             turnos = this.turnoRepository.findByMedico(medico); //implementar metodo de obtener turnos de un medico en turnoRepository 
             for(const turno of turnos){
-                if(!medicoService.estaDisponible(medico.id, turno.fechaHora)) {
+                if(!medicoService.estaDisponible(medico.id, turno.fechaInicio)) {
                     if(turno.paciente === null)  {
                         this.turnoRepository.delete(turno)
                     }

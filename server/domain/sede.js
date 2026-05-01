@@ -1,18 +1,11 @@
 export class Sede{
-    _id;
-    _nombre;
-    _direccion;
-
+    id;
+    nombre;
+    direccion;
 
     constructor(id = null, nombre, direccion) {
-        this._id = id;
-        this._nombre = nombre;
-        this._direccion = direccion;
+        this.id = id;
+        this.nombre = nombre;
+        this.direccion = direccion;
     }
-
-    get id() {
-        return this._id;
-    }
-    
-
 }
