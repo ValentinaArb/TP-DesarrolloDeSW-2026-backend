@@ -1,18 +1,13 @@
-import {MedicoRepository} from "../repositories/medicoRepository.js";
+import { DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
 import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
-import {DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
-import {TurnoService} from "./turnoService.js";
-
 
 export class MedicoService {
-
-    constructor() {
-        this.medicoRepository = new MedicoRepository();
+    constructor(medicoRepository) {
+        this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.disponibilidadRepository = new DisponibilidadRepository();
-        this.turnoService = new TurnoService()
     }
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
@@ -39,12 +34,12 @@ export class MedicoService {
         return await this.medicoRepository.update(medico, medico.id);
     }
 
-    async estaDisponible(medicoId, fechaHora) {
+    async estaDisponible(medicoId, fechaHora, turnoService) {
         const fecha = new Date(fechaHora);
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-        const turnosYaDados = this.turnoRepository.filtrarPor(medicoId);
-        return disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t => this.turnoService.seSuperponen(t._fechaHora,t._fechaFinal, fechaHora)))
+        const turnosYaDados = turnoService.filtrarPor(medicoId);
+        return disponibilidadesMedico.some((d) => d.abarca(fecha)) && !turnosYaDados.some((t => turnoService.seSuperponen(t._fechaHora,t._fechaFinal, fechaHora)))
         // no tiene la disponibilidad o la fecha inicio del turno se superpone con algún turno que ya tiene en sus turnos
     }
 
@@ -77,7 +72,10 @@ export class MedicoService {
     }
 
     async perteneceASede(medicoId, sede){
-        const medico = this.medicoRepository.findById(medicoId);
-        return medico._sedes.some(s => s === sede);
+        const medico = await this.medicoRepository.findById(medicoId);
+        console.log("medico completo:", medico);
+        console.log("medico._sedes:", medico._sedes);
+        console.log("sede buscada:", sede);
+        return medico._sedes.some(s => s._nombre === sede);
     }
 }

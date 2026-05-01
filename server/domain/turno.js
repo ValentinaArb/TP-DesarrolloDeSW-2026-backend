@@ -1,6 +1,6 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
-import { EstadoTurno } from "./estadoTurno.js";
-import { ConflictError } from "../errors/AppError.js";
+import {EstadoTurno} from "./estadoTurno.js";
+import {ConflictError} from "../errors/AppError.js";
 
 class Turno{
     _id;
@@ -17,8 +17,8 @@ class Turno{
     constructor(id = null, medico, fechaHora, fechaFinal = null, paciente = null, practica, sede, estado, estados, costo = null){
         this._id = id;
         this._medico = medico;
-        this._fechaHora = fechaHora;
-        this._fechaFinal = fechaHora.getMinutes() + practica._duracionEnMins
+        this._fechaHora = fechaHora instanceof Date ? fechaHora : new Date(fechaHora);
+        this._fechaFinal = fechaHora instanceof Date ? fechaHora : new Date(fechaHora);
         this._paciente = paciente;
         this._practica = practica;
         this._sede = sede;

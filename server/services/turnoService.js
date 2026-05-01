@@ -1,7 +1,6 @@
-import { TurnoRepository } from '../repositories/turnoRepository.js';
-import { PacienteRepository } from '../repositories/pacienteRepository.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
-import {MedicoService} from './medicoService.js';
+import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {PacienteRepository} from "../repositories/pacienteRepository.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {Turno} from "../domain/turno.js";
 
@@ -9,7 +8,6 @@ export class TurnoService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
         this.pacienteRepository = new PacienteRepository();
-        this.medicoService = new MedicoService();
         this.medicoRepository = new MedicoRepository();
     }
 
@@ -43,20 +41,20 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({medicoId, fechaHora, practica, sede}) {
+    async crearTurno({medicoId, fechaHora, practica, sede}, medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
-        const estaDisponible = await this.medicoService.estaDisponible(medicoId, fechaHora);
-        const perteneceASede = await this.medicoService.perteneceASede(medicoId, sede)
+        const estaDisponible = await medicoService.estaDisponible(medicoId, fechaHora, this);
+        const perteneceASede = await medicoService.perteneceASede(medicoId, sede)
         if (!estaDisponible) {
             throw new Error("El medico no esta disponible en la fecha y hora indicada.");
         }
-        if (!this.servicioPerteneceAMedico(medicoId, practica)){
+        if (!await this.servicioPerteneceAMedico(medicoId, practica)){
             throw new Error("El medico no realiza esa practica especifica");
         }
         if(!perteneceASede){
             throw new Error("El medico no pertenece a esa sede");
         }
-        const yaTieneTurno = await this.medicoService.yaTieneTurno(medicoId, fechaHora);
+        const yaTieneTurno = await medicoService.yaTieneTurno(medicoId, fechaHora);
         if (yaTieneTurno) {
             throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
@@ -107,8 +105,8 @@ export class TurnoService {
         return fechaInicioTurno2 > fechaInicioTurno1 && fechaInicioTurno2 < fechaFinalTurno1
     }
 
-    servicioPerteneceAMedico(medicoId, practica){ //que el médico brinde la práctica por la cual quieren usarlo
-        const medico = this.medicoRepository.findById(medicoId);
+    async servicioPerteneceAMedico(medicoId, practica) { //que el médico brinde la práctica por la cual quieren usarlo
+        const medico = await this.medicoRepository.findById(medicoId);
         return medico._practicas.some(p => p === practica)
     }
 

@@ -1,8 +1,9 @@
 import { MedicoService } from '../services/medicoService.js';
+import { MedicoRepository } from '../repositories/medicoRepository.js';
 
 class MedicoController {
     constructor() {
-        this.medicoService = new MedicoService();
+        this.medicoService = new MedicoService(new MedicoRepository());
     }
 
     // GET /medicos

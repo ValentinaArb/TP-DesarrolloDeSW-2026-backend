@@ -1,8 +1,11 @@
 import { TurnoService } from '../services/turnoService.js';
+import { MedicoService } from '../services/medicoService.js';
+import {MedicoRepository} from "../repositories/medicoRepository.js";
 
 class TurnoController{
     constructor() {
         this.turnoService = new TurnoService();
+        this.medicoService = new MedicoService(new MedicoRepository());
     }
 
     async obtenerTodos(req,res,next){
@@ -51,7 +54,7 @@ class TurnoController{
     async crearTurno(req, res,next){
         try{
             //const {medicoId, fechaHora, practica, sede} = req.body
-            const turnoCreado = await this.turnoService.crearTurno(req.body);
+            const turnoCreado = await this.turnoService.crearTurno(req.body, this.medicoService);
             res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
         catch(error){

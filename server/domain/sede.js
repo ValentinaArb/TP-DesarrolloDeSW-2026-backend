@@ -1,4 +1,4 @@
-class Sede{
+export class Sede{
     _id;
     _nombre;
     _direccion;
