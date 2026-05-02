@@ -4,7 +4,6 @@ import {CambioEstadoTurno} from "../domain/cambioEstadoTurno.js";
 import { Repository } from "./repository.js";
 import { SedeRepository } from "./sedeRepository.js";
 import {PacienteRepository} from "./pacienteRepository.js"
-import {EspecialidadRepository} from "./especialidadRepository.js"
 import { PracticaRepository } from "./practicaRepository.js";
 import {MedicoRepository} from "./medicoRepository.js";
 
@@ -15,8 +14,10 @@ const sedeRepository = new SedeRepository();
 const sede1 = await sedeRepository.findById(1);
 const sede2 = await sedeRepository.findById(2);
 
+/*
 const especialidadRepository = new EspecialidadRepository();
 const especialidad1 = await especialidadRepository.findById(1);
+*/
 
 const practicaRepository = new PracticaRepository();
 const practica1 = await practicaRepository.findById(1);
@@ -36,12 +37,12 @@ export class TurnoRepository extends Repository {
 
     turnosDe(medicoId){
         console.log("[DEBUG] Obteniendo turnos para el médico con ID:", medicoId);
-        console.log("[DEBUG] turnos :", this.objetos.filter(tur => tur.medico.id == medicoId)); //IMPORTANTE VER NO ESTÁ GUARDANDO LOS TURNOS. 
+        console.log("[DEBUG] turnos :", this.objetos.filter(tur => tur.medico.id === medicoId)); //IMPORTANTE VER NO ESTÁ GUARDANDO LOS TURNOS.
 
-        return this.objetos.filter(tur => tur.medico.id == medicoId);
+        return this.objetos.filter(tur => tur.medico.id === medicoId);
     }
 
     turnosPara(paciente){
-        return this.objetos.filter(tur => tur.paciente == paciente);
+        return this.objetos.filter(tur => tur.paciente === paciente);
     }
 }

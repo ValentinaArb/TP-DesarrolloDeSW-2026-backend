@@ -48,9 +48,9 @@ export class TurnoService {
         fechaInicio = new Date(fechaInicio);
         const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
         
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal,null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
         
-        const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno, this);
+        const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
@@ -108,7 +108,7 @@ export class TurnoService {
     }
 
     noSeSuperponen(turno1, turno2){
-        return turno2.fechaFin < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFin 
+        return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
     async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo

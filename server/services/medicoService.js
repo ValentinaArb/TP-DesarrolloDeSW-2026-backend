@@ -28,47 +28,31 @@ export class MedicoService {
 
         return await this.medicoRepository.update(medico, medico.id);
     }
-
-
-
-
-
-
-
-
-
-
 //!!VER
-    async estaDisponible(medicoId, turno, turnoService) {
+    async estaDisponible(medicoId, turno) {
         const fechaInicio = turno.fechaInicio;
         const fechaFinal = turno.fechaFinal;
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-        const turnosYaDados = turnoService.filtrarPor(medicoId);
-        return !disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal)) && turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turno));
+
+        console.log("[DEBUG] fechaInicio:", fechaInicio);
+        console.log("[DEBUG] fechaFinal:", fechaFinal);
+        console.log("[DEBUG] diaSemana fechaInicio:", fechaInicio.getDay());
+        console.log("[DEBUG] diaSemana fechaFinal:", fechaFinal.getDay());
+        console.log("[DEBUG] disponibilidades:", JSON.stringify(disponibilidadesMedico, null, 2));
+
+        return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
     }
 
     //!!VER
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
-        const turnos = await this.turnoRepository.turnosDe(medicoId);
-        
-        console.log("[DEBUG] ----------------- turnosService del médico:", turnos);
+        const turnosYaDados = turnoService.filtrarPor(medicoId);
+
+        console.log("[DEBUG] ----------------- turnosService del médico:", turnosYaDados);
         console.log("[DEBUG] ----------------------------turnoChequear:", turnoChequear);
 
-        return turnos.every((turno) => turnoService.noSeSuperponen(turno, turnoChequear));
+        return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
         try{const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
         return await this.medicoRepository.create(nuevoMedico);}
@@ -92,6 +76,6 @@ export class MedicoService {
 
     async perteneceASede(medicoId, sedeId){
         const medico = await this.medicoRepository.findById(medicoId);
-        return medico.sedes.some(s => s.id == sedeId);
+        return medico.sedes.some(s => s.id === sedeId);
     }
 }
