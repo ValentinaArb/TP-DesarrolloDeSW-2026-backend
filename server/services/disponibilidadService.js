@@ -1,5 +1,6 @@
 import { DisponibilidadRepository} from '../repositories/disponibilidadRepository.js';
 import {DisponibilidadHoraria} from '../domain/disponibilidadHoraria.js';
+import { BadRequestError } from '../errors/AppError.js';
 
 export class DisponibilidadService {
     constructor() {
@@ -13,7 +14,7 @@ export class DisponibilidadService {
             return await this.disponibilidadRepository.create(nuevaDisponibilidad);
         }
         else {
-            throw new Error();
+            throw new BadRequestError("Faltan campos obligatorios: diaSemana, horaDesde y horaHasta son requeridos.");
         }
     }
 

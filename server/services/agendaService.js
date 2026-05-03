@@ -1,6 +1,6 @@
 import { TurnoService } from "./turnoService";
 import { TurnoRepository } from "../repositories/turnoRepository";
-
+import { UnprocessableEntityError } from "../errors/AppError"
 class AgendaService {
     constructor() {
         this.turnoRepository = new TurnoRepository(); // Asegúrate de tener una implementación de TurnoRepository
@@ -12,7 +12,7 @@ class AgendaService {
         const medicoId = medico.id;
         try{
             if(!sedesMedico.includes(sede)){
-                throw new Error("El medico no tiene la sede indicada."); //ESTA MAL
+                throw new UnprocessableEntityError("El medico no tiene la sede indicada.");
             }
             turnosMedico.forEach(turno => {
                 if(medico.yaTieneTurno(medicoId, turno)){

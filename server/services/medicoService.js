@@ -30,7 +30,7 @@ export class MedicoService {
 
         return await this.medicoRepository.update(medico, medico.id);
     }
-    //!!VER
+    
     async estaDisponible(medicoId, turno) {
         const fechaInicio = turno.fechaInicio;
         const fechaFinal = turno.fechaFinal;
@@ -46,12 +46,8 @@ export class MedicoService {
         return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
     }
 
-    //!!VER
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
         const turnosYaDados = turnoService.filtrarPor(medicoId);
-
-        console.log("[DEBUG] ----------------- turnosService del médico:", turnosYaDados);
-        console.log("[DEBUG] ----------------------------turnoChequear:", turnoChequear);
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
