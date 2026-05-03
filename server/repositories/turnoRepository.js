@@ -14,11 +14,6 @@ const sedeRepository = new SedeRepository();
 const sede1 = await sedeRepository.findById(1);
 const sede2 = await sedeRepository.findById(2);
 
-/*
-const especialidadRepository = new EspecialidadRepository();
-const especialidad1 = await especialidadRepository.findById(1);
-*/
-
 const practicaRepository = new PracticaRepository();
 const practica1 = await practicaRepository.findById(1);
 
