@@ -1,9 +1,12 @@
 import { MedicoRepository } from '../repositories/medicoRepository.js';
-import {TurnoRepository} from "../repositories/turnoRepository.js";
-import {PacienteRepository} from "../repositories/pacienteRepository.js";
-import {EstadoTurno} from "../domain/estadoTurno.js";
-import {Turno} from "../domain/turno.js";
+import { TurnoRepository } from "../repositories/turnoRepository.js";
+import { PacienteRepository } from "../repositories/pacienteRepository.js";
+import { EstadoTurno } from "../domain/estadoTurno.js";
+import { Turno } from "../domain/turno.js";
 import { MedicoService } from './medicoService.js';
+import { UnprocessableEntityError } from "../errors/AppError.js";
+import { ConflictError } from "../errors/AppError.js";
+
 
 export class TurnoService {
     constructor() {
@@ -16,23 +19,23 @@ export class TurnoService {
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if(!turno.estado === EstadoTurno.RESERVADO){
+            if (!turno.estado === EstadoTurno.RESERVADO) {
                 console.error("El turno no esta reservado")
             }
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
-        } catch(error) {
+        } catch (error) {
             console.error("Error al dar de baja el turno:", error);
             throw error;
         }
     }
 
-    async darDeAlta(turnoId, pacienteId){
+    async darDeAlta(turnoId, pacienteId) {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
             const listaTurnos = this.turnoRepository.turnosPara(paciente);
-            if(listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
+            if (listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
                 turno.darDeAlta(paciente);
                 await this.turnoRepository.update(turno, turnoId);
             }
@@ -43,29 +46,38 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({medicoId, fechaInicio, practica, sede}, medicoService = this.medicoService) {
+    async crearTurno({ medicoId, fechaInicio, practica, sede }, medicoService = this.medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
+
+        if (isNaN(fechaInicio.getTime())) {
+            throw new BadRequestError("El formato de la fecha de inicio es inválido.");
+        }
+
+        if (fechaInicio < new Date()) {
+            throw new UnprocessableEntityError("No se pueden crear turnos en fechas pasadas.");
+        }
+
         const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
-        
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal,null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-        
+
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
-            throw new Error("El medico no esta disponible en la fecha y hora indicada.");
+            throw new UnprocessableEntityError("El medico no esta disponible en la fecha y hora indicada.");
         }
-        if (!servicioPerteneceAMedico){
-            throw new Error("El medico no realiza esa practica especifica");
+        if (!servicioPerteneceAMedico) {
+            throw new UnprocessableEntityError("El medico no realiza esa practica especifica");
         }
-        if(!perteneceASede){
-            throw new Error("El medico no pertenece a esa sede");
+        if (!perteneceASede) {
+            throw new UnprocessableEntityError("El medico no pertenece a esa sede");
         }
         const yaTieneTurno = await medicoService.yaTieneTurno(medicoId, nuevoTurno, this);
-        
+
         if (yaTieneTurno) {
-            throw new Error("El medico ya tiene un turno asignado en la fecha y hora indicada.");
+            throw new ConflictError("El medico ya tiene un turno asignado en la fecha y hora indicada.");
         }
         return await this.turnoRepository.create(nuevoTurno);
     }
@@ -78,9 +90,9 @@ export class TurnoService {
         return await this.turnoRepository.findById(turnoId);
     }
 
-    async obtenerTodos({pagina = 1, limitePorPagina = 10} = {}) {
-        if(this.validarPaginacion(pagina, limitePorPagina)){
-            const {objetos: turno, totalObjetos: totalTurno} = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
+    async obtenerTodos({ pagina = 1, limitePorPagina = 10 } = {}) {
+        if (this.validarPaginacion(pagina, limitePorPagina)) {
+            const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
             const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
 
             return {
@@ -98,16 +110,16 @@ export class TurnoService {
 
     validarPaginacion(pagina, limitePagina) {
         return Number.isInteger(pagina) &&
-                pagina > 0 &&
-                Number.isInteger(limitePagina) &&
-                limitePagina > 0;
+            pagina > 0 &&
+            Number.isInteger(limitePagina) &&
+            limitePagina > 0;
     }
 
-    filtrarPor(medicoId){
+    filtrarPor(medicoId) {
         return this.turnoRepository.turnosDe(medicoId);
     }
 
-    noSeSuperponen(turno1, turno2){
+    noSeSuperponen(turno1, turno2) {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
