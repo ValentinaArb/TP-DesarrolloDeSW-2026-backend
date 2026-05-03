@@ -1,7 +1,9 @@
-import { DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
-import {TurnoRepository} from "../repositories/turnoRepository.js";
-import {Medico} from "../domain/medico.js";
-import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
+import { DisponibilidadRepository } from "../repositories/disponibilidadRepository.js";
+import { TurnoRepository } from "../repositories/turnoRepository.js";
+import { Medico } from "../domain/medico.js";
+import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
+import { ConflictError } from "../errors/AppError.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 export class MedicoService {
     constructor(medicoRepository) {
@@ -28,7 +30,7 @@ export class MedicoService {
 
         return await this.medicoRepository.update(medico, medico.id);
     }
-//!!VER
+    //!!VER
     async estaDisponible(medicoId, turno) {
         const fechaInicio = turno.fechaInicio;
         const fechaFinal = turno.fechaFinal;
@@ -54,10 +56,18 @@ export class MedicoService {
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
     async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
-        try{const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
-        return await this.medicoRepository.create(nuevoMedico);}
-        catch(error) {
-            console.error(error)
+        try {
+            const medicoExistente = await this.medicoRepository.findByMatricula(matricula);
+            if (medicoExistente) {
+                throw new ConflictError("El médico que intentas crear ya existe.");
+            }
+        }
+        catch (error) {
+            if (error instanceof NotFoundError) {
+                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+                return await this.medicoRepository.create(nuevoMedico);
+            }
+
             throw error;
         }
     }
@@ -74,7 +84,7 @@ export class MedicoService {
         return await this.medicoRepository.findAll();
     }
 
-    async perteneceASede(medicoId, sedeId){
+    async perteneceASede(medicoId, sedeId) {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.sedes.some(s => s.id === sedeId);
     }

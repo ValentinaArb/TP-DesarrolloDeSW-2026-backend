@@ -29,4 +29,19 @@ export class MedicoRepository extends Repository {
         super();
         this.objetos = [medico1,medico2, medico3];
     }
+
+    async findByMatricula(matricula) {
+        const indiceBuscado = this.encontrarIndiceDeMatricula(matricula);
+
+        if(indiceBuscado !== -1){
+            return this.objetos[indiceBuscado];
+        } else {
+            this.errorNoEncontrado();
+        }
+    }
+
+    // methods internos
+    encontrarIndiceDeMatricula(objetoMatricula) {
+        return this.objetos.findIndex((o) => String(o.matricula) === String(objetoMatricula));
+    }
 }
