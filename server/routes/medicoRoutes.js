@@ -1,0 +1,13 @@
+import { Router } from "express";
+import medicoController from "../controllers/medicoController.js";
+
+const router = Router();
+
+router.get('/', async (req, res, next) => await medicoController.obtenerTodos(req, res, next));
+router.get('/:id', async (req, res, next) => await medicoController.obtenerMedico(req, res, next));
+router.post('/', async (req, res, next) => await medicoController.crearMedico(req, res, next));
+router.delete('/:id', async (req, res, next) => await medicoController.eliminarMedico(req, res, next));
+router.post('/:id/disponibilidad', async (req, res, next) => await medicoController.agregarDisponibilidad(req, res, next));
+router.delete('/:id/disponibilidad/:idDisponibilidad', async (req, res, next) => await medicoController.eliminarDisponibilidad(req, res, next));
+
+export default router;
