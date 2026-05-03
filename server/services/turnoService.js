@@ -6,7 +6,7 @@ import { Turno } from "../domain/turno.js";
 import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
-
+import { BadRequestError } from "../errors/AppError.js";
 
 export class TurnoService {
     constructor() {
@@ -104,7 +104,7 @@ export class TurnoService {
             }
         }
         else {
-            throw new Error("Paginación errónea");
+            throw new BadRequestError("Paginación errónea");
         }
     }
 

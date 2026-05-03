@@ -36,9 +36,6 @@ export class TurnoRepository extends Repository {
     }
 
     turnosDe(medicoId){
-        console.log("[DEBUG] Obteniendo turnos para el médico con ID:", medicoId);
-        console.log("[DEBUG] turnos :", this.objetos.filter(tur => tur.medico.id === medicoId)); //IMPORTANTE VER NO ESTÁ GUARDANDO LOS TURNOS.
-
         return this.objetos.filter(tur => tur.medico.id === medicoId);
     }
 

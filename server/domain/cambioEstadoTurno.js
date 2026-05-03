@@ -1,7 +1,7 @@
 export class CambioEstadoTurno {
     fechaInicioIngreso;
     estado;
-    turnoId; //VER -> antes era turno pero era un bucle porque turno llamaba a cambio de estado y cambio de estado a turno.
+    turnoId;
     paciente;
     motivo
 
