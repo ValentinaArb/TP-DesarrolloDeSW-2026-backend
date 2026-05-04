@@ -37,12 +37,6 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
 
-        console.log("[DEBUG] fechaInicio:", fechaInicio);
-        console.log("[DEBUG] fechaFinal:", fechaFinal);
-        console.log("[DEBUG] diaSemana fechaInicio:", fechaInicio.getDay());
-        console.log("[DEBUG] diaSemana fechaFinal:", fechaFinal.getDay());
-        console.log("[DEBUG] disponibilidades:", JSON.stringify(disponibilidadesMedico, null, 2));
-
         return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
     }
 

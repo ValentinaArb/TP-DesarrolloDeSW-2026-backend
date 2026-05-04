@@ -5,14 +5,24 @@ export class NotificacionService {
         this.notificacionRepository = new NotificacionRepository();
     }
 
-    async obtenerTodos(usuarioId){
+    async obtenerTodosFiltrados(usuarioId){
         const notificaciones = await this.notificacionRepository.findAll()
         return notificaciones.filter((n) => n.destinatario.id == usuarioId);
-    }  
+    }
 
-    marcarLeida(id){
-        const notificacion = this.notificacionRepository.findById(id)
-        notificacion.marcarLeida()
-        this.notificacionRepository.update(notificacion,id)
+    async obtenerTodos(){
+        const notificaciones = await this.notificacionRepository.findAll()
+        return notificaciones;
+    }
+
+    async marcarLeida(id){
+        try{
+            const notificacion = await this.notificacionRepository.findById(id)
+            notificacion.marcarComoLeida()
+            this.notificacionRepository.update(notificacion,id)
+        }catch(error){
+            console.error("Error al marcar como leido el turno", error);
+            throw error;
+        }
     }
 }

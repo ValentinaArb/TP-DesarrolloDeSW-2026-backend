@@ -17,7 +17,7 @@ export class Notificacion {
         this.estaLeida = false;
     }
 
-    marcarComoLeida(disponibilidad) {
+    marcarComoLeida() {
         this.fechaHoraLeida = new Date()
         this.estaLeida = true;
     }

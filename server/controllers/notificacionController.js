@@ -7,19 +7,13 @@ export class NotificacionController {
     }
 
     // GET /notificaciones
-    async obtenerTodos(req, res,next) {
+    async obtenerTodosFiltrados(req, res,next) {
         try {
             const {id} = req.params;
             const {estaLeida} = req.body;
-            
-            console.log(id)
-            console.log(estaLeida)
 
-            const notificacionesUsuario = await this.notificacionService.obtenerTodos(id);
+            const notificacionesUsuario = await this.notificacionService.obtenerTodosFiltrados(id);
             const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida === estaLeida)
-
-            console.log(notificacionesUsuario)
-            console.log(notificacionesFiltradas)
 
             res.status(200).json(notificacionesFiltradas);
         } catch(error) {
@@ -27,12 +21,21 @@ export class NotificacionController {
         }
     }
 
-    async marcarLeida(){
+    async obtenerTodos(req, res,next) {
+        try {
+            const notificacionesUsuario = await this.notificacionService.obtenerTodos();
+
+            res.status(200).json(notificacionesUsuario);
+        } catch(error) {
+            return next(error);
+        }
+    }
+
+    async marcarLeida(req, res, next){
         try {
             const {id} = req.params;
-            this.notificacionService.marcarLeida(id);
-
-            res.status(200);
+            await this.notificacionService.marcarLeida(id);
+            res.status(200).json({mensaje : "La notificación fue leída con éxito"});;
         } catch(error) {
             return next(error);
         }
