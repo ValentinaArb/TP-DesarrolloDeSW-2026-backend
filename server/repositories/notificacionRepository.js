@@ -13,4 +13,8 @@ export class NotificacionRepository extends Repository {
         super();
         this.objetos = [notificacion1, notificacion2];
     }
+
+    guardar(notificacion){
+        this.objetos.push(notificacion)
+    }
 }

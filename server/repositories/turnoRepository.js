@@ -37,4 +37,13 @@ export class TurnoRepository extends Repository {
     turnosPara(paciente){
         return this.objetos.filter(tur => tur.paciente === paciente);
     }
+
+    buscarPorFechaYEstado(fecha,estado){
+        return this.objetos.filter(tur => 
+            tur.fechaInicio.getDate() === fecha.getDate() &&
+            tur.fechaInicio.getMonth() === fecha.getMonth() && 
+            tur.fechaInicio.getFullYear() === fecha.getFullYear() &&
+            tur.estado === estado
+        );
+    }
 }
