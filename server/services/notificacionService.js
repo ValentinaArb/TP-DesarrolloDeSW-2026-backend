@@ -1,12 +1,13 @@
-import {NotificacionRepository} from "../repositories/notificacionRepository"
+import {NotificacionRepository} from "../repositories/notificacionRepository.js"
 
-class NotificacionService {
+export class NotificacionService {
     constructor() {
         this.notificacionRepository = new NotificacionRepository();
     }
 
     async obtenerTodos(usuarioId){
-        return await this.notificacionRepository.findAll().filter((n) => n.usuarioId == usuarioId);
+        const notificaciones = await this.notificacionRepository.findAll()
+        return notificaciones.filter((n) => n.destinatario.id == usuarioId);
     }  
 
     marcarLeida(id){

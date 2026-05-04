@@ -7,6 +7,6 @@ const usuario2 = new Usuario(2, "Pablo", "todoBien");
 export class UsuarioRepository extends Repository {
     constructor() {
         super();
-        this.objetos = [usuario1];
+        this.objetos = [usuario1, usuario2];
     }
 }

@@ -1,7 +1,7 @@
 import { NotificacionService } from '../services/notificacionService.js';
 import { NotificacionRepository } from '../repositories/notificacionRepository.js';
 
-class notificacionController {
+export class NotificacionController {
     constructor() {
         this.notificacionService = new NotificacionService();
     }
@@ -9,11 +9,17 @@ class notificacionController {
     // GET /notificaciones
     async obtenerTodos(req, res,next) {
         try {
-            const {usuarioId} = req.params;
+            const {id} = req.params;
             const {estaLeida} = req.body;
             
-            const notificacionesUsuario = await this.notificacionService.obtenerTodos(usuarioId);
-            const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida == estaLeida)
+            console.log(id)
+            console.log(estaLeida)
+
+            const notificacionesUsuario = await this.notificacionService.obtenerTodos(id);
+            const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida === estaLeida)
+
+            console.log(notificacionesUsuario)
+            console.log(notificacionesFiltradas)
 
             res.status(200).json(notificacionesFiltradas);
         } catch(error) {

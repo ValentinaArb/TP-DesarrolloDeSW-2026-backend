@@ -5,7 +5,7 @@ export class Notificacion {
     mensaje
     fechaHoraCreacion
     fechaHoraLeida
-    leida
+    estaLeida
 
     constructor(id = null, destinatario, remitente, mensaje, fechaHoraCreacion, fechaHoraLeida, leida) {
         this.id = id;
@@ -14,11 +14,11 @@ export class Notificacion {
         this.mensaje = mensaje;
         this.fechaHoraCreacion = fechaHoraCreacion;
         this.fechaHoraLeida = fechaHoraLeida;
-        this.leida= false;
+        this.estaLeida = false;
     }
 
     marcarComoLeida(disponibilidad) {
         this.fechaHoraLeida = new Date()
-        this.leida = true;
+        this.estaLeida = true;
     }
 }

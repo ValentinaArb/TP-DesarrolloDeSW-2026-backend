@@ -1,4 +1,4 @@
-import { NotificacionRepository } from "../repositories/notificacionRepository";
+import { NotificacionRepository } from "../repositories/notificacionRepository.js";
 
 export class FactoryNotificacion {
 
@@ -33,7 +33,7 @@ export class FactoryNotificacion {
                 throw new Error("Estado de turno no reconocido para notificar");
         }
         const notificacion = new Notificacion(destinatario, mensaje); 
-        this.notificacionRepository.guardar(notificacion)
+        this.notificacionRepository.create(notificacion)
         return notificacion
     }
     static crearRecordatorio(turno) {
@@ -42,7 +42,7 @@ export class FactoryNotificacion {
         const destinatario = [turno.paciente, turno.medico];
 
         const notificacion = new Notificacion(destinatario, mensaje);
-        this.notificacionRepository.guardar(notificacion)
+        this.notificacionRepository.create(notificacion)
         return notificacion
     }    
 }
