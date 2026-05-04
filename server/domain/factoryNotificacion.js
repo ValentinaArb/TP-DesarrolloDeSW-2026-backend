@@ -1,36 +1,39 @@
 import { NotificacionRepository } from "../repositories/notificacionRepository";
 
-const notificacionRepository = new NotificacionRepository()
+export class FactoryNotificacion {
 
-class FactoryNotificacion {
+    constructor() {
+        this.notificacionRepository = new NotificacionRepository()
+    }
+
     static crearSegunEstadoTurno(turno) {
         let mensaje = "";
-        let destinatario = [];
+        let destinatario;
 
         switch (turno.estado) {
             case 'CONFIRMADO':
                 mensaje = `Tu turno para el ${turno.fecha} fue confirmado.`;
-                destinatario.push(turno.paciente);
+                destinatario = turno.paciente;
                 break;
             case 'CANCELADO':
                 mensaje = `El turno del día ${turno.fecha} fue cancelado.`;
-                destinatario.push(turno.paciente);
+                destinatario = turno.paciente;
                 break;
             case 'DISPONIBLE':
                 mensaje = `El turno del ${turno.fecha} fue cancelado.`;
-                destinatario.push(turno.medico);
+                destinatario = turno.medico;
                 break;
             case 'RESERVADO':
                 mensaje = `El turno del ${turno.fecha} fue reservado. 
                 Paciente: ${turno.paciente}
                 Servicio: ${turno.servicio}`;
-                destinatario.push(turno.medico);
+                destinatario = turno.medico;
                 break;
             default:
                 throw new Error("Estado de turno no reconocido para notificar");
         }
         const notificacion = new Notificacion(destinatario, mensaje); 
-        notificacionRepository.guardar(notificacion)
+        this.notificacionRepository.guardar(notificacion)
         return notificacion
     }
     static crearRecordatorio(turno) {
@@ -39,7 +42,7 @@ class FactoryNotificacion {
         const destinatario = [turno.paciente, turno.medico];
 
         const notificacion = new Notificacion(destinatario, mensaje);
-        notificacionRepository.guardar(notificacion)
+        this.notificacionRepository.guardar(notificacion)
         return notificacion
     }    
 }

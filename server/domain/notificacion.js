@@ -21,10 +21,4 @@ export class Notificacion {
         this.fechaHoraLeida = new Date()
         this.leida = true;
     }
-
-    /* eliminarDisponibilidad(disponibilidad) {
-        const indice = this.disponibilidades.indexOf(disponibilidad);
-
-        this.disponibilidades.splice(indice, 1);
-    } */
 }

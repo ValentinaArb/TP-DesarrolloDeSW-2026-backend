@@ -3,7 +3,7 @@ import { NotificacionRepository } from '../repositories/notificacionRepository.j
 
 class notificacionController {
     constructor() {
-
+        this.notificacionService = new NotificacionService();
     }
 
     // GET /notificaciones
@@ -12,7 +12,7 @@ class notificacionController {
             const {usuarioId} = req.params;
             const {estaLeida} = req.body;
             
-            const notificacionesUsuario = await this.NotificacionService.obtenerTodos(usuarioId);
+            const notificacionesUsuario = await this.notificacionService.obtenerTodos(usuarioId);
             const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida == estaLeida)
 
             res.status(200).json(notificacionesFiltradas);
@@ -24,7 +24,7 @@ class notificacionController {
     async marcarLeida(){
         try {
             const {id} = req.params;
-            this.NotificacionService.marcarLeida(id);
+            this.notificacionService.marcarLeida(id);
 
             res.status(200);
         } catch(error) {

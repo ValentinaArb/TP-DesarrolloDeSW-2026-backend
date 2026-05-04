@@ -1,8 +1,10 @@
 import { TurnoRepository } from "../repositories/turnoRepository"
+import { FactoryNotificacion } from "../domain/factoryNotificacion"
 
 const cron = require('node-cron');
 
 const turnoRepository = new TurnoRepository()
+const factoryNotificacion = new FactoryNotificacion()
 
 cron.schedule('0 8 * * *', async () => {
     console.log("Ejecutando cron de recordatorios...");
@@ -12,6 +14,6 @@ cron.schedule('0 8 * * *', async () => {
     const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'CONFIRMADO');
 
     for (const turno of turnosParaRecordar) {
-        const notificacion = FactoryNotificacion.crearRecordatorio(turno);
+        factoryNotificacion.crearRecordatorio(turno);
     }
 });
