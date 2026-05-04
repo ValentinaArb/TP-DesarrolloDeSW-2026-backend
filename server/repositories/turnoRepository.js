@@ -6,6 +6,8 @@ import { SedeRepository } from "./sedeRepository.js";
 import {PacienteRepository} from "./pacienteRepository.js"
 import { PracticaRepository } from "./practicaRepository.js";
 import {MedicoRepository} from "./medicoRepository.js";
+import { TurnoMapper } from "../mappers/TurnoMapper.js";
+import { TurnoModel } from "../schemas/turno.schema.js";
 
 const pacienteRepository = new PacienteRepository();
 const paciente1 = await pacienteRepository.findById(1);
@@ -31,15 +33,16 @@ let turno2 = new Turno(2, medico3, "2027-03-10T15:30:00", null , null, practica1
 
 export class TurnoRepository extends Repository {
     constructor() {
-        super();
-        this.objetos = [turno1, turno2];
+        super(TurnoModel, new TurnoMapper());
     }
 
     turnosDe(medicoId){
-        return this.objetos.filter(tur => tur.medico.id === medicoId);
+        const documentos = this.mongooseModel.find({"medicoInfo.medicoId": medicoId});
+        return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
     turnosPara(paciente){
-        return this.objetos.filter(tur => tur.paciente === paciente);
+        const documentos = this.mongooseModel.find({"pacienteInfo.pacienteId": paciente.id});
+        return documentos.map(doc => this.mapper.toDomain(doc));
     }
 }
