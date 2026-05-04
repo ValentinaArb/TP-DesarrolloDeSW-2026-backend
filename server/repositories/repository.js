@@ -1,70 +1,83 @@
 import { NotFoundError } from "../errors/AppError.js";
 
 export class Repository {
-    objetos = [];
+    constructor(mongooseModel, mapper) {
+        this.mongooseModel = mongooseModel;
+        this.mapper = mapper;
+    }
     
     // CREATE (POST)
     async create(objeto) {
-        const indice = this.objetos.length - 1  
-        const ultimoId = this.objetos[indice].id;
-        objeto.id = ultimoId + 1;
-        this.objetos.push(objeto);
-        console.info("Creado " , objeto.constructor.name);
-        return objeto;
+        // 1. Traduce de Dominio a formato BD
+        const dataMongo = this.mapper.toPersistence(objeto);
+        
+        // 2. Guarda en MongoDB
+        const documentoGuardado = await this.mongooseModel.create(dataMongo);
+        
+        // 3. Devuelve la entidad de dominio con su nuevo ID
+        return this.mapper.toDomain(documentoGuardado);
     }
 
     // DELETE (DELETE)
     async delete(objetoId) {
-        const indiceAEliminar = this.encontrarIndiceDeId(objetoId);
-        const objeto = this.objetos[indiceAEliminar]
-        if(indiceAEliminar !== -1) {
-            this.objetos.splice(indiceAEliminar, 1);
-            console.info("Eliminado ", objeto.constructor.name);
-        } else {
-            this.errorNoEncontrado();
-        }
+        await this.mongooseModel.findByIdAndDelete(objetoId);
     }
 
     // READ (GET)
     // all
     async findAll() {
-        return this.objetos;
+        const documentos = await this.mongooseModel.find();
+
+        return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
     async findPaginated(pagina, limitePorPagina) {
-        const todosLosObjetos = Object.values(this.objetos);
-        const inicio = (pagina - 1) * limitePorPagina;
-        const fin = inicio + limitePorPagina;
+        // 1. Calculamos desde dónde empezar a cortar (el "inicio")
+        const skip = (pagina - 1) * limitePorPagina;
 
+        // 2. Ejecutamos las dos consultas a la vez para que sea más rápido
+        // Usamos Promise.all porque contar y buscar son tareas independientes
+        const [totalObjetos, documentos] = await Promise.all([
+            this.mongooseModel.countDocuments(), // Cuenta el total exacto en la BD
+            this.mongooseModel.find()            // Busca los documentos
+                .skip(skip)              // "Sáltate los primeros N"
+                .limit(limitePorPagina)  // "Y de los que quedan, tráeme solo esta cantidad"
+        ]);
+
+        // 3. Traducimos los documentos de Mongoose a tus objetos de Dominio
+        const objetosDeDominio = documentos.map(doc => this.mapper.toDomain(doc));
+
+        // 4. Devolvemos exactamente la misma estructura que tu Service ya espera
         return {
-            objetos: todosLosObjetos.slice(inicio, fin),
-            totalObjetos: todosLosObjetos.length
-        }
+            objetos: objetosDeDominio,
+            totalObjetos: totalObjetos
+        };
     }
 
     // by ID
     async findById(objetoId) {
-        const indiceBuscado = this.encontrarIndiceDeId(objetoId);
-
-        if(indiceBuscado !== -1){
-            return this.objetos[indiceBuscado];
-        } else {
-            this.errorNoEncontrado();
-        }
+        const documento = await this.mongooseModel.findById(objetoId);
+        if (!documento) return this.errorNoEncontrado();
+        
+        return this.mapper.toDomain(documento);
     }
 
     // UPDATE (PUT/PATCH)
     async update(nuevoObjeto, idObjetoViejo) {
-        const indice = this.encontrarIndiceDeId(idObjetoViejo);
-
-        this.objetos[indice] = nuevoObjeto;
+        const dataMongo = this.mapper.toPersistence(nuevoObjeto);
+    
+        // findByIdAndUpdate busca por ID y reemplaza los datos.
+        // El { new: true } es VITAL: le dice a Mongoose que te devuelva 
+        // el objeto YA actualizado (por defecto devuelve la versión vieja).
+        const documentoActualizado = await this.mongooseModel.findByIdAndUpdate(
+            idObjetoViejo, 
+            dataMongo, 
+            { new: true } 
+        );
         
-        console.info("Actualizado ", nuevoObjeto.constructor.name);
-    }
-
-    // methods internos
-    encontrarIndiceDeId(objetoId) {
-        return this.objetos.findIndex((o) => String(o.id) === String(objetoId));
+        if (!documentoActualizado) return this.errorNoEncontrado();
+        
+        return this.mapper.toDomain(documentoActualizado);
     }
 
     errorNoEncontrado() {
