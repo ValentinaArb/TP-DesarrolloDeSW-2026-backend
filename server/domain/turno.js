@@ -57,7 +57,7 @@ export class Turno{
 
     verificarBaja() {
         const ahora = new Date();
-        const horaTurno = new Date(this.fechaInicio);
+        const horaTurno = this.fechaInicio;
 
         const tiempoQueFaltaParaTurno = horaTurno - ahora;
         const unaHora = 60 * 60 * 1000;
