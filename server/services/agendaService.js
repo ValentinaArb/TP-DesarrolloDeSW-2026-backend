@@ -1,6 +1,7 @@
 import { TurnoService } from "./turnoService";
 import { TurnoRepository } from "../repositories/turnoRepository";
 import { UnprocessableEntityError } from "../errors/AppError"
+
 class AgendaService {
     constructor() {
         this.turnoRepository = new TurnoRepository(); // Asegúrate de tener una implementación de TurnoRepository
