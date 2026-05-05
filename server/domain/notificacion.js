@@ -12,7 +12,7 @@ export class Notificacion {
         this.destinatario = destinatario;
         this.remitente = remitente;
         this.mensaje = mensaje;
-        this.fechaHoraCreacion = fechaHoraCreacion;
+        this.fechaHoraCreacion = fechaHoraCreacion instanceof Date ? fechaHoraCreacion : new Date(fechaHoraCreacion);
         this.fechaHoraLeida = fechaHoraLeida;
         this.estaLeida = false;
     }

@@ -31,10 +31,10 @@ export class NotificacionController {
         }
     }
 
-    async marcarLeida(req, res, next){
+    async marcarComoLeida(req, res, next){
         try {
             const {id} = req.params;
-            await this.notificacionService.marcarLeida(id);
+            await this.notificacionService.marcarComoLeida(id);
             res.status(200).json({mensaje : "La notificación fue leída con éxito"});;
         } catch(error) {
             return next(error);
