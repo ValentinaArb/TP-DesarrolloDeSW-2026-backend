@@ -14,11 +14,6 @@ const sedeRepository = new SedeRepository();
 const sede1 = await sedeRepository.findById(1);
 const sede2 = await sedeRepository.findById(2);
 
-/*
-const especialidadRepository = new EspecialidadRepository();
-const especialidad1 = await especialidadRepository.findById(1);
-*/
-
 const practicaRepository = new PracticaRepository();
 const practica1 = await practicaRepository.findById(1);
 
@@ -41,5 +36,14 @@ export class TurnoRepository extends Repository {
 
     turnosPara(paciente){
         return this.objetos.filter(tur => tur.paciente === paciente);
+    }
+
+    buscarPorFechaYEstado(fecha,estado){
+        return this.objetos.filter(tur => 
+            tur.fechaInicio.getDate() === fecha.getDate() &&
+            tur.fechaInicio.getMonth() === fecha.getMonth() && 
+            tur.fechaInicio.getFullYear() === fecha.getFullYear() &&
+            tur.estado === estado
+        );
     }
 }
