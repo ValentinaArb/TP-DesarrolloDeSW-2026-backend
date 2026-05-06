@@ -1,3 +1,5 @@
+import { Especialidad } from "../domain/especialidad.js";
+
 export class EspecialidadMapper {
     static toPersistence(especialidad) {
         return {

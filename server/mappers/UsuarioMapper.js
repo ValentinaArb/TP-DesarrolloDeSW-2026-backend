@@ -1,3 +1,5 @@
+import { Usuario } from "../domain/usuario.js";
+
 export class UsuarioMapper {
     static toPersistence(usuario) {
         return {

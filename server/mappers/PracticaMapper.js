@@ -1,3 +1,5 @@
+import { Practica } from "../domain/practica.js";
+
 export class PracticaMapper {
     static toPersistence(practica) {
         return {

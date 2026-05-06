@@ -1,3 +1,5 @@
+import { Medico } from "../domain/medico.js";
+
 export class MedicoMapper {
     static toPersistence(medico) {
         return {
