@@ -8,19 +8,19 @@ export class Turno{
     fechaInicio;
     fechaFinal;
     paciente;
-    practica;
+    servicio;
     sede;
     estado;
     historialDeEstados;
     costo;
 
-    constructor(id = null, medico, fechaInicio, fechaFinal, paciente = null, practica, sede, estado, estados, costo = null){
+    constructor(id = null, medico, fechaInicio, fechaFinal, paciente = null, servicio, sede, estado, estados, costo = null){
         this.id = id;
         this.medico = medico;
         this.fechaInicio = fechaInicio instanceof Date ? fechaInicio : new Date(fechaInicio);
         this.fechaFinal = fechaFinal instanceof Date ? fechaFinal : new Date(fechaFinal);
         this.paciente = paciente;
-        this.practica = practica;
+        this.practica = servicio;
         this.sede = sede;
         this.estado = estado;
         this.historialDeEstados = estados;
@@ -52,12 +52,15 @@ export class Turno{
         this.paciente = paciente;
         if(nuevoEstado === EstadoTurno.DISPONIBLE) {
             this.paciente = null;
+            return null
         }
+        const nuevaNotificacion = FactoryNotificacion.crearSegunEstadoTurno(this);
+        return nuevaNotificacion
     }
 
     verificarBaja() {
         const ahora = new Date();
-        const horaTurno = new Date(this.fechaInicio);
+        const horaTurno = this.fechaInicio;
 
         const tiempoQueFaltaParaTurno = horaTurno - ahora;
         const unaHora = 60 * 60 * 1000;
