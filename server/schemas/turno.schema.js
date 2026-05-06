@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import { es } from "zod/locales";
 
 const turnoSchema = new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
     medicoInfo: {
         medicoId: { type: mongoose.Schema.Types.ObjectId, ref: "Medico", required: true },
         nombre: { type: String, required: true },

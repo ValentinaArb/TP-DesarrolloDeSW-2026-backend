@@ -37,12 +37,12 @@ export class TurnoRepository extends Repository {
     }
 
     turnosDe(medicoId){
-        const documentos = this.mongooseModel.find({"medicoInfo.medicoId": medicoId});
+        const documentos = await this.mongooseModel.find({"medicoInfo.medicoId": medicoId});
         return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
     turnosPara(paciente){
-        const documentos = this.mongooseModel.find({"pacienteInfo.pacienteId": paciente.id});
+        const documentos = await this.mongooseModel.find({"pacienteInfo.pacienteId": paciente.id});
         return documentos.map(doc => this.mapper.toDomain(doc));
     }
 }
