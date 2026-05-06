@@ -76,6 +76,21 @@ class MedicoController {
             return next(error);
         }
     }
+
+
+    //PUT /medicos/:medicoId/disponibilidades/:disponibilidadAModificarId
+    async modificarDisponibilidad(req, res, next){
+        try {
+            const {medicoId, disponibilidadAModificarId} = req.params;
+            const {diaSemana, horaDesde, horaHasta} = req.body
+
+            await this.medicoService.modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta);
+            res.status(200).json({mensaje: "Disponibilidad Modificada"})
+        }
+        catch (error){
+            return next(error)
+        }
+    }
 }
 
 const medicoController = new MedicoController();

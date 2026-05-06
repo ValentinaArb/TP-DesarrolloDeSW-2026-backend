@@ -128,4 +128,9 @@ export class TurnoService {
         return medico.practicas.some(p => p.id === practicaId)
     }
 
+    async obtenerTurnosPorEstado(pacienteId, estadoPedido){
+        const turnos = this.turnoRepository.turnosPara(pacienteId)
+        return turnos.filter(t => t.estado === estadoPedido)
+    }
+
 }

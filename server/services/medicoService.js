@@ -55,7 +55,7 @@ export class MedicoService {
         catch (error) {
             if (error instanceof NotFoundError) {
                 const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
-                return await this.medicoRepository.create(nuevoMedico);
+                return this.medicoRepository.create(nuevoMedico);
             }
 
             throw error;
@@ -78,4 +78,12 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.sedes.some(s => s.id === sedeId);
     }
+
+    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
+        const disponibilidadNueva = new DisponibilidadHoraria(diaSemana, horaDesde, horaHasta);
+        const medico = this.medicoRepository.findById(medicoId);
+        medico.eliminarDisponibilidad(disponibilidadAModificarId);
+        medico.agregarDisponibilidad(disponibilidadNueva);
+    }
+
 }

@@ -34,8 +34,8 @@ export class TurnoRepository extends Repository {
         return this.objetos.filter(tur => tur.medico.id === medicoId);
     }
 
-    turnosPara(paciente){
-        return this.objetos.filter(tur => tur.paciente === paciente);
+    turnosPara(pacienteId){
+        return this.objetos.filter(tur => tur.paciente.id === pacienteId);
     }
 
     buscarPorFechaYEstado(fecha,estado){
