@@ -1,10 +1,12 @@
 import { Turno } from "../domain/turno.js";
 import { Medico } from "../domain/medico.js";
 import { Paciente } from "../domain/paciente.js";
+import { id } from "zod/locales";
 
 export class TurnoMapper {
     static toPersistence(turno) {
         return {
+            id: turno.id,
             medicoInfo: {
                 medicoId: turno.medico.id,
                 nombre: turno.medico.nombre,
@@ -40,6 +42,6 @@ export class TurnoMapper {
         const paciente = turnoDoc.pacienteInfo ? new Paciente(turnoDoc.pacienteInfo.pacienteId, turnoDoc.pacienteInfo.nombre, turnoDoc.pacienteInfo.apellido) : null;
         const servicio = { nombre: turnoDoc.servicioInfo.nombre, duracion: turnoDoc.servicioInfo.duracion };
         const sede = { nombre: turnoDoc.sedeInfo.nombre, direccion: turnoDoc.sedeInfo.direccion };
-        return new Turno(turnoDoc._id, medico, turnoDoc.fechaInicio, turnoDoc.fechaFinal, paciente, servicio, sede, turnoDoc.estado, turnoDoc.historialDeEstados, turnoDoc.costo);
+        return new Turno(turnoDoc.id, medico, turnoDoc.fechaInicio, turnoDoc.fechaFinal, paciente, servicio, sede, turnoDoc.estado, turnoDoc.historialDeEstados, turnoDoc.costo);
     }
 }

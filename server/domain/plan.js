@@ -1,15 +1,13 @@
 class Plan{
     id;
     nombre;
-    coberturasEspecialidad
-    coberturasPractica;
+    coberturasServicio;
 
 
-    constructor(id = null, nombre, coberturasEspecialidad, coberturasPractica) {
+    constructor(id = null, nombre, coberturasServicio) {
         this.id = id;
         this.nombre = nombre;
-        this.coberturasEspecialidad = coberturasEspecialidad;
-        this.coberturasPractica = coberturasPractica;
+        this.coberturasServicio = coberturasServicio;
     }
 
     obtenerNivelDeLista(lista, propiedad, valorBuscado) {
@@ -17,11 +15,7 @@ class Plan{
         return cobertura?.nivel || null;
     }
 
-    obtenerCoberturaPorEspecialidad(especialidad) {
-        return this.obtenerNivelDeLista(this.coberturasEspecialidad, 'especialidad', especialidad);
-    }
-
-    obtenerCoberturaPorPractica(practica) {
-        return this.obtenerNivelDeLista(this.coberturasPractica, 'practica', practica);
+    obtenerCoberturaPorServicio(servicio) {
+        return this.obtenerNivelDeLista(this.coberturasServicio, 'servicio', servicio);
     }
 }
