@@ -45,7 +45,7 @@ export class MedicoService {
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
-    async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+    async crearMedico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         try {
             const medicoExistente = await this.medicoRepository.findByMatricula(matricula);
             if (medicoExistente) {
@@ -54,7 +54,7 @@ export class MedicoService {
         }
         catch (error) {
             if (error instanceof NotFoundError) {
-                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
                 return await this.medicoRepository.create(nuevoMedico);
             }
 

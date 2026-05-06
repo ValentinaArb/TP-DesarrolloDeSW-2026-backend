@@ -46,7 +46,7 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({ medicoId, fechaInicio, practica, sede }, medicoService = this.medicoService) {
+    async crearTurno({ medicoId, fechaInicio, servicio, sede }, medicoService = this.medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
 
@@ -58,18 +58,18 @@ export class TurnoService {
             throw new UnprocessableEntityError("No se pueden crear turnos en fechas pasadas.");
         }
 
-        const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
+        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionEnMins * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
-        const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
+        const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
             throw new UnprocessableEntityError("El medico no esta disponible en la fecha y hora indicada.");
         }
         if (!servicioPerteneceAMedico) {
-            throw new UnprocessableEntityError("El medico no realiza esa practica especifica");
+            throw new UnprocessableEntityError("El medico no realiza ese servicio especifico");
         }
         if (!perteneceASede) {
             throw new UnprocessableEntityError("El medico no pertenece a esa sede");
@@ -123,9 +123,9 @@ export class TurnoService {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
-    async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo
+    async servicioPerteneceAMedico(medicoId, servicioId) { //que el médico brinde el servicio por el cual quieren usarlo
         const medico = await this.medicoRepository.findById(medicoId);
-        return medico.practicas.some(p => p.id === practicaId)
+        return medico.servicios.some(s => s.id === servicioId)
     }
 
 }

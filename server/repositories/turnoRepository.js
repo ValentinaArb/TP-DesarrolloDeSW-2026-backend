@@ -1,11 +1,11 @@
 import {Turno} from "../domain/turno.js"
-import {EstadoTurno} from "../domain/estadoTurno.js";
-import {CambioEstadoTurno} from "../domain/cambioEstadoTurno.js";
+/* import {EstadoTurno} from "../domain/estadoTurno.js";
+import {CambioEstadoTurno} from "../domain/cambioEstadoTurno.js"; */
 import { Repository } from "./repository.js";
-import { SedeRepository } from "./sedeRepository.js";
-import {PacienteRepository} from "./pacienteRepository.js"
+/* import { SedeRepository } from "./sedeRepository.js";
+ *//* import {PacienteRepository} from "./pacienteRepository.js"
 import { PracticaRepository } from "./practicaRepository.js";
-import {MedicoRepository} from "./medicoRepository.js";
+import {MedicoRepository} from "./medicoRepository.js"; */
 import { TurnoMapper } from "../mappers/TurnoMapper.js";
 import { TurnoModel } from "../schemas/turno.schema.js";
 

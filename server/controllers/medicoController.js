@@ -30,8 +30,8 @@ class MedicoController {
     // POST /medicos
     async crearMedico(req, res,next) {
         try {
-            const { usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades } = req.body;
-            const nuevoMedico = await this.medicoService.crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+            const { usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades } = req.body;
+            const nuevoMedico = await this.medicoService.crearMedico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
             res.status(201).json({mensaje: "Médico creado", data: nuevoMedico});
         } 
         catch(error) {
