@@ -37,7 +37,7 @@ export class FactoryNotificacion {
             default:
                 throw new Error("Estado de turno no reconocido para notificar");
         }
-        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, null); //id y fechaHoraCreacion se asignarán automáticamente en mongo
+        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, null);
         this.notificacionRepository.create(notificacion)
         return notificacion
     }

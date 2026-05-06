@@ -123,7 +123,7 @@ export class TurnoService {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
-    async servicioPerteneceAMedico(medicoId, servicioId) { //que el médico brinde el servicio por el cual quieren usarlo
+    async servicioPerteneceAMedico(medicoId, servicioId) {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.servicios.some(s => s.id === servicioId)
     }
