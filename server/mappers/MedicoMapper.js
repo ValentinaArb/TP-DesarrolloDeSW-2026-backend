@@ -1,3 +1,5 @@
+import { Medico } from "../domain/medico.js";
+
 export class MedicoMapper {
     static toPersistence(medico) {
         return {
@@ -6,13 +8,9 @@ export class MedicoMapper {
             apellido: medico.apellido,
             email: medico.email,
             matricula: medico.matricula,
-            especialidades: medico.especialidades.map((especialidad) => ({
-                especialidadId: especialidad.especialidadId,
-                nombre: especialidad.nombre
-            })),
-            practicas: medico.practicas.map((practica) => ({
-                practicaId: practica.id,
-                nombre: practica.nombre
+            servicios: medico.servicios.map((servicio) => ({
+                servicioId: servicio.id,
+                nombre: servicio.nombre
             })),
             sedes: medico.sedes.map((sede) => ({
                 sedeId: sede.id,
@@ -27,13 +25,9 @@ export class MedicoMapper {
     }
 
     static toDomain(medicoDoc) {
-        const especialidades = medicoDoc.especialidades.map((especialidad) => ({
-            especialidadId: especialidad.especialidadId,
-            nombre: especialidad.nombre
-        }));
-        const practicas = medicoDoc.practicas.map((practica) => ({
-            practicaId: practica.id,
-            nombre: practica.nombre
+        const servicios = medicoDoc.servicios.map((servicio) => ({
+            servicioId: servicio.id,
+            nombre: servicio.nombre
         }));
         const sedes = medicoDoc.sedes.map((sede) => ({
             sedeId: sede.id,
@@ -44,6 +38,6 @@ export class MedicoMapper {
             fechaInicio: disponibilidad.horaDesde,
             fechaFinal: disponibilidad.horaHasta
         }));
-        return new Medico(medicoDoc.id, medicoDoc.nombre, medicoDoc.apellido, medicoDoc.email, medicoDoc.matricula, especialidades, practicas, sedes, disponibilidades);
+        return new Medico(medicoDoc.id, medicoDoc.nombre, medicoDoc.apellido, medicoDoc.email, medicoDoc.matricula, servicios, sedes, disponibilidades);
     }
 }

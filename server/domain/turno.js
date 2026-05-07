@@ -20,7 +20,7 @@ export class Turno{
         this.fechaInicio = fechaInicio instanceof Date ? fechaInicio : new Date(fechaInicio);
         this.fechaFinal = fechaFinal instanceof Date ? fechaFinal : new Date(fechaFinal);
         this.paciente = paciente;
-        this.practica = servicio;
+        this.servicio = servicio;
         this.sede = sede;
         this.estado = estado;
         this.historialDeEstados = estados;

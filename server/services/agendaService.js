@@ -4,7 +4,7 @@ import { UnprocessableEntityError } from "../errors/AppError"
 
 class AgendaService {
     constructor() {
-        this.turnoRepository = new TurnoRepository(); // Asegúrate de tener una implementación de TurnoRepository
+        this.turnoRepository = new TurnoRepository();
     }
 
     generarTurnosPara(servicio, medico, sede){  //!! VER CON GRUPO
@@ -28,7 +28,7 @@ class AgendaService {
     
     refrescarTurnosSegunDisponibilidadDe(medico){ 
         try {
-            turnos = this.turnoRepository.findByMedico(medico); //implementar metodo de obtener turnos de un medico en turnoRepository 
+            turnos = this.turnoRepository.findByMedico(medico); 
             for(const turno of turnos){
                 if(!medicoService.estaDisponible(medico.id, turno)) {
                     if(turno.paciente === null)  {

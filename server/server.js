@@ -1,5 +1,5 @@
 import app from "./app.js"
-
+import mongoose from "mongoose";
 
 const port = process.env.PORT;
 await mongoose.connect(process.env.MONGODB_URI);

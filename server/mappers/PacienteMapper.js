@@ -1,5 +1,7 @@
+import { Paciente } from "../domain/paciente.js";
+
 export class PacienteMapper {
-    toDomain(pacienteDoc) {
+    static toDomain(pacienteDoc) {
         return new Paciente(
             pacienteDoc.id,
             pacienteDoc.nombre,
@@ -12,7 +14,7 @@ export class PacienteMapper {
         );
     }
 
-    toPersistence(paciente) {
+    static toPersistence(paciente) {
         return {
             id: paciente.id,
             nombre: paciente.nombre,

@@ -1,3 +1,5 @@
+import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
+
 export class DisponibilidadMapper {
     static toPersistence(disponibilidad) {
         return {

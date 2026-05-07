@@ -1,3 +1,5 @@
+import { Sede } from "../domain/sede.js";
+
 export class SedeMapper {
     static toPersistence(sede) {
         return {

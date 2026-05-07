@@ -51,7 +51,7 @@ class TurnoController{
     //POST /turnos
     async crearTurno(req, res,next){
         try{
-            //const {medicoId, fechaInicio, practica, sede} = req.body
+            //const {medicoId, fechaInicio, servicio, sede} = req.body
             const turnoCreado = await this.turnoService.crearTurno(req.body, this.medicoService);
             res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
@@ -98,11 +98,9 @@ class TurnoController{
     async modificarEstado(req, res) {
     try {
         const { id } = req.params;
-        // pacienteId y motivo para extraerlos del body
         const { operacion, estado, pacienteId, motivo } = req.body; 
 
         if (operacion === 'alta' || estado === 'activo') {
-            // nos deben mandar si o si el pacienteId
             if (!pacienteId) {
                 return res.status(400).json({ error: 'Falta el pacienteId para dar de alta' });
             }
@@ -110,7 +108,6 @@ class TurnoController{
             return res.status(200).json({ mensaje: "Turno fue dado de alta con éxito" });
 
         } else if (operacion === 'baja' || estado === 'inactivo') {
-            // nos deben mandar si o si el motivo
             if (!motivo) {
                 return res.status(400).json({ error: 'Falta el motivo para dar de baja' });
             }

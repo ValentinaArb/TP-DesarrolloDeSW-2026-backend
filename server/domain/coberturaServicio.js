@@ -1,4 +1,5 @@
 class CoberturaServicio{
+    id;
     servicio;
     nivel;
 

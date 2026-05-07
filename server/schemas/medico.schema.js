@@ -24,12 +24,8 @@ const medicoSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  especialidades: [{
-    especialidadId: { type: mongoose.Schema.Types.ObjectId, ref: "Especialidad", required: true },
-    nombre: { type: String, required: true }
-  }],
-  practicas : [{
-    practicaId: { type: mongoose.Schema.Types.ObjectId, ref: "Practica", required: true },
+  servicios : [{
+    servicioId: { type: mongoose.Schema.Types.ObjectId, ref: "Servicio", required: true },
     nombre: { type: String, required: true }
   }],
   sedes: [{

@@ -4,7 +4,6 @@ import { BadRequestError } from '../errors/AppError.js';
 
 export class DisponibilidadService {
     constructor() {
-        // si no, se podría inyectar
         this.disponibilidadRepository =  new DisponibilidadRepository();
     }
 
