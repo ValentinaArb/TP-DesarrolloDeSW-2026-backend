@@ -56,7 +56,7 @@ class MedicoController {
             const { id } = req.params;
             const { diaSemana, horaDesde, horaHasta } = req.body;
 
-            const nuevoMedico = await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta);
+            await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta);
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
@@ -69,7 +69,7 @@ class MedicoController {
         try{
             const { id, idDisponibilidad } = req.params;
 
-            const nuevoMedico = await this.medicoService.eliminarDisponibilidad(id, idDisponibilidad);
+            await this.medicoService.eliminarDisponibilidad(id, idDisponibilidad);
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
@@ -89,6 +89,19 @@ class MedicoController {
         }
         catch (error){
             return next(error)
+        }
+    }
+
+    //PATCH /medicos/:medicoId/turnos/:turnoId
+    async marcarTurnoComo(req, res, next){
+        try{
+            const {medicoId, turnoId} = req.params;
+            const {estado} = req.body;
+            await this.medicoService.marcarTurnoComo(medicoId, turnoId, estado);
+            res.status(200).json({mensaje: "Estado de turno cambiado"})
+        }
+        catch (error){
+            return next(error);
         }
     }
 }

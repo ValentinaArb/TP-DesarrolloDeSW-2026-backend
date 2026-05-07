@@ -86,4 +86,14 @@ export class MedicoService {
         medico.agregarDisponibilidad(disponibilidadNueva);
     }
 
+    async marcarTurnoComo(medicoId, turnoId, estado){
+        const turnosDeMedico = this.turnoRepository.turnosDe(medicoId);
+        for(const t of turnosDeMedico){
+            if(t.id === turnoId){
+                t.estado = estado;
+                break;
+            }
+        }
+    }
+
 }

@@ -10,4 +10,5 @@ router.delete('/:id', async (req, res, next) => await medicoController.eliminarM
 router.post('/:id/disponibilidad', async (req, res, next) => await medicoController.agregarDisponibilidad(req, res, next));
 router.delete('/:id/disponibilidad/:idDisponibilidad', async (req, res, next) => await medicoController.eliminarDisponibilidad(req, res, next));
 router.put("/medicos/:medicoId/disponibilidades/:disponibilidadId", async(req, res, next) => await medicoController.modificarDisponibilidad(req, res, next));
+router.patch("/medicos/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
 export default router;
