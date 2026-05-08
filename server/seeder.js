@@ -111,8 +111,11 @@ const seedDatabase = async () => {
 
         let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", null, paciente1, practica1,sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
         let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", null , paciente2, practica1,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
-        await turnoRepository.create(turno1);
-        await turnoRepository.create(turno2);
+        turno1 = await turnoRepository.create(turno1);
+        turno2 = await turnoRepository.create(turno2);
+
+        console.log(turno1.id);
+        console.log(turno2.id);
 
         let cambioEstadoTurno1 = new CambioEstadoTurno(null, new Date(), EstadoTurno.DISPONIBLE, turno1, paciente1, "ALTA");
         let cambioEstadoTurno2 = new CambioEstadoTurno(null, new Date(), EstadoTurno.CANCELADO, turno2, paciente2, "No puedo al final");
