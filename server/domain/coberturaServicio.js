@@ -1,4 +1,4 @@
-class CoberturaServicio{
+export class CoberturaServicio{
     id;
     servicio;
     nivel;

@@ -3,15 +3,14 @@ import { Practica } from "../domain/practica.js";
 export class PracticaMapper {
     static toPersistence(practica) {
         return {
-            id: practica.id,
             codigo: practica.codigo,
             nombre: practica.nombre,
-            duracionEnMins: practica.duracionEnMins,
+            duracion: practica.duracion,
             costo: practica.costo
         };
     }
 
     static toDomain(practicaDoc) {
-        return new Practica(practicaDoc.id, practicaDoc.codigo, practicaDoc.nombre, practicaDoc.duracionEnMins, practicaDoc.costo);
+        return new Practica(practicaDoc._id.toString(), practicaDoc.codigo, practicaDoc.nombre, practicaDoc.duracion, practicaDoc.costo);
     }
 }

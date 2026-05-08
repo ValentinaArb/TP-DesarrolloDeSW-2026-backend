@@ -1,14 +1,13 @@
-import { CambioEstadoTurno } from "../domain/cambioEstadoTurno";
+import { CambioEstadoTurno } from "../domain/cambioEstadoTurno.js";
 
 export class CambioEstadoTurnoMapper {
     static toPersistence(cambioEstadoTurno) {
         return {
-            id: cambioEstadoTurno.id,
             fechaInicioIngreso: cambioEstadoTurno.fechaInicioIngreso,
             estado: cambioEstadoTurno.estado,
-            turnoId: cambioEstadoTurno.turnoId,
+            turno: cambioEstadoTurno.turno,
             Paciente: {
-                pacienteId: cambioEstadoTurno.paciente.id,
+                id: cambioEstadoTurno.paciente.id,
                 nombre: cambioEstadoTurno.paciente.nombre,
                 apellido: cambioEstadoTurno.paciente.apellido
             },
@@ -18,10 +17,10 @@ export class CambioEstadoTurnoMapper {
 
     static toDomain(cambioEstadoTurnoDoc) {
         const paciente = {
-            id: cambioEstadoTurnoDoc.Paciente.pacienteId,
+            id: cambioEstadoTurnoDoc.Paciente.id,
             nombre: cambioEstadoTurnoDoc.Paciente.nombre,
             apellido: cambioEstadoTurnoDoc.Paciente.apellido
         };
-        return new CambioEstadoTurno(cambioEstadoTurnoDoc.id, cambioEstadoTurnoDoc.fechaInicioIngreso, cambioEstadoTurnoDoc.estado, cambioEstadoTurnoDoc.turnoId, paciente, cambioEstadoTurnoDoc.motivo);
+        return new CambioEstadoTurno(cambioEstadoTurnoDoc._id.toString(), cambioEstadoTurnoDoc.fechaInicioIngreso, cambioEstadoTurnoDoc.estado, cambioEstadoTurnoDoc.turno, paciente, cambioEstadoTurnoDoc.motivo);
     }
 }

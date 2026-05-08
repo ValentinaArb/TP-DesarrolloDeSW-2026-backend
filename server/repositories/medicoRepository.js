@@ -1,11 +1,10 @@
-import {Medico} from "../domain/medico.js"
 import { Repository } from "./repository.js";
 import { MedicoModel } from "../schemas/medico.schema.js";
 import { MedicoMapper } from "../mappers/MedicoMapper.js";
 
 export class MedicoRepository extends Repository {
     constructor() {
-        super(MedicoModel, new MedicoMapper());
+        super(MedicoModel, MedicoMapper);
     }
 
     async findByMatricula(matricula) {

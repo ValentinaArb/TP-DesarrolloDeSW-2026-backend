@@ -3,7 +3,6 @@ import { Usuario } from "../domain/usuario.js";
 export class UsuarioMapper {
     static toPersistence(usuario) {
         return {
-            id: usuario.id,
             nombre: usuario.nombre,
             mail: usuario.mail,
             password: usuario.password
@@ -11,6 +10,6 @@ export class UsuarioMapper {
     }
 
     static toDomain(usuarioDoc) {
-        return new Usuario(usuarioDoc.id, usuarioDoc.nombre, usuarioDoc.mail, usuarioDoc.password);
+        return new Usuario(usuarioDoc._id.toString(), usuarioDoc.nombre, usuarioDoc.mail, usuarioDoc.password);
     }
 }

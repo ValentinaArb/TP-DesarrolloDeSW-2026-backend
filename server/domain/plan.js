@@ -1,4 +1,4 @@
-class Plan{
+export class Plan{
     id;
     nombre;
     coberturasServicio;

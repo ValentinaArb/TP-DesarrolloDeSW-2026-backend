@@ -1,9 +1,8 @@
-import { CoberturaServicio } from "../domain/coberturaServicio";
+import { CoberturaServicio } from "../domain/coberturaServicio.js";
 
 export class CoberturaMapper {
     static toPersistence(cobertura) {
         return {
-            id: cobertura.id,
             servicio: {
                 nombre: cobertura.servicio.nombre,
                 costo: cobertura.servicio.costo

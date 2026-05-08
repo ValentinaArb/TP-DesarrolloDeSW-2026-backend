@@ -3,7 +3,6 @@ import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 export class DisponibilidadMapper {
     static toPersistence(disponibilidad) {
         return {
-            id: disponibilidad.id,
             diaSemana: disponibilidad.diaSemana,
             horaDesde: `${disponibilidad.horaDesde.getHours()}:${disponibilidad.horaDesde.getMinutes()}`,
             horaHasta: `${disponibilidad.horaHasta.getHours()}:${disponibilidad.horaHasta.getMinutes()}`
@@ -11,6 +10,6 @@ export class DisponibilidadMapper {
     }
 
     static toDomain(disponibilidadDoc) {
-        return new DisponibilidadHoraria(disponibilidadDoc.id, disponibilidadDoc.diaSemana, disponibilidadDoc.horaDesde, disponibilidadDoc.horaHasta);
+        return new DisponibilidadHoraria(disponibilidadDoc._id.toString(), disponibilidadDoc.diaSemana, disponibilidadDoc.horaDesde, disponibilidadDoc.horaHasta);
     }
 }

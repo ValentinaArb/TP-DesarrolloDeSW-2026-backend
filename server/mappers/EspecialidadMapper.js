@@ -3,14 +3,13 @@ import { Especialidad } from "../domain/especialidad.js";
 export class EspecialidadMapper {
     static toPersistence(especialidad) {
         return {
-            id: especialidad.id,
             nombre: especialidad.nombre,
-            duracionTurno: especialidad.duracionTurno,
+            duracion: especialidad.duracion,
             costo: especialidad.costo
         };
     }
 
     static toDomain(especialidadDoc) {
-        return new Especialidad(especialidadDoc.id, especialidadDoc.nombre, especialidadDoc.duracionTurno, especialidadDoc.costo);
+        return new Especialidad(especialidadDoc._id.toString(), especialidadDoc.nombre, especialidadDoc.duracion, especialidadDoc.costo);
     }
 }
