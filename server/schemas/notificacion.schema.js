@@ -1,20 +1,15 @@
 import mongoose from "mongoose";
-import { required } from "zod/mini";
 
 const notificacionSchema = new mongoose.Schema({
-    id: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true
-    },
-    destinatarioInfo: {
+    destinatario: {
+        id: {type: String, required: true},
         nombre: { type: String, required: true },
-        apellido: { type: String, required: true },
-        usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }
+        apellido: { type: String, required: true }
     },
-    remitenteInfo: {
+    remitente: {
+        id: { type: String, required: true },
         nombre: { type: String, required: true },
-        apellido: { type: String, required: true },
-        usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }
+        apellido: { type: String, required: true }
     },
     mensaje: {
         type: String,

@@ -1,19 +1,17 @@
-import { no } from "zod/locales";
 import { Notificacion } from "../domain/notificacion.js";
 
 export class NotificacionMapper {
     static toPersistence(notificacion) {
         return {
-            id: notificacion.id,
-            destinatarioInfo: {
+            destinatario: {
+                id: notificacion.destinatario.id,
                 nombre: notificacion.destinatario.nombre,
-                apellido: notificacion.destinatario.apellido,
-                usuarioId: notificacion.destinatario.usuarioId
+                apellido: notificacion.destinatario.apellido
             },
-            remitenteInfo: {
+            remitente: {
+                id: notificacion.remitente.id,
                 nombre: notificacion.remitente.nombre,
-                apellido: notificacion.remitente.apellido,
-                usuarioId: notificacion.remitente.usuarioId
+                apellido: notificacion.remitente.apellido
             },
             mensaje: notificacion.mensaje,
             fechaHoraCreacion: notificacion.fechaHoraCreacion.toISOString(),
@@ -24,16 +22,16 @@ export class NotificacionMapper {
 
     static toDomain(notificacionDoc) {
         return new Notificacion(
-            notificacionDoc.id,
+            notificacionDoc._id.toString(),
             {
-                nombre: notificacionDoc.destinatarioInfo.nombre,
-                apellido: notificacionDoc.destinatarioInfo.apellido,
-                usuarioId: notificacionDoc.destinatarioInfo.usuarioId
+                nombre: notificacionDoc.destinatario.nombre,
+                apellido: notificacionDoc.destinatario.apellido,
+                id: notificacionDoc.destinatario.id
             },
             {
-                nombre: notificacionDoc.remitenteInfo.nombre,
-                apellido: notificacionDoc.remitenteInfo.apellido,
-                usuarioId: notificacionDoc.remitenteInfo.usuarioId
+                nombre: notificacionDoc.remitente.nombre,
+                apellido: notificacionDoc.remitente.apellido,
+                id: notificacionDoc.remitente.id
             },
             notificacionDoc.mensaje,
             new Date(notificacionDoc.fechaHoraCreacion),

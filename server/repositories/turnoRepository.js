@@ -1,11 +1,10 @@
-import {Turno} from "../domain/turno.js"
 import { Repository } from "./repository.js";
 import { TurnoMapper } from "../mappers/TurnoMapper.js";
 import { TurnoModel } from "../schemas/turno.schema.js";
 
 export class TurnoRepository extends Repository {
     constructor() {
-        super(TurnoModel, new TurnoMapper());
+        super(TurnoModel, TurnoMapper);
     }
 
     async turnosDe(medicoId){

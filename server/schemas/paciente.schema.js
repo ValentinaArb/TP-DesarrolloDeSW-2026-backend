@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const pacienteSchema = new mongoose.Schema({
-    id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
+    usuario: {
+        nombre: String,
+        mail: String
     },
     nombre: {
         type: String,
@@ -23,16 +23,14 @@ const pacienteSchema = new mongoose.Schema({
         required: true
     },
     obraSocial: {
-        obraSocialId: { type: mongoose.Schema.Types.ObjectId, ref: "ObraSocial" },
         nombre: { type: String }
     },
     plan: {
-        planId: { type: mongoose.Schema.Types.ObjectId },
         nombre: { type: String }
     },
     sexo: {
         type: String,
-        enum: ["MASCULINO", "FEMENINO"],
+        enum: ["M", "F"],
         required: true
     }
 });
