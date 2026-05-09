@@ -95,19 +95,6 @@ class TurnoController{
         }
     }
 
-    //GET /pacientes/:pacienteId/turnos?estado=realizado
-    async obtenerHistorialTurnos(req, res, next){
-        try{
-            const { pacienteId} = req.params;
-            const { estadoTurno } = req.query;
-            const turnosHistorial = await this.turnoService.obtenerTurnosPorEstado(pacienteId, estadoTurno);
-            res.status(200).json(turnosHistorial);
-        }
-        catch(error){
-            return next(error);
-        }
-    }
-    
     async modificarEstado(req, res) {
     try {
         const { id } = req.params;
@@ -140,7 +127,6 @@ class TurnoController{
 }
 
 }
-
 
 const turnoController = new TurnoController();
 export default turnoController;

@@ -16,13 +16,13 @@ export class TurnoService {
         this.medicoService = new MedicoService(this.medicoRepository);
     }
 
-    async darDeBaja(turnoId, motivo) {
+    async darDeBaja(turnoId, motivo, estado) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
             if (!turno.estado === EstadoTurno.RESERVADO) {
                 console.error("El turno no esta reservado")
             }
-            turno.darDeBaja(motivo);
+            turno.darDeBaja(motivo, estado);
             await this.turnoRepository.update(turno, turnoId);
         } catch (error) {
             console.error("Error al dar de baja el turno:", error);
@@ -126,11 +126,6 @@ export class TurnoService {
     async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.practicas.some(p => p.id === practicaId)
-    }
-
-    async obtenerTurnosPorEstado(pacienteId, estadoPedido){
-        const turnos = this.turnoRepository.turnosPara(pacienteId)
-        return turnos.filter(t => t.estado === estadoPedido)
     }
 
 }

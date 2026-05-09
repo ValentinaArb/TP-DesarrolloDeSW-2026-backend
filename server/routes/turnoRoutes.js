@@ -8,6 +8,5 @@ router.get('/:id', async (req, res,next) => await turnoController.obtenerTurno(r
 router.delete('/:id', async (req, res,next) => await turnoController.eliminarTurno(req, res,next));
 router.patch('/:id', async (req, res,next) => await turnoController.modificarEstado(req, res,next));
 router.post('/', async (req, res,next) => await turnoController.crearTurno(req, res,next));
-router.get('/pacientes/:pacienteId/turnos', async( req, res, next) => await turnoController.obtenerHistorialTurnos(req, res, next));
 
 export default router;

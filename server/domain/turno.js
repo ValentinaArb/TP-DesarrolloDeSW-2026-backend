@@ -27,9 +27,9 @@ export class Turno{
         this.costo = costo;
     }
 
-    darDeBaja(motivo) {
+    darDeBaja(motivo, estado) {
         if(this.verificarBaja()) {
-            this.actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
+            this.actualizarEstado(estado, this.paciente, motivo);
         }
         else {
             throw new ConflictError("Los turnos se deben cancelar con al menos una hora de antelación.");
