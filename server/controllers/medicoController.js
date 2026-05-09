@@ -1,9 +1,11 @@
 import { MedicoService } from '../services/medicoService.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
+import {ServicioRepository} from "../repositories/servicioRepository.js";
 
 class MedicoController {
     constructor() {
         this.medicoService = new MedicoService(new MedicoRepository());
+        this.servicioRepository = new ServicioRepository();
     }
 
     // GET /medicos
@@ -135,6 +137,42 @@ class MedicoController {
             const{medicoId, servicioId} = req.params
             const disponibilidad = await this.medicoService.consultarDisponibilidad(medicoId, servicioId);
             res.status(200).json(disponibilidad);
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+    //POST /medicos/:idMedicos/servicios/servicios:id
+    async darAltaServicio(req, res, next){
+        try{
+            const{medicoId, servicioId} = req.params;
+            await this.medicoService.darDeAltaServicio(medicoId, servicioId)
+            const servicioCreado = this.servicioRepository.findById(servicioId);
+            res.status(201).json(servicioCreado);
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+
+    // DELETE /medicos/:id/servicios/:id
+    async darDeBajaServicio(req, res, next){
+        try{
+            const{medicoId, ServicioId} = req.params;
+            await this.medicoService.darDeBajaServicio(medicoId, ServicioId)
+            res.status(200).json({mensaje: "Servicio dado de baja"})
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+    //PATCH /servicios/:id
+    async modificarServicio(req, res, next){
+        try{
+            const{servicioId} = req.params;
+            const{nombre, duracionTurno, costo} = req.body;
+            const servicioModificado = await this.medicoService.modificarServicio(servicioId, nombre, duracionTurno, costo);
+            res.status(200).json(servicioModificado);
         }
         catch(error){
             return next(error);

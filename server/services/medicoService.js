@@ -1,5 +1,6 @@
 import {DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
 import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
@@ -11,6 +12,7 @@ export class MedicoService {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.disponibilidadRepository = new DisponibilidadRepository();
+        this.servicioRepository = new ServicioRepository();
 
     }
     get usuarioService() {
@@ -124,10 +126,25 @@ export class MedicoService {
         return turnosPaciente.filter(t=> t.medico = medicoId);
     }
 
-
     async consultarDisponibilidad(medicoId, servicioId){
         const medico = this.medicoRepository.findById(medicoId);
         return (medico.servicios.filter(s => s.id === servicioId))
     }
+
+    async darDeBajaServicio(medicoId, servicioId){
+        const medico = this.medicoRepository.findById(medicoId);
+        medico.darDeBajaServicio(servicioId);
+    }
+    async darDeAltaServicio(medicoId, servicioId){
+        const medico = this.medicoRepository.findById(medicoId);
+        medico.darDeAltaServicio(servicioId);
+    }
+
+    async modificarServicio(servicioId, nombre, duracionTurno, costo){
+        const servicio = this.servicioRepository.findById(servicioId);
+        servicio.modificarServicio(this,nombre, duracionTurno, costo);
+        return servicio;
+    }
+
 
 }
