@@ -10,6 +10,9 @@ const router = Router();
  *     tags:
  *       - System
  *     summary: Verifica el estado del servidor
+ *     responses:
+ *       201:
+ *         description: Healthcheck exitoso
  */
 router.get("/", healthcheckController.healthcheck);
 

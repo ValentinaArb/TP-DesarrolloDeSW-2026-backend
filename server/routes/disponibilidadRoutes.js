@@ -10,13 +10,19 @@ const router = Router();
  *     tags:
  *       - Disponibilidades
  *     summary: Obtiene todas las disponibilidades
+ *     responses:
+ *       200:
+ *         description: Lista de disponibilidades
  *
  *   post:
  *     tags:
  *       - Disponibilidades
  *     summary: Crear una nueva disponibilidad
+ *     responses:
+ *       200:
+ *         description: Disponibilidad creada con éxito
  *
- * ./disponibilidades/{id}:
+ * /disponibilidades/{id}:
  *   get:
  *     tags:
  *       - Disponibilidades
@@ -27,7 +33,10 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *
+ *     responses:
+ *       200:
+ *         description: Disponibilidad obtenida de forma exitosa
+ * 
  *   delete:
  *     tags:
  *       - Disponibilidades
@@ -38,6 +47,9 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       200:
+ *         description: Disponibilidad eliminada con éxito
  */
 
 router.get('/', async (req, res, next) => await disponibilidadController.obtenerTodas(req, res, next));

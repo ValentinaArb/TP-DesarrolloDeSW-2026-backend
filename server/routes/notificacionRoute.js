@@ -11,8 +11,11 @@ const notificacionController = new NotificacionController()
  *     tags:
  *       - Notificaciones
  *     summary: Obtiene todas las notificaciones
- *
- * ./notificaciones/{id}:
+ *     responses:
+ *       201:
+ *         description: Notificaciones obtenidas exitosamente
+ * 
+ * /notificaciones/{id}:
  *   get:
  *     tags:
  *       - Notificaciones
@@ -23,6 +26,9 @@ const notificacionController = new NotificacionController()
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       201:
+ *         description: Notificación obtenida exitosamente
  *
  *   patch:
  *     tags:
@@ -34,6 +40,9 @@ const notificacionController = new NotificacionController()
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       201:
+ *         description: Notificación modificada exitosamente
  */
 
 router.get('/:id', async (req, res, next) => await notificacionController.obtenerTodosFiltrados(req, res, next));

@@ -10,7 +10,9 @@ const router = Router();
  *     tags:
  *       - Medicos
  *     summary: Obtiene todos los médicos
- *
+ *     responses:
+ *       201:
+ *         description: Medicos obtenidos exitosamente
  *   post:
  *     tags:
  *       - Medicos
@@ -21,8 +23,11 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *
- * ./medicos/{id}:
+ *     responses:
+ *       201:
+ *         description: Médico creado exitosamente
+ * 
+ * /medicos/{id}:
  *   get:
  *     tags:
  *       - Medicos
@@ -33,7 +38,10 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *
+ *     responses:
+ *       201:
+ *         description: Médico obtenido exitosamente
+ * 
  *   delete:
  *     tags:
  *       - Medicos
@@ -44,8 +52,11 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *
- * ./medicos/{id}/disponibilidad:
+ *     responses:
+ *       201:
+ *         description: Médico eliminado exitosamente
+ * 
+ * /medicos/{id}/disponibilidad:
  *   post:
  *     tags:
  *       - Medicos
@@ -56,8 +67,11 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       201:
+ *         description: Disponibilidad agregada al médico exitosamente
  *
- * ./medicos/{id}/disponibilidad/{idDisponibilidad}:
+ * /medicos/{id}/disponibilidad/{idDisponibilidad}:
  *   delete:
  *     tags:
  *       - Medicos
@@ -73,6 +87,9 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       201:
+ *         description: Disponibilidad eliminada del médico exitosamente
  */
 
 router.get('/', async (req, res, next) => await medicoController.obtenerTodos(req, res, next));

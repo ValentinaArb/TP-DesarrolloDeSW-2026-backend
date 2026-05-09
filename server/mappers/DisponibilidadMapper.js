@@ -4,8 +4,8 @@ export class DisponibilidadMapper {
     static toPersistence(disponibilidad) {
         return {
             diaSemana: disponibilidad.diaSemana,
-            horaDesde: `${disponibilidad.horaDesde.getHours()}:${disponibilidad.horaDesde.getMinutes()}`,
-            horaHasta: `${disponibilidad.horaHasta.getHours()}:${disponibilidad.horaHasta.getMinutes()}`
+            horaDesde: disponibilidad.horaDesde.toString(),
+            horaHasta: disponibilidad.horaHasta.toString()
         };
     }
 

@@ -15,8 +15,8 @@ export class MedicoMapper {
             })),
             disponibilidades: medico.disponibilidades.map((disponibilidad) => ({
                 diaSemana: disponibilidad.diaSemana,
-                fechaInicio: disponibilidad.horaDesde,
-                fechaFinal: disponibilidad.horaHasta
+                horaDesde: disponibilidad.horaDesde,
+                horaHasta: disponibilidad.horaHasta
             }))
         };
     }

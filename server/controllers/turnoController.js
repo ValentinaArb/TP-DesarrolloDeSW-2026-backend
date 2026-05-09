@@ -88,7 +88,7 @@ class TurnoController{
         try{
             const {id} = req.params;
             await this.turnoService.eliminarTurno(id);
-            res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
+            res.status(200).json({mensaje : "Turno fue eliminado con exito"});
         }
         catch(error){
             return next(error);
