@@ -3,6 +3,78 @@ import medicoController from "../controllers/medicoController.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * /medicos:
+ *   get:
+ *     tags:
+ *       - Medicos
+ *     summary: Obtiene todos los médicos
+ *
+ *   post:
+ *     tags:
+ *       - Medicos
+ *     summary: Crear un nuevo médico
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *
+ * ./medicos/{id}:
+ *   get:
+ *     tags:
+ *       - Medicos
+ *     summary: Obtiene un médico por ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *
+ *   delete:
+ *     tags:
+ *       - Medicos
+ *     summary: Eliminar un médico
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *
+ * ./medicos/{id}/disponibilidad:
+ *   post:
+ *     tags:
+ *       - Medicos
+ *     summary: Agregar disponibilidad a un médico
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *
+ * ./medicos/{id}/disponibilidad/{idDisponibilidad}:
+ *   delete:
+ *     tags:
+ *       - Medicos
+ *     summary: Eliminar disponibilidad específica
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: idDisponibilidad
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ */
+
 router.get('/', async (req, res, next) => await medicoController.obtenerTodos(req, res, next));
 router.get('/:id', async (req, res, next) => await medicoController.obtenerMedico(req, res, next));
 router.post('/', async (req, res, next) => await medicoController.crearMedico(req, res, next));
