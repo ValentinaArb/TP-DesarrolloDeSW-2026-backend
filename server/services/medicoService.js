@@ -124,4 +124,10 @@ export class MedicoService {
         return turnosPaciente.filter(t=> t.medico = medicoId);
     }
 
+
+    async consultarDisponibilidad(medicoId, servicioId){
+        const medico = this.medicoRepository.findById(medicoId);
+        return (medico.servicios.filter(s => s.id === servicioId))
+    }
+
 }

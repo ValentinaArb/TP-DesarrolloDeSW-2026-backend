@@ -4,21 +4,19 @@ export class Medico {
     matricula
     nombre
     apellido
-    especialidades
-    practicas
+    servicios
     sedes
     disponibilidades
     disponibilidadesAnteriores
 
 
-    constructor(id = null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+    constructor(id = null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         this.id = id;
         this.usuario = usuario;
         this.matricula = matricula;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.especialidades = especialidades;
-        this.practicas = practicas;
+        this.servicios = servicios;
         this.sedes = sedes;
         this.disponibilidades = disponibilidades;
         this.disponibilidadesAnteriores = [];

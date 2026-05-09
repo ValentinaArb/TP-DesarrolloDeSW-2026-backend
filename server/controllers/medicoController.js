@@ -121,7 +121,20 @@ class MedicoController {
     async consultarHistorialTurnos(req, res, next){
         try{
             const{pacienteId, medicoId, estado} = req.params
-            await this.medicoService.consultarHistorialTurnos(pacienteId, medicoId, estado);
+            const historial = await this.medicoService.consultarHistorialTurnos(pacienteId, medicoId, estado);
+            res.status(200).json(historial);
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+
+    //GET medicos/:MedicoId/servicios/:ServiciosId
+    async consultarDisponibilidad(req, res, next){
+        try{
+            const{medicoId, servicioId} = req.params
+            const disponibilidad = await this.medicoService.consultarDisponibilidad(medicoId, servicioId);
+            res.status(200).json(disponibilidad);
         }
         catch(error){
             return next(error);

@@ -13,5 +13,5 @@ router.put("/:medicoId/disponibilidades/:disponibilidadId", async(req, res, next
 router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
 router.patch("/:medicoId/turnos/:turnoId/cancelar", async(req, res, next) => await medicoController.cancelarTurno(req, res, next));
 router.get("/medicoId/pacientes/:pacienteId", async(req, res, next) => await medicoController.consultarHistorialTurnos(req, res, next));
-
+router.get("/:medicoId/servicios/:serviciosId", async(req, res, next) => await medicoController.consultarDisponibilidad(req, res, next))
 export default router;
