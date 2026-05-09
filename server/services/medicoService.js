@@ -4,6 +4,7 @@ import { Medico } from "../domain/medico.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 import { ConflictError } from "../errors/AppError.js";
 import { NotFoundError } from "../errors/AppError.js";
+import {EstadoTurno} from "../domain/estadoTurno.js";
 
 export class MedicoService {
     constructor(medicoRepository) {
@@ -88,11 +89,25 @@ export class MedicoService {
 
     async marcarTurnoComo(medicoId, turnoId, estado){
         const turnosDeMedico = this.turnoRepository.turnosDe(medicoId);
+
         for(const t of turnosDeMedico){
             if(t.id === turnoId){
                 t.estado = estado;
                 break;
             }
+        }
+    }
+    async cancelarTurno(medicoId, turnoId, motivo){
+        const turno = this.turnoRepository.findById(turnoId);
+        try {
+            if (turno.medico === medicoId) {
+                await this.marcarTurnoComo(medicoId, turnoId, EstadoTurno.CANCELADO);
+                turno.actualizarEstado(EstadoTurno.CANCELADO, turno.paciente, motivo);
+            }
+        }
+        catch(error){
+            console.error("No se pudo dar de baja el turno", error);
+            throw error;
         }
     }
 
