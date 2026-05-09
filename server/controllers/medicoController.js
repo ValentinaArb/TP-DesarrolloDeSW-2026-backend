@@ -117,6 +117,16 @@ class MedicoController {
             return next(error);
         }
     }
+    //GET /medicos/:MedicoId/pacientes/:pacienteId
+    async consultarHistorialTurnos(req, res, next){
+        try{
+            const{pacienteId, medicoId, estado} = req.params
+            await this.medicoService.consultarHistorialTurnos(pacienteId, medicoId, estado);
+        }
+        catch(error){
+            return next(error);
+        }
+    }
 }
 
 const medicoController = new MedicoController();

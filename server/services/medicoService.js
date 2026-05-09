@@ -1,16 +1,24 @@
-import { DisponibilidadRepository } from "../repositories/disponibilidadRepository.js";
-import { TurnoRepository } from "../repositories/turnoRepository.js";
-import { Medico } from "../domain/medico.js";
-import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
-import { ConflictError } from "../errors/AppError.js";
-import { NotFoundError } from "../errors/AppError.js";
+import {DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
+import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {Medico} from "../domain/medico.js";
+import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
+import {ConflictError, NotFoundError} from "../errors/AppError.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
+
 
 export class MedicoService {
     constructor(medicoRepository) {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.disponibilidadRepository = new DisponibilidadRepository();
+
+    }
+    get usuarioService() {
+        if (!this._usuarioService) {
+            const { UsuarioService } = import("./usuarioService.js");
+            this._usuarioService = new UsuarioService();
+        }
+        return this._usuarioService;
     }
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
@@ -109,6 +117,11 @@ export class MedicoService {
             console.error("No se pudo dar de baja el turno", error);
             throw error;
         }
+    }
+
+    async consultarHistorialTurnos(pacienteId, medicoId, estado){
+        const turnosPaciente = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
+        return turnosPaciente.filter(t=> t.medico = medicoId);
     }
 
 }
