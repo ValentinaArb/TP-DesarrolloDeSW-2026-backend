@@ -92,7 +92,7 @@ export class MedicoService {
 
     async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
         const disponibilidadNueva = new DisponibilidadHoraria(diaSemana, horaDesde, horaHasta);
-        const medico = this.medicoRepository.findById(medicoId);
+        const medico = await this.medicoRepository.findById(medicoId);
         medico.eliminarDisponibilidad(disponibilidadAModificarId);
         medico.agregarDisponibilidad(disponibilidadNueva);
     }

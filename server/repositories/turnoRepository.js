@@ -21,8 +21,8 @@ const medicoRepository = new MedicoRepository();
 const medico1 = await medicoRepository.findById(1);
 const medico3 = await medicoRepository.findById(3);
 
-let turno1 = new Turno(1, medico1, "2026-04-19T20:00:00", null, paciente1, servicio1,sede1, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
-let turno2 = new Turno(2, medico3, "2027-03-10T15:30:00", null , null, servicio1,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(Date.now(), EstadoTurno.RESERVADO, 2, null, "ALTA")], null);
+let turno1 = new Turno(1, medico1, "2026-04-19T20:00:00", null,null , servicio1,sede1, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+let turno2 = new Turno(2, medico3, "2027-03-10T15:30:00", null , paciente1, servicio1,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(Date.now(), EstadoTurno.RESERVADO, 2, null, "ALTA")], null);
 
 export class TurnoRepository extends Repository {
     constructor() {
@@ -35,7 +35,7 @@ export class TurnoRepository extends Repository {
     }
 
     turnosPara(pacienteId){
-        return this.objetos.filter(tur => tur.paciente.id === pacienteId);
+        return this.objetos.filter(tur => tur.paciente?.id === pacienteId);
     }
 
     buscarPorFechaYEstado(fecha,estado){

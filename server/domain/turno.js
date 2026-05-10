@@ -1,6 +1,7 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 import {EstadoTurno} from "./estadoTurno.js";
 import {ConflictError} from "../errors/AppError.js";
+import {FactoryNotificacion} from "./factoryNotificacion.js";
 
 export class Turno{
     id;
@@ -54,8 +55,7 @@ export class Turno{
             this.paciente = null;
             return null
         }
-        const nuevaNotificacion = FactoryNotificacion.crearSegunEstadoTurno(this);
-        return nuevaNotificacion
+        return FactoryNotificacion.crearSegunEstadoTurno(this)
     }
 
     verificarBaja() {

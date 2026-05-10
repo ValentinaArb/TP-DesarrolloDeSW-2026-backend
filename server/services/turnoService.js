@@ -34,11 +34,13 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            const listaTurnos = this.turnoRepository.turnosPara(paciente);
-            if (listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
-                turno.darDeAlta(paciente);
-                await this.turnoRepository.update(turno, turnoId);
+            const listaTurnos = this.turnoRepository.turnosPara(pacienteId);
+            const haySuperpocision = listaTurnos.some(t => !this.noSeSuperponen(t, turno));
+            if (haySuperpocision) {
+                throw new ConflictError("El turno se superpone con uno existente.");
             }
+            turno.darDeAlta(paciente);
+            await this.turnoRepository.update(turno, turnoId);
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
