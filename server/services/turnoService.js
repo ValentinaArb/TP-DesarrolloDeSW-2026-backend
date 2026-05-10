@@ -7,6 +7,7 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
 
 export class TurnoService {
     constructor() {
@@ -62,7 +63,7 @@ export class TurnoService {
 
         const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionEnMins * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], null);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
@@ -117,8 +118,8 @@ export class TurnoService {
             limitePagina > 0;
     }
 
-    filtrarPor(medicoId) {
-        return this.turnoRepository.turnosDe(medicoId);
+    async filtrarPor(medicoId) {
+        return await this.turnoRepository.turnosDe(medicoId);
     }
 
     noSeSuperponen(turno1, turno2) {

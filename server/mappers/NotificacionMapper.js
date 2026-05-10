@@ -16,7 +16,7 @@ export class NotificacionMapper {
             mensaje: notificacion.mensaje,
             fechaHoraCreacion: notificacion.fechaHoraCreacion.toISOString(),
             fechaHoraLeida: notificacion.fechaHoraLeida ? notificacion.fechaHoraLeida.toISOString() : null,
-            leida: notificacion.leida
+            leida: notificacion.estaLeida
         };
     }
 

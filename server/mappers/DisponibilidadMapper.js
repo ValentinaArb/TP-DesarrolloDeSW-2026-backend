@@ -1,11 +1,11 @@
-import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
+import { DisponibilidadHoraria } from '../domain/DisponibilidadHoraria.js';
 
 export class DisponibilidadMapper {
     static toPersistence(disponibilidad) {
         return {
             diaSemana: disponibilidad.diaSemana,
-            horaDesde: `${disponibilidad.horaDesde.getHours()}:${disponibilidad.horaDesde.getMinutes()}`,
-            horaHasta: `${disponibilidad.horaHasta.getHours()}:${disponibilidad.horaHasta.getMinutes()}`
+            horaDesde: disponibilidad.horaDesde,
+            horaHasta: disponibilidad.horaHasta
         };
     }
 

@@ -52,7 +52,7 @@ export class MedicoService {
     }
 
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
-        const turnosYaDados = turnoService.filtrarPor(medicoId);
+        const turnosYaDados = await turnoService.filtrarPor(medicoId);
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
@@ -62,13 +62,12 @@ export class MedicoService {
             if (medicoExistente) {
                 throw new ConflictError("El médico que intentas crear ya existe.");
             }
+            else {
+                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
+                return await this.medicoRepository.create(nuevoMedico);
+            }
         }
         catch (error) {
-            if (error instanceof NotFoundError) {
-                const nuevoMedico = new Medico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
-                return this.medicoRepository.create(nuevoMedico);
-            }
-
             throw error;
         }
     }

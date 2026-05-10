@@ -1,4 +1,5 @@
 import { Medico } from "../domain/medico.js";
+import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 
 export class MedicoMapper {
     static toPersistence(medico) {
@@ -15,13 +16,14 @@ export class MedicoMapper {
             })),
             disponibilidades: medico.disponibilidades.map((disponibilidad) => ({
                 diaSemana: disponibilidad.diaSemana,
-                fechaInicio: disponibilidad.horaDesde,
-                fechaFinal: disponibilidad.horaHasta
+                horaDesde: disponibilidad.horaDesde,
+                horaHasta: disponibilidad.horaHasta
             }))
         };
     }
 
     static toDomain(medicoDoc) {
+        if(!medicoDoc) return null;
         const servicios = medicoDoc.servicios.map((servicio) => ({
             id: servicio._id.toString(),
             nombre: servicio.nombre
@@ -30,11 +32,7 @@ export class MedicoMapper {
             id: sede._id.toString(),
             nombre: sede.nombre
         }));
-        const disponibilidades = medicoDoc.disponibilidades.map((disponibilidad) => ({
-            diaSemana: disponibilidad.diaSemana,
-            fechaInicio: disponibilidad.horaDesde,
-            fechaFinal: disponibilidad.horaHasta
-        }));
+        const disponibilidades = medicoDoc.disponibilidades.map((disponibilidad) => new DisponibilidadHoraria(disponibilidad._id.toString(), disponibilidad.diaSemana, disponibilidad.horaDesde, disponibilidad.horaHasta));
         return new Medico(medicoDoc._id.toString(), medicoDoc.usuario, medicoDoc.matricula, medicoDoc.nombre, medicoDoc.apellido,  servicios, sedes, disponibilidades);
     }
 }

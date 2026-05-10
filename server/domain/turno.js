@@ -47,7 +47,7 @@ export class Turno{
     }
 
     actualizarEstado(nuevoEstado, paciente, motivo) {
-        let cambio = new CambioEstadoTurno(Date.now(), nuevoEstado, this.id, paciente, motivo);
+        let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;
         this.paciente = paciente;

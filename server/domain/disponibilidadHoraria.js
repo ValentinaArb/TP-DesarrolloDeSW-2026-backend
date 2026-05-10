@@ -7,14 +7,20 @@ export class DisponibilidadHoraria{
     constructor(id=null, diaSemana, horaDesde, horaHasta) {
         this.id = id;
         this.diaSemana = diaSemana;
-        this.horaDesde = new Date(horaDesde);
-        this.horaHasta = new Date(horaHasta);
+
+        if (typeof horaDesde !== 'string' || typeof horaHasta !== 'string') {
+            throw new Error('horaDesde y horaHasta deben ser strings en formato HH:MM:SS');
+        }
+        this.horaDesde = horaDesde;
+        this.horaHasta = horaHasta;
     }
 
     abarca(fecha) {
         const horaFecha = fecha.getHours() * 60 + fecha.getMinutes();
-        const desde = this.horaDesde.getHours() * 60 + this.horaDesde.getMinutes();
-        const hasta = this.horaHasta.getHours() * 60 + this.horaHasta.getMinutes();
+        const [desdeH, desdeM] = this.horaDesde.split(':').map(Number);
+        const [hastaH, hastaM] = this.horaHasta.split(':').map(Number);
+        const desde = desdeH * 60 + desdeM;
+        const hasta = hastaH * 60 + hastaM;
 
         return (fecha.getDay() === this.diaSemana) &&
             (horaFecha >= desde) &&
