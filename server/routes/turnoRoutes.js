@@ -22,6 +22,10 @@ const router = Router();
  *                 status: { type: string }
  *                 data: { type: array, items: { type: object } }
  *                 paginacion: { type: object }
+ *       400:
+ *         description: Parámetros de consulta inválidos
+ *       500:
+ *         description: Error interno del servidor
  * 
  *   post:
  *     tags:
@@ -107,6 +111,8 @@ const router = Router();
  *         description: Error de lógica de negocio (fecha pasada, médico no disponible, etc.)
  *       409:
  *         description: Conflicto (médico ya tiene turno en esa fecha/hora)
+ *       500:
+ *         description: Error interno del servidor
  *
  * /turnos/{id}:
  *   get:
@@ -123,6 +129,27 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Turno encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 medicoInfo:
+ *                   type: object
+ *                 pacienteInfo:
+ *                   type: object
+ *                 servicioInfo:
+ *                   type: object
+ *                 sedeInfo:
+ *                   type: object
+ *                 estado:
+ *                   type: string
+ *       404:
+ *         description: Turno no encontrado
+ *       500:
+ *         description: Error interno del servidor
  *
  *   delete:
  *     tags:
@@ -139,6 +166,8 @@ const router = Router();
  *         description: Turno eliminado correctamente
  *       404:
  *         description: Turno no encontrado
+ *       500:
+ *         description: Error interno del servidor
  *
  *   patch:
  *     tags:
@@ -189,6 +218,10 @@ const router = Router();
  *         description: Datos inválidos o faltantes
  *       404:
  *         description: Turno no encontrado
+ *       409:
+ *         description: Conflicto al cambiar el estado del turno
+ *       500:
+ *         description: Error interno del servidor
  */
 router.get('/', async (req, res, next) => await turnoController.obtenerTodos(req, res, next));
 router.get('/:id', async (req, res,next) => await turnoController.obtenerTurno(req, res,next));

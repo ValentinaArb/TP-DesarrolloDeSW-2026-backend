@@ -1,13 +1,13 @@
 export class Especialidad {
     id;
     nombre;
-    duracion;
+    duracionEnMins;
     costo;
 
-    constructor(id = null, nombre, duracion, costo) {
+    constructor(id = null, nombre, duracionEnMins, costo) {
         this.id = id;
         this.nombre = nombre;
-        this.duracion = duracion;
+        this.duracionEnMins = duracionEnMins;
         this.costo = costo;
     }
 

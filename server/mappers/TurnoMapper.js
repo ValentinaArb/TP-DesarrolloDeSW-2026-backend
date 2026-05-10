@@ -24,7 +24,7 @@ export class TurnoMapper {
             } : null,
             servicioInfo: {
                 nombre: turno.servicio.nombre,
-                duracionEnMins: turno.servicio.duracionEnMins || turno.servicio.duracion
+                duracionEnMins: turno.servicio.duracionEnMins
             },
             sedeInfo: {
                 nombre: turno.sede.nombre,

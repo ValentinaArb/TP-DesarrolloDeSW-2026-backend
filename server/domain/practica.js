@@ -2,14 +2,14 @@ export class Practica{
     id
     codigo
     nombre
-    duracion
+    duracionEnMins
     costo
 
-    constructor(id = null, codigo, nombre, duracion, costo) {
+    constructor(id = null, codigo, nombre, duracionEnMins, costo) {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
-        this.duracion = duracion;
+        this.duracionEnMins = duracionEnMins;
         this.costo = costo;
     }
 }

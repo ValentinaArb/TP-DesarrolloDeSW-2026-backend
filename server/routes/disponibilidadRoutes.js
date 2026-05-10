@@ -76,6 +76,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Disponibilidad eliminada con éxito
+ *       404:
+ *         description: Disponibilidad no encontrada
+ *       500:
+ *         description: Error interno del servidor
  */
 
 router.get('/', async (req, res, next) => await disponibilidadController.obtenerTodas(req, res, next));

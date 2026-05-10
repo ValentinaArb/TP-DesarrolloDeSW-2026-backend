@@ -15,7 +15,10 @@ export class Repository {
 
     // DELETE (DELETE)
     async delete(objetoId) {
-        await this.mongooseModel.findByIdAndDelete(objetoId);
+        const document = await this.mongooseModel.findByIdAndDelete(objetoId);
+        if (!document) {
+            this.errorNoEncontrado();
+        }
     }
 
     // READ (GET)

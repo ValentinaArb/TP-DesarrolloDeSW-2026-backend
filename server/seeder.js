@@ -98,10 +98,10 @@ const seedDatabase = async () => {
         paciente2 = await pacienteRepository.create(paciente2);
         console.log("Pacientes creados:", paciente1.id, paciente2.id);
 
-        let disponibilidad1 = new DisponibilidadHoraria(null, 2, new Date(0, 0, 0, 8, 0), new Date(0, 0, 0, 12, 0));
-        let disponibilidad2 = new DisponibilidadHoraria(null, 4, new Date(0, 0, 0, 14, 0), new Date(0, 0, 0, 18, 0));
-        let disponibilidad3 = new DisponibilidadHoraria(null, 4, new Date(2026,6,8,9,0), new Date(2026,6,8,16,0));
-        let disponibilidad4 = new DisponibilidadHoraria(null, 5, new Date(2026,6,9,9,0), new Date(2026,6,9,16,0));
+        let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00");
+        let disponibilidad2 = new DisponibilidadHoraria(null, 4, "14:00:00", "18:00:00");
+        let disponibilidad3 = new DisponibilidadHoraria(null, 4, "09:00:00", "16:00:00");
+        let disponibilidad4 = new DisponibilidadHoraria(null, 5, "09:00:00", "16:00:00");
         disponibilidad1 = await disponibilidadRepository.create(disponibilidad1);
         disponibilidad2 = await disponibilidadRepository.create(disponibilidad2);
         disponibilidad3 = await disponibilidadRepository.create(disponibilidad3);

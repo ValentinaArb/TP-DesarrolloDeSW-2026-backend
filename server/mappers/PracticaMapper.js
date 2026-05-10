@@ -5,12 +5,12 @@ export class PracticaMapper {
         return {
             codigo: practica.codigo,
             nombre: practica.nombre,
-            duracion: practica.duracion,
+            duracionEnMins: practica.duracionEnMins,
             costo: practica.costo
         };
     }
 
     static toDomain(practicaDoc) {
-        return new Practica(practicaDoc._id.toString(), practicaDoc.codigo, practicaDoc.nombre, practicaDoc.duracion, practicaDoc.costo);
+        return new Practica(practicaDoc._id.toString(), practicaDoc.codigo, practicaDoc.nombre, practicaDoc.duracionEnMins, practicaDoc.costo);
     }
 }

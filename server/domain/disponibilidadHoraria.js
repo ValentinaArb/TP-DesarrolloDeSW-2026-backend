@@ -7,16 +7,12 @@ export class DisponibilidadHoraria{
     constructor(id=null, diaSemana, horaDesde, horaHasta) {
         this.id = id;
         this.diaSemana = diaSemana;
-        // Convierte a string si es Date, para evitar problemas de zona horaria
-        this.horaDesde = typeof horaDesde === 'string' ? horaDesde : horaDesde instanceof Date ? this.extraerHora(horaDesde) : horaDesde;
-        this.horaHasta = typeof horaHasta === 'string' ? horaHasta : horaHasta instanceof Date ? this.extraerHora(horaHasta) : horaHasta;
-    }
 
-    extraerHora(date) {
-        const horas = String(date.getHours()).padStart(2, '0');
-        const minutos = String(date.getMinutes()).padStart(2, '0');
-        const segundos = String(date.getSeconds()).padStart(2, '0');
-        return `${horas}:${minutos}:${segundos}`;
+        if (typeof horaDesde !== 'string' || typeof horaHasta !== 'string') {
+            throw new Error('horaDesde y horaHasta deben ser strings en formato HH:MM:SS');
+        }
+        this.horaDesde = horaDesde;
+        this.horaHasta = horaHasta;
     }
 
     abarca(fecha) {
