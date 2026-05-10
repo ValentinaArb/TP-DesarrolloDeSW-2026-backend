@@ -1,6 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
-import { Turno } from '../server/model/turno.js';
-import { EstadoTurno } from '../server/model/estadoTurno.js';
+import { Turno } from '../server/domain/turno.js';
+import { EstadoTurno } from '../server/domain/estadoTurno.js';
 
 const unaHora = 60 * 60 * 1000;
 
