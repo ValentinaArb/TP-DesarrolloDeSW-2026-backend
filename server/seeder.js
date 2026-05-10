@@ -65,7 +65,7 @@ const seedDatabase = async () => {
         await sedeRepository.create(sede2);
 
         let practica1 = new Practica(null, "1234","Operación", 60, 0);
-        await practicaRepository.create(practica1);
+        practica1 = await practicaRepository.create(practica1);
 
         let especialidad1 = new Especialidad(null, "odontologia", 60, 0);
         await especialidadRepository.create(especialidad1);

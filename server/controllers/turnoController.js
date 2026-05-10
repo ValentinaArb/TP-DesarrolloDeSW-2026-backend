@@ -119,7 +119,8 @@ class TurnoController{
         }
 
     } catch (error) {
-        res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+        return next(error);
+        //res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
     }
 }
 
@@ -142,7 +143,8 @@ class TurnoController{
             res.status(200).json({status: 'success',data: resultados});
 
         } catch (error) {
-            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);
+            //res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 

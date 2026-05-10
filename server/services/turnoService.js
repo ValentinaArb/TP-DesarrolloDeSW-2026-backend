@@ -7,6 +7,7 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { PlanRepository } from '../repositories/planRepository.js';
 
 export class TurnoService {
     constructor() {
@@ -14,6 +15,7 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
         this.medicoRepository = new MedicoRepository();
         this.medicoService = new MedicoService(this.medicoRepository);
+        this.planRepository = new PlanRepository();
     }
 
     async darDeBaja(turnoId, motivo) {
