@@ -25,8 +25,8 @@ const medicoSchema = new mongoose.Schema({
   }],
   disponibilidades: [{
     diaSemana: { type: Number, required: true },
-    fechaInicio: { type: Date, required: true },
-    fechaFinal: { type: Date, required: true }
+    fechaInicio: { type: String, required: true },
+    fechaFinal: { type: String, required: true }
   }]
 });
 

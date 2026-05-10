@@ -4,7 +4,7 @@ export class ServicioMapper {
     static toPersistence(servicio) {
         return {
             nombre: servicio.nombre,
-            duracion: servicio.duracion,
+            duracion: servicio.duracionTurno,
             costo: servicio.costo
         };
     }
