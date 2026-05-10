@@ -119,6 +119,22 @@ const seedDatabase = async () => {
         await cambioEstadoTurnoRepository.create(cambioEstadoTurno1);
         await cambioEstadoTurnoRepository.create(cambioEstadoTurno2);
 
+
+        let practicaCara = new Practica(null, "9999", "Cirugía Compleja", 120, 50000);
+        practicaCara = await practicaRepository.create(practicaCara);
+
+        let coberturaCara = new CoberturaServicio(practicaCara, NivelCobertura.PARCIAL);
+        await coberturaRepository.create(coberturaCara);
+        plan1.coberturasServicio.push(coberturaCara);
+        
+        await planRepository.update(plan1, plan1.id);
+
+        let turno3 = new Turno(null, medico1, "2026-05-12T09:00:00", "2026-05-12T11:00:00", null, practicaCara, sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
+        let turno4 = new Turno(null, medico1, "2026-05-20T15:00:00", "2026-05-20T16:00:00", null, especialidad1, sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
+
+        await turnoRepository.create(turno3);
+        await turnoRepository.create(turno4);
+
         console.log("Database populada correctamente.");
         process.exit(0);
     }

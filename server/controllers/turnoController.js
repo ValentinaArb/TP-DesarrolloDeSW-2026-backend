@@ -144,7 +144,6 @@ class TurnoController{
 
         } catch (error) {
             return next(error);
-            //res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
         }
     }
 
