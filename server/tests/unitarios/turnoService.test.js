@@ -6,7 +6,7 @@ import { Practica } from "../../domain/practica";
 import { Sede } from "../../domain/sede";
 import { MedicoService } from "../../services/medicoService";
 import { MedicoRepository } from "../../repositories/medicoRepository";
-import { ConflictError } from "../../errors/AppError";
+import { ConflictError, UnprocessableEntityError } from "../../errors/AppError";
 
 const practica = new Practica(1, '123', 'practicaloca', 60, 100);
 const sede = new Sede(1, 'Puente Saavedra', 'Abajo del puente');
@@ -28,5 +28,20 @@ describe("turnoService", () => {
 
             await expect(turnoService.crearTurno(turnoPrueba, medicoService)).rejects.toThrow(ConflictError);
         })
+        test("no puedo dar de baja un turno que no esta reservado", async () => {
+            const turno = new Turno(1, new Date("2026-05-05T10:10:10"), null, null, null);
+            await turnoRepository.create(turno);
+            await expect(turnoService.darDeBaja(turno.id)).rejects.toThrow(Error);
+        })
+        test("No puedo crear un turno con fecha pasada", async () => {
+            const turnoPasado = {
+                medicoId: 1,
+                fechaInicio: "2020-05-05T10:10:10",
+                practica: practica,
+                sede: sede
+            };
+            await expect(turnoService.crearTurno(turnoPasado, medicoService)).rejects.toThrow(UnprocessableEntityError);
+        })
     })
 })
+
