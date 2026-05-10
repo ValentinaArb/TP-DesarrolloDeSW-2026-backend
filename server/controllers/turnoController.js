@@ -119,7 +119,7 @@ class TurnoController{
         }
 
     } catch (error) {
-        res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+            return next(error);
     }
 }
 

@@ -41,7 +41,7 @@ export class MedicoService {
     }
 
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
-        const turnosYaDados = turnoService.filtrarPor(medicoId);
+        const turnosYaDados = await turnoService.filtrarPor(medicoId);
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }

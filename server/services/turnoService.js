@@ -7,6 +7,7 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
 
 export class TurnoService {
     constructor() {
@@ -115,8 +116,8 @@ export class TurnoService {
             limitePagina > 0;
     }
 
-    filtrarPor(medicoId) {
-        return this.turnoRepository.turnosDe(medicoId);
+    async filtrarPor(medicoId) {
+        return await this.turnoRepository.turnosDe(medicoId);
     }
 
     noSeSuperponen(turno1, turno2) {

@@ -53,23 +53,27 @@ const router = Router();
  *                 type: object
  *                 required:
  *                   - id
+ *                   - nombre
  *                   - duracionEnMins
  *                 properties:
  *                   id:
  *                     type: string
  *                     example: "507f1f77bcf86cd799439012"
- *                     description: ID del servicio
+ *                     description: ID del servicio (práctica)
  *                   nombre:
  *                     type: string
- *                     example: "Cardiología"
+ *                     example: "Operación"
+ *                     description: Nombre del servicio
  *                   duracionEnMins:
  *                     type: integer
- *                     example: 30
+ *                     example: 60
  *                     description: Duración del turno en minutos
  *               sede:
  *                 type: object
  *                 required:
  *                   - id
+ *                   - nombre
+ *                   - direccion
  *                 properties:
  *                   id:
  *                     type: string
@@ -78,12 +82,25 @@ const router = Router();
  *                   nombre:
  *                     type: string
  *                     example: "Sede Central"
+ *                     description: Nombre de la sede
  *                   direccion:
  *                     type: string
  *                     example: "Av. Rivadavia 1234"
+ *                     description: Dirección de la sede
  *     responses:
  *       201:
  *         description: Turno creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: "Turno creado exitosamente."
+ *                 data:
+ *                   type: object
+ *                   description: Datos del turno creado
  *       400:
  *         description: Datos inválidos (fecha en formato incorrecto)
  *       422:
@@ -127,10 +144,12 @@ const router = Router();
  *     tags:
  *       - Turnos
  *     summary: Modifica el estado de un turno
+ *     description: Permite dar de alta o baja un turno. Para dar de alta, use operacion 'alta' y proporcione pacienteId. Para dar de baja, use operacion 'baja' y proporcione motivo.
  *     parameters:
  *       - name: id
  *         in: path
  *         required: true
+ *         description: ID único del turno en MongoDB
  *         schema:
  *           type: string
  *     requestBody:
@@ -140,17 +159,34 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
- *               - estado
+ *               - operacion
  *             properties:
- *               estado:
+ *               operacion:
  *                 type: string
- *                 enum: [DISPONIBLE, RESERVADO, CANCELADO]
- *                 example: "RESERVADO"
+ *                 enum: ["alta", "baja"]
+ *                 example: "baja"
+ *                 description: Operación a realizar
+ *               pacienteId:
+ *                 type: string
+ *                 example: "507f1f77bcf86cd799439014"
+ *                 description: ID del paciente (requerido si operacion es 'alta')
+ *               motivo:
+ *                 type: string
+ *                 example: "Cancelación por enfermedad"
+ *                 description: Motivo de la baja (requerido si operacion es 'baja')
  *     responses:
  *       200:
- *         description: Estado actualizado
+ *         description: Operación realizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: "Turno fue dado de alta con éxito"
  *       400:
- *         description: Datos inválidos
+ *         description: Datos inválidos o faltantes
  *       404:
  *         description: Turno no encontrado
  */
