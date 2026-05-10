@@ -93,8 +93,8 @@ class TurnoController{
         catch(error){
             return next(error);
         }
-    }    
-    
+    }
+
     async modificarEstado(req, res) {
     try {
         const { id } = req.params;
@@ -124,7 +124,6 @@ class TurnoController{
 }
 
 }
-
 
 const turnoController = new TurnoController();
 export default turnoController;

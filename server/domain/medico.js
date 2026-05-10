@@ -7,6 +7,7 @@ export class Medico {
     servicios
     sedes
     disponibilidades
+    disponibilidadesAnteriores
 
 
     constructor(id = null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
@@ -18,6 +19,7 @@ export class Medico {
         this.servicios = servicios;
         this.sedes = sedes;
         this.disponibilidades = disponibilidades;
+        this.disponibilidadesAnteriores = [];
     }
 
     agregarDisponibilidad(disponibilidad) {
@@ -26,7 +28,16 @@ export class Medico {
 
     eliminarDisponibilidad(disponibilidad) {
         const indice = this.disponibilidades.indexOf(disponibilidad);
-
         this.disponibilidades.splice(indice, 1);
+        this.disponibilidadesAnteriores.push(disponibilidad);
+    }
+    darDeAltaServicio(servicio){
+        this.servicios.push(servicio);
+    }
+
+    darDeBajaServicio(servicio){
+        if(this.servicios.some(s => s === servicio)){
+            this.servicios.pop(servicio);
+        }
     }
 }

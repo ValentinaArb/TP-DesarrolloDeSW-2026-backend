@@ -1,6 +1,7 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 import {EstadoTurno} from "./estadoTurno.js";
 import {ConflictError} from "../errors/AppError.js";
+import {FactoryNotificacion} from "./factoryNotificacion.js";
 
 export class Turno{
     id;
@@ -27,9 +28,9 @@ export class Turno{
         this.costo = costo;
     }
 
-    darDeBaja(motivo) {
+    darDeBaja(motivo, estado) {
         if(this.verificarBaja()) {
-            this.actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
+            this.actualizarEstado(estado, this.paciente, motivo);
         }
         else {
             throw new ConflictError("Los turnos se deben cancelar con al menos una hora de antelación.");
@@ -54,8 +55,7 @@ export class Turno{
             this.paciente = null;
             return null
         }
-        const nuevaNotificacion = FactoryNotificacion.crearSegunEstadoTurno(this);
-        return nuevaNotificacion
+        return FactoryNotificacion.crearSegunEstadoTurno(this)
     }
 
     verificarBaja() {
