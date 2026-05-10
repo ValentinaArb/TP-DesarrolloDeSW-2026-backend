@@ -1,70 +1,63 @@
 import { NotFoundError } from "../errors/AppError.js";
 
 export class Repository {
-    objetos = [];
+    constructor(mongooseModel, mapper) {
+        this.mongooseModel = mongooseModel;
+        this.mapper = mapper;
+    }
     
     // CREATE (POST)
     async create(objeto) {
-        const indice = this.objetos.length - 1  
-        const ultimoId = this.objetos[indice].id;
-        objeto.id = ultimoId + 1;
-        this.objetos.push(objeto);
-        console.info("Creado " , objeto.constructor.name);
-        return objeto;
+        const dataMongo = this.mapper.toPersistence(objeto);
+        const documentoGuardado = await this.mongooseModel.create(dataMongo);
+        return this.mapper.toDomain(documentoGuardado);
     }
 
     // DELETE (DELETE)
     async delete(objetoId) {
-        const indiceAEliminar = this.encontrarIndiceDeId(objetoId);
-        const objeto = this.objetos[indiceAEliminar]
-        if(indiceAEliminar !== -1) {
-            this.objetos.splice(indiceAEliminar, 1);
-            console.info("Eliminado ", objeto.constructor.name);
-        } else {
-            this.errorNoEncontrado();
-        }
+        await this.mongooseModel.findByIdAndDelete(objetoId);
     }
 
     // READ (GET)
     // all
     async findAll() {
-        return this.objetos;
+        const documentos = await this.mongooseModel.find();
+        return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
     async findPaginated(pagina, limitePorPagina) {
-        const todosLosObjetos = Object.values(this.objetos);
-        const inicio = (pagina - 1) * limitePorPagina;
-        const fin = inicio + limitePorPagina;
-
+        const skip = (pagina - 1) * limitePorPagina;
+        const [totalObjetos, documentos] = await Promise.all([
+            this.mongooseModel.countDocuments(),
+            this.mongooseModel.find()
+                .skip(skip)
+                .limit(limitePorPagina)
+        ]);
+        const objetosDeDominio = documentos.map(doc => this.mapper.toDomain(doc));
         return {
-            objetos: todosLosObjetos.slice(inicio, fin),
-            totalObjetos: todosLosObjetos.length
-        }
+            objetos: objetosDeDominio,
+            totalObjetos: totalObjetos
+        };
     }
 
     // by ID
     async findById(objetoId) {
-        const indiceBuscado = this.encontrarIndiceDeId(objetoId);
-
-        if(indiceBuscado !== -1){
-            return this.objetos[indiceBuscado];
-        } else {
-            this.errorNoEncontrado();
-        }
+        const documento = await this.mongooseModel.findById(objetoId);
+        if (!documento) return this.errorNoEncontrado();
+        return this.mapper.toDomain(documento);
     }
 
     // UPDATE (PUT/PATCH)
     async update(nuevoObjeto, idObjetoViejo) {
-        const indice = this.encontrarIndiceDeId(idObjetoViejo);
-
-        this.objetos[indice] = nuevoObjeto;
+        const dataMongo = this.mapper.toPersistence(nuevoObjeto);
+        const documentoActualizado = await this.mongooseModel.findByIdAndUpdate(
+            idObjetoViejo, 
+            dataMongo, 
+            { new: true } 
+        );
         
-        console.info("Actualizado ", nuevoObjeto.constructor.name);
-    }
-
-    // methods internos
-    encontrarIndiceDeId(objetoId) {
-        return this.objetos.findIndex((o) => String(o.id) === String(objetoId));
+        if (!documentoActualizado) return this.errorNoEncontrado();
+        return this.mapper.toDomain(documentoActualizado);
     }
 
     errorNoEncontrado() {

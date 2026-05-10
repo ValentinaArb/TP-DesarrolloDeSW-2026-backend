@@ -37,12 +37,6 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
 
-        console.log("[DEBUG] fechaInicio:", fechaInicio);
-        console.log("[DEBUG] fechaFinal:", fechaFinal);
-        console.log("[DEBUG] diaSemana fechaInicio:", fechaInicio.getDay());
-        console.log("[DEBUG] diaSemana fechaFinal:", fechaFinal.getDay());
-        console.log("[DEBUG] disponibilidades:", JSON.stringify(disponibilidadesMedico, null, 2));
-
         return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
     }
 
@@ -51,7 +45,7 @@ export class MedicoService {
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
-    async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+    async crearMedico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         try {
             const medicoExistente = await this.medicoRepository.findByMatricula(matricula);
             if (medicoExistente) {
@@ -60,7 +54,7 @@ export class MedicoService {
         }
         catch (error) {
             if (error instanceof NotFoundError) {
-                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
                 return await this.medicoRepository.create(nuevoMedico);
             }
 

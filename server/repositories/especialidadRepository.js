@@ -1,11 +1,9 @@
-import { Especialidad } from "../domain/especialidad.js";
 import { Repository } from "./repository.js";
-
-let especialidad1 = new Especialidad(1, "odontologia", 60, 0);
+import { EspecialidadMapper } from "../mappers/EspecialidadMapper.js";
+import { EspecialidadModel } from "../schemas/especialidad.schema.js";
 
 export  class EspecialidadRepository extends Repository {
     constructor() {
-        super();
-        this.objetos = [especialidad1];
+        super(EspecialidadModel, EspecialidadMapper);
     }
 }

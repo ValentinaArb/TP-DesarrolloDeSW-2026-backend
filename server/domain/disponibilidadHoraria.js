@@ -1,5 +1,5 @@
 export class DisponibilidadHoraria{
-    id
+    id;
     diaSemana;
     horaDesde;
     horaHasta;
