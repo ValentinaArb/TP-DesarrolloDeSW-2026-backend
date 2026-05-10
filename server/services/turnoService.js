@@ -61,7 +61,7 @@ export class TurnoService {
             throw new UnprocessableEntityError("No se pueden crear turnos en fechas pasadas.");
         }
 
-        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionEnMins * 60000);
+        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionTurno * 60000);
 
         const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], null);
 

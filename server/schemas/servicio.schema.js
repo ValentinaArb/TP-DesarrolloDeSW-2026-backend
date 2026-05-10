@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const servicioSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
-    duracionEnMins: { type: Number, required: true },
+    duracionTurno: { type: Number, required: true },
     costo: { type: Number, required: true }
 });
 

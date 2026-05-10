@@ -58,7 +58,7 @@ const router = Router();
  *                 required:
  *                   - id
  *                   - nombre
- *                   - duracionEnMins
+ *                   - duracionTurno
  *                 properties:
  *                   id:
  *                     type: string
@@ -68,7 +68,7 @@ const router = Router();
  *                     type: string
  *                     example: "Operación"
  *                     description: Nombre del servicio
- *                   duracionEnMins:
+ *                   duracionTurno:
  *                     type: integer
  *                     example: 60
  *                     description: Duración del turno en minutos
