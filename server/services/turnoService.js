@@ -60,7 +60,7 @@ export class TurnoService {
 
         const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionEnMins * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], null);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
