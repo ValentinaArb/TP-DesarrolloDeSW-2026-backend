@@ -53,7 +53,7 @@ export class Repository {
         const documentoActualizado = await this.mongooseModel.findByIdAndUpdate(
             idObjetoViejo, 
             dataMongo, 
-            { new: true } 
+            { returnDocument: 'after' } 
         );
         
         if (!documentoActualizado) return this.errorNoEncontrado();

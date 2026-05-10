@@ -114,8 +114,8 @@ const seedDatabase = async () => {
         medico2 = await medicoRepository.create(medico2);
         console.log("Médicos creados:", medico1.id, medico2.id);
 
-        let notificacion1 = new Notificacion(null,medico1,paciente2, "Reservo turno","2027-04-19T20:00:00",null, true);
-        let notificacion2 = new Notificacion(null,paciente2,medico1, "Cancelo turno","2026-08-19T10:00:00",null, null);
+        let notificacion1 = new Notificacion(null,medico1,paciente2, "Reservo turno","2027-04-19T20:00:00",null, false);
+        let notificacion2 = new Notificacion(null,paciente2,medico1, "Cancelo turno","2026-08-19T10:00:00",null, false);
         notificacion1 = await notificacionRepository.create(notificacion1);
         notificacion2 = await notificacionRepository.create(notificacion2);
         console.log("Notificaciones creadas:", notificacion1.id, notificacion2.id);

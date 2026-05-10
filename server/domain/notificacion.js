@@ -14,7 +14,7 @@ export class Notificacion {
         this.mensaje = mensaje;
         this.fechaHoraCreacion = fechaHoraCreacion instanceof Date ? fechaHoraCreacion : new Date(fechaHoraCreacion);
         this.fechaHoraLeida = fechaHoraLeida;
-        this.estaLeida = false;
+        this.estaLeida = leida;
     }
 
     marcarComoLeida() {
