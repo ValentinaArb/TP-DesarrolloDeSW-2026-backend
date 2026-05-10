@@ -7,5 +7,4 @@ export class CoberturaServicio{
         this.servicio = servicio;
         this.nivel = nivel;
     }
-
 }

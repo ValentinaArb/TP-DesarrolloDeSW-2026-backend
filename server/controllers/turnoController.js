@@ -123,6 +123,29 @@ class TurnoController{
     }
 }
 
+    // GET /turnos/busqueda (???)
+    async buscarTurnosDisponibles(req, res, next) {
+        try {
+            const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;
+
+            if (!pacienteId) {
+                return res.status(400).json({ error: 'El id del paciente es obligatorio para considerar la obra social y plan' });
+            }
+
+            const filtros = { medicoId, servicioId, sede, fechaDesde, fechaHasta };
+            const orden = {
+                sortBy: sortBy === 'costo' ? 'costo' : 'fecha',
+                sortOrder: sortOrder === 'desc' ? 'desc' : 'asc'
+            };
+
+            const resultados = await this.turnoService.buscarTurnosDisponibles(pacienteId, filtros, orden);
+            res.status(200).json({status: 'success',data: resultados});
+
+        } catch (error) {
+            res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
+        }
+    }
+
 }
 
 
