@@ -12,7 +12,7 @@ const notificacionController = new NotificacionController()
  *       - Notificaciones
  *     summary: Obtiene todas las notificaciones
  *     responses:
- *       201:
+ *       200:
  *         description: Notificaciones obtenidas exitosamente
  * 
  * /notificaciones/{id}:
@@ -26,9 +26,24 @@ const notificacionController = new NotificacionController()
  *         required: true
  *         schema:
  *           type: string
+ *       - name: estaLeida
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Filtrar por notificaciones leídas (true) o no leídas (false)
  *     responses:
- *       201:
- *         description: Notificación obtenida exitosamente
+ *       200:
+ *         description: Notificaciones obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   estaLeida:
+ *                     type: boolean
  *
  *   patch:
  *     tags:
@@ -41,8 +56,10 @@ const notificacionController = new NotificacionController()
  *         schema:
  *           type: string
  *     responses:
- *       201:
- *         description: Notificación modificada exitosamente
+ *       200:
+ *         description: Notificación marcada como leída exitosamente
+ *       404:
+ *         description: Notificación no encontrada
  */
 
 router.get('/:id', async (req, res, next) => await notificacionController.obtenerTodosFiltrados(req, res, next));

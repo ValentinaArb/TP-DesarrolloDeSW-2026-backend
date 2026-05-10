@@ -13,6 +13,7 @@ const router = Router();
  *     responses:
  *       201:
  *         description: Medicos obtenidos exitosamente
+ *
  *   post:
  *     tags:
  *       - Medicos
@@ -23,9 +24,61 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 example: "Juan"
+ *               apellido:
+ *                 type: string
+ *                 example: "Pérez"
+ *               usuario:
+ *                 type: string
+ *                 example: "jperez_med"
+ *               matricula:
+ *                 type: string
+ *                 example: "MN12345"
+ *               servicios:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       example: "Cardiología"
+ *               sedes:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       example: "Sede Central"
+ *                     direccion:
+ *                       type: string
+ *                       example: "Av. Rivadavia 1234"
+ *               disponibilidades:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     diaSemana:
+ *                       type: integer
+ *                       example: 1
+ *                     horaDesde:
+ *                       type: string
+ *                       format: time
+ *                       example: "08:00:00"
+ *                     horaHasta:
+ *                       type: string
+ *                       format: time
+ *                       example: "12:00:00"
  *     responses:
  *       201:
  *         description: Médico creado exitosamente
+ *       400:
+ *         description: Datos inválidos
+ *       500:
+ *         description: Error del servidor
  * 
  * /medicos/{id}:
  *   get:
@@ -39,7 +92,7 @@ const router = Router();
  *         schema:
  *           type: string
  *     responses:
- *       201:
+ *       200:
  *         description: Médico obtenido exitosamente
  * 
  *   delete:
@@ -53,8 +106,10 @@ const router = Router();
  *         schema:
  *           type: string
  *     responses:
- *       201:
+ *       204:
  *         description: Médico eliminado exitosamente
+ *       404:
+ *         description: Médico no encontrado
  * 
  * /medicos/{id}/disponibilidad:
  *   post:
@@ -67,10 +122,36 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - diaSemana
+ *               - horaDesde
+ *               - horaHasta
+ *             properties:
+ *               diaSemana:
+ *                 type: integer
+ *                 example: 1
+ *               horaDesde:
+ *                 type: string
+ *                 format: time
+ *                 example: "08:00:00"
+ *               horaHasta:
+ *                 type: string
+ *                 format: time
+ *                 example: "12:00:00"
  *     responses:
- *       201:
+ *       200:
  *         description: Disponibilidad agregada al médico exitosamente
- *
+ *       400:
+ *         description: Datos inválidos
+ *       404:
+ *         description: Médico no encontrado
+ * 
  * /medicos/{id}/disponibilidad/{idDisponibilidad}:
  *   delete:
  *     tags:
@@ -88,8 +169,10 @@ const router = Router();
  *         schema:
  *           type: string
  *     responses:
- *       201:
+ *       204:
  *         description: Disponibilidad eliminada del médico exitosamente
+ *       404:
+ *         description: Médico o disponibilidad no encontrado
  */
 
 router.get('/', async (req, res, next) => await medicoController.obtenerTodos(req, res, next));

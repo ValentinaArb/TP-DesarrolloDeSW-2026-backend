@@ -22,6 +22,7 @@ export class MedicoMapper {
     }
 
     static toDomain(medicoDoc) {
+        if(!medicoDoc) return null;
         const servicios = medicoDoc.servicios.map((servicio) => ({
             id: servicio._id.toString(),
             nombre: servicio.nombre

@@ -27,19 +27,69 @@ const router = Router();
  *     tags:
  *       - Turnos
  *     summary: Crea un nuevo turno
- *     description: Registra un nuevo turno en la base de datos.
+ *     description: Registra un nuevo turno en la base de datos. El turno se crea con estado DISPONIBLE.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - medicoId
+ *               - fechaInicio
+ *               - servicio
+ *               - sede
  *             properties:
- *               paciente: { type: string }
- *               fecha: { type: string, format: date-time }
+ *               medicoId:
+ *                 type: string
+ *                 example: "507f1f77bcf86cd799439011"
+ *                 description: ID del médico que atiende el turno
+ *               fechaInicio:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2026-05-15T09:00:00"
+ *                 description: Fecha y hora de inicio del turno
+ *               servicio:
+ *                 type: object
+ *                 required:
+ *                   - id
+ *                   - duracionEnMins
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: "507f1f77bcf86cd799439012"
+ *                     description: ID del servicio
+ *                   nombre:
+ *                     type: string
+ *                     example: "Cardiología"
+ *                   duracionEnMins:
+ *                     type: integer
+ *                     example: 30
+ *                     description: Duración del turno en minutos
+ *               sede:
+ *                 type: object
+ *                 required:
+ *                   - id
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: "507f1f77bcf86cd799439013"
+ *                     description: ID de la sede
+ *                   nombre:
+ *                     type: string
+ *                     example: "Sede Central"
+ *                   direccion:
+ *                     type: string
+ *                     example: "Av. Rivadavia 1234"
  *     responses:
  *       201:
  *         description: Turno creado exitosamente
+ *       400:
+ *         description: Datos inválidos (fecha en formato incorrecto)
+ *       422:
+ *         description: Error de lógica de negocio (fecha pasada, médico no disponible, etc.)
+ *       409:
+ *         description: Conflicto (médico ya tiene turno en esa fecha/hora)
  *
  * /turnos/{id}:
  *   get:
@@ -68,8 +118,10 @@ const router = Router();
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       204:
  *         description: Turno eliminado correctamente
+ *       404:
+ *         description: Turno no encontrado
  *
  *   patch:
  *     tags:
@@ -87,11 +139,20 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - estado
  *             properties:
- *               estado: { type: string }
+ *               estado:
+ *                 type: string
+ *                 enum: [DISPONIBLE, RESERVADO, CANCELADO]
+ *                 example: "RESERVADO"
  *     responses:
  *       200:
  *         description: Estado actualizado
+ *       400:
+ *         description: Datos inválidos
+ *       404:
+ *         description: Turno no encontrado
  */
 router.get('/', async (req, res, next) => await turnoController.obtenerTodos(req, res, next));
 router.get('/:id', async (req, res,next) => await turnoController.obtenerTurno(req, res,next));

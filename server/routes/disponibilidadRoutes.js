@@ -18,9 +18,35 @@ const router = Router();
  *     tags:
  *       - Disponibilidades
  *     summary: Crear una nueva disponibilidad
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - diaSemana
+ *               - horaDesde
+ *               - horaHasta
+ *             properties:
+ *               diaSemana:
+ *                 type: integer
+ *                 example: 1
+ *               horaDesde:
+ *                 type: string
+ *                 format: time
+ *                 example: "08:00:00"
+ *               horaHasta:
+ *                 type: string
+ *                 format: time
+ *                 example: "12:00:00"
  *     responses:
- *       200:
- *         description: Disponibilidad creada con éxito
+ *       201:
+ *         description: Disponibilidad creada exitosamente
+ *       400:
+ *         description: Datos inválidos
+ *       500:
+ *         description: Error del servidor
  *
  * /disponibilidades/{id}:
  *   get:
