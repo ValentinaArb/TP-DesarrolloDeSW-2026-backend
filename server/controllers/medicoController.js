@@ -152,7 +152,7 @@ class MedicoController {
         try{
             const{medicoId, servicioId} = req.params;
             await this.medicoService.darDeAltaServicio(medicoId, servicioId)
-            const servicioCreado = this.servicioRepository.findById(servicioId);
+            const servicioCreado = await this.servicioRepository.findById(servicioId);
             res.status(201).json(servicioCreado);
         }
         catch(error){

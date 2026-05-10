@@ -14,7 +14,7 @@ router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medico
 router.patch("/:medicoId/turnos/:turnoId/cancelar", async(req, res, next) => await medicoController.cancelarTurno(req, res, next));
 router.get("/:medicoId/pacientes/:pacienteId", async(req, res, next) => await medicoController.consultarHistorialTurnos(req, res, next));
 router.get("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.consultarDisponibilidad(req, res, next));
-router.patch("/servicios/:id", async(req, res, next) => await medicoController.modificarServicio(req, res, next));
-router.delete("/:idMedico/servicios/:idServicio", async(req, res, next) => await medicoController.darDeBajaServicio(req, res, next));
-router.post("/:idMedico/servicios/:idServicio", async(req, res, next) => await medicoController.darAltaServicio(req, res, next))
+router.put("/servicios/:servicioId", async(req, res, next) => await medicoController.modificarServicio(req, res, next));
+router.delete("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darDeBajaServicio(req, res, next));
+router.post("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darAltaServicio(req, res, next))
 export default router;

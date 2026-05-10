@@ -141,8 +141,17 @@ export class MedicoService {
         medico.darDeBajaServicio(servicioId);
     }
     async darDeAltaServicio(medicoId, servicioId){
-        const medico = await this.medicoRepository.findById(medicoId);
-        medico.darDeAltaServicio(servicioId);
+        console.log("entre a la alta de servicio:");
+        console.log("medico id", medicoId);
+        console.log
+        const medico = await this.medicoRepository.findById(Number(medicoId));
+        console.log("despues del medico find by id");
+        const servicio = await this.servicioRepository.findById(Number(servicioId));
+        console.log("medico:", medico?.id, "servicio:", servicio?.id);
+        medico.darDeAltaServicio(medico, servicio);
+        await this.medicoRepository.update(medico, Number(medicoId));
+        console.log("servicios despues:", medico.servicios);
+
     }
 
     async modificarServicio(servicioId, nombre, duracionTurno, costo){

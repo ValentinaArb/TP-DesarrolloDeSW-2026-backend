@@ -31,16 +31,13 @@ export class Medico {
         this.disponibilidades.splice(indice, 1);
         this.disponibilidadesAnteriores.push(disponibilidad);
     }
-    darDeAltaServicio(medico, servicio){
-        medico.servicios.add(servicio);
+    darDeAltaServicio(servicio){
+        this.servicios.push(servicio);
     }
 
-    darDeBajaServicio(medico, servicio){
-        if(medico.servicios.any(s => s === servicio)){
-            medico.servicios.pop(servicio);
+    darDeBajaServicio(servicio){
+        if(this.servicios.some(s => s === servicio)){
+            this.servicios.pop(servicio);
         }
     }
-
-
-
 }
