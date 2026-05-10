@@ -1,6 +1,7 @@
 import { TurnoRepository } from "../repositories/turnoRepository.js";
 import {TurnoService} from "./turnoService.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
+import {NotFoundError} from "../errors/AppError.js";
 
 export class UsuarioService{
     constructor() {
@@ -13,11 +14,13 @@ export class UsuarioService{
     }
 
     async cancelarTurno(pacienteId,turnoId, motivo){
-        const turno = this.turnoRepository.findById(turnoId);
+        const turno = await this.turnoRepository.findById(turnoId);
         try{
-            if(turno.paciente === pacienteId){
-                await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
+            if(turno.paciente.id !== Number(pacienteId)) {
+                throw new NotFoundError("El turno no pertenece a este paciente.");
             }
+            await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
+
         }
         catch(error) {
             console.error("El turno no pertenece a este paciente:", error);
@@ -26,7 +29,7 @@ export class UsuarioService{
     }
 
     async obtenerTurnosPorEstado(pacienteId, estadoPedido){
-        const turnos = this.turnoRepository.turnosPara(pacienteId)
+        const turnos = this.turnoRepository.turnosPara(Number(pacienteId));
         return turnos.filter(t => t.estado === estadoPedido)
     }
 

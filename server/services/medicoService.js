@@ -5,6 +5,7 @@ import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
+import {UsuarioService} from "./usuarioService.js";
 
 
 export class MedicoService {
@@ -13,11 +14,10 @@ export class MedicoService {
         this.turnoRepository = new TurnoRepository();
         this.disponibilidadRepository = new DisponibilidadRepository();
         this.servicioRepository = new ServicioRepository();
-
     }
+
     get usuarioService() {
         if (!this._usuarioService) {
-            const { UsuarioService } = import("./usuarioService.js");
             this._usuarioService = new UsuarioService();
         }
         return this._usuarioService;
@@ -56,7 +56,7 @@ export class MedicoService {
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
-    async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+    async crearMedico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         try {
             const medicoExistente = await this.medicoRepository.findByMatricula(matricula);
             if (medicoExistente) {
@@ -65,7 +65,7 @@ export class MedicoService {
         }
         catch (error) {
             if (error instanceof NotFoundError) {
-                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+                const nuevoMedico = new Medico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
                 return this.medicoRepository.create(nuevoMedico);
             }
 
@@ -99,19 +99,21 @@ export class MedicoService {
 
     async marcarTurnoComo(medicoId, turnoId, estado){
         const turnosDeMedico = this.turnoRepository.turnosDe(medicoId);
-
-        for(const t of turnosDeMedico){
-            if(t.id === turnoId){
-                t.estado = estado;
-                break;
-            }
+        const turno = turnosDeMedico.find(t => t.id === Number(turnoId));
+        if (!turno) {
+            throw new NotFoundError("El turno no pertenece a este médico.");
         }
+        turno.estado = estado;
+        await this.turnoRepository.update(turno, turnoId);
     }
     async cancelarTurno(medicoId, turnoId, motivo){
-        const turno = this.turnoRepository.findById(turnoId);
+        const turno = await this.turnoRepository.findById(turnoId);
+        console.log("turno encontrado:", turno?.id, "medico.id:", turno?.medico?.id, "medicoId:", Number(medicoId));
         try {
-            if (turno.medico === medicoId) {
+            if (turno.medico.id === Number(medicoId)) {
+                console.log("estado", turno?.estado);
                 await this.marcarTurnoComo(medicoId, turnoId, EstadoTurno.CANCELADO);
+                console.log("turno estado despues de marcar turno:", turno?.estado);
                 turno.actualizarEstado(EstadoTurno.CANCELADO, turno.paciente, motivo);
             }
         }
@@ -123,25 +125,28 @@ export class MedicoService {
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){
         const turnosPaciente = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
-        return turnosPaciente.filter(t=> t.medico = medicoId);
+        return turnosPaciente.filter(t=> t.medico = Number(medicoId));
     }
 
     async consultarDisponibilidad(medicoId, servicioId){
-        const medico = this.medicoRepository.findById(medicoId);
-        return (medico.servicios.filter(s => s.id === servicioId))
+        const medico = await this.medicoRepository.findById(Number(medicoId));
+        console.log("servicios:", JSON.stringify(medico.servicios));
+        console.log("buscando servicioId:", Number(servicioId), typeof Number(servicioId));
+        console.log("s.id:", medico.servicios[0]?.id, typeof medico.servicios[0]?.id);
+        return (medico.servicios.filter(s => s.id === Number(servicioId)))
     }
 
     async darDeBajaServicio(medicoId, servicioId){
-        const medico = this.medicoRepository.findById(medicoId);
+        const medico = await this.medicoRepository.findById(medicoId);
         medico.darDeBajaServicio(servicioId);
     }
     async darDeAltaServicio(medicoId, servicioId){
-        const medico = this.medicoRepository.findById(medicoId);
+        const medico = await this.medicoRepository.findById(medicoId);
         medico.darDeAltaServicio(servicioId);
     }
 
     async modificarServicio(servicioId, nombre, duracionTurno, costo){
-        const servicio = this.servicioRepository.findById(servicioId);
+        const servicio = await this.servicioRepository.findById(servicioId);
         servicio.modificarServicio(this,nombre, duracionTurno, costo);
         return servicio;
     }

@@ -1,11 +1,13 @@
 import { MedicoService } from '../services/medicoService.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
 import {ServicioRepository} from "../repositories/servicioRepository.js";
+import { TurnoRepository} from "../repositories/turnoRepository.js";
 
 class MedicoController {
     constructor() {
         this.medicoService = new MedicoService(new MedicoRepository());
         this.servicioRepository = new ServicioRepository();
+        this.turnoRepository = new TurnoRepository();
     }
 
     // GET /medicos
@@ -100,7 +102,8 @@ class MedicoController {
             const {medicoId, turnoId} = req.params;
             const {estado} = req.body;
             await this.medicoService.marcarTurnoComo(medicoId, turnoId, estado);
-            res.status(200).json({mensaje: "Estado de turno cambiado"})
+            const turnoCambiado = await this.turnoRepository.findById(turnoId)
+            res.status(200).json(turnoCambiado)
         }
         catch (error){
             return next(error);
@@ -113,7 +116,8 @@ class MedicoController {
             const {medicoId, turnoId} = req.params;
             const {motivo} = req.body;
             await this.medicoService.cancelarTurno(medicoId, turnoId, motivo);
-            res.status(200).json({mensaje: "Turno Cancelado"});
+            const turnoCancelado = await this.turnoRepository.findById(turnoId);
+            res.status(200).json(turnoCancelado);
         }
         catch(error){
             return next(error);
@@ -122,7 +126,8 @@ class MedicoController {
     //GET /medicos/:MedicoId/pacientes/:pacienteId
     async consultarHistorialTurnos(req, res, next){
         try{
-            const{pacienteId, medicoId, estado} = req.params
+            const{pacienteId, medicoId} = req.params
+            const {estado} = req.query;
             const historial = await this.medicoService.consultarHistorialTurnos(pacienteId, medicoId, estado);
             res.status(200).json(historial);
         }

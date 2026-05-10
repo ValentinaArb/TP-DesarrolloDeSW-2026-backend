@@ -36,8 +36,8 @@ class UsuarioController{
     async obtenerHistorialTurnos(req, res, next){
         try{
             const { pacienteId} = req.params;
-            const { estadoTurno } = req.query;
-            const turnosHistorial = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estadoTurno);
+            const { estado } = req.query;
+            const turnosHistorial = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
             res.status(200).json(turnosHistorial);
         }
         catch(error){
