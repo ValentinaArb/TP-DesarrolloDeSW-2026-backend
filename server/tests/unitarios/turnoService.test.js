@@ -1,19 +1,18 @@
 import {describe, expect, test, beforeEach} from "@jest/globals"
 import {TurnoService} from "../../services/turnoService"
 import { Turno } from "../../domain/turno"
-import { Medico } from "../../domain/medico";
-import { Practica } from "../../domain/practica";
 import { Sede } from "../../domain/sede";
 import { MedicoService } from "../../services/medicoService";
 import { MedicoRepository } from "../../repositories/medicoRepository";
 import { ConflictError, UnprocessableEntityError } from "../../errors/AppError";
+import {Servicio} from "../../domain/servicio.js";
 
-const practica = new Practica(1, '123', 'practicaloca', 60, 100);
+const servicio = new Servicio(1, 'practicaloca', 60, 100);
 const sede = new Sede(1, 'Puente Saavedra', 'Abajo del puente');
 const turnoPrueba = {
     medicoId: 1,
     fechaInicio: "2026-05-05T10:10:10",
-    practica: practica,
+    practica: servicio,
     sede: sede
 };
 
@@ -37,7 +36,7 @@ describe("turnoService", () => {
             const turnoPasado = {
                 medicoId: 1,
                 fechaInicio: "2020-05-05T10:10:10",
-                practica: practica,
+                practica: servicio,
                 sede: sede
             };
             await expect(turnoService.crearTurno(turnoPasado, medicoService)).rejects.toThrow(UnprocessableEntityError);

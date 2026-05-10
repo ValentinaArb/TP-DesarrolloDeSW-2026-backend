@@ -2,11 +2,10 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { Usuario } from "./domain/usuario.js";
 import { Sede } from "./domain/sede.js";
-import { Practica } from "./domain/practica.js";
 import { Paciente } from "./domain/paciente.js";
 import { CambioEstadoTurno } from "./domain/cambioEstadoTurno.js";
 import { CoberturaServicio } from "./domain/coberturaServicio.js";
-import { Especialidad } from "./domain/especialidad.js";
+import { Servicio } from "./domain/servicio.js";
 import { ObraSocial } from "./domain/obraSocial.js";
 import { Plan } from "./domain/plan.js";
 import { Notificacion } from "./domain/notificacion.js";
@@ -17,7 +16,7 @@ import { EstadoTurno } from "./domain/estadoTurno.js";
 import { NivelCobertura} from "./domain/nivelCobertura.js";
 import { CambioEstadoTurnoRepository } from "./repositories/cambioEstadoTurnoRepository.js";
 import { CoberturaRepository } from "./repositories/coberturaRepository.js";
-import { EspecialidadRepository } from "./repositories/especialidadRepository.js";
+import { ServicioRepository } from "./repositories/servicioRepository.js";
 import { ObraSocialRepository } from "./repositories/obraSocialRepository.js";
 import { DisponibilidadRepository } from "./repositories/disponibilidadRepository.js";
 import { NotificacionRepository } from "./repositories/notificacionRepository.js";
@@ -26,12 +25,11 @@ import { MedicoRepository } from "./repositories/medicoRepository.js";
 import { TurnoRepository } from "./repositories/turnoRepository.js";
 import { UsuarioRepository } from "./repositories/usuarioRepository.js";
 import { SedeRepository } from "./repositories/sedeRepository.js";
-import { PracticaRepository } from "./repositories/practicaRepository.js";
 import { PlanRepository } from "./repositories/planRepository.js";
 
 const cambioEstadoTurnoRepository = new CambioEstadoTurnoRepository();
 const coberturaRepository = new CoberturaRepository();
-const especialidadRepository = new EspecialidadRepository();
+const servicioRepository = new ServicioRepository();
 const obraSocialRepository = new ObraSocialRepository();
 const disponibilidadRepository = new DisponibilidadRepository();
 const notificacionRepository = new NotificacionRepository();
@@ -40,7 +38,6 @@ const medicoRepository = new MedicoRepository();
 const turnoRepository = new TurnoRepository();
 const usuarioRepository = new UsuarioRepository();
 const sedeRepository = new SedeRepository();
-const practicaRepository = new PracticaRepository();
 const planRepository = new PlanRepository();
 
 dotenv.config();
@@ -64,14 +61,13 @@ const seedDatabase = async () => {
         await sedeRepository.create(sede1);
         await sedeRepository.create(sede2);
 
-        let practica1 = new Practica(null, "1234","Operación", 60, 0);
-        await practicaRepository.create(practica1);
+        let servicio1 = new Servicio(null, "1234",60, 0);
+        let servicio2 = new Servicio(null, "odontologia", 60, 0);
+        await servicioRepository.create(servicio1);
+        await servicioRepository.create(servicio2);
 
-        let especialidad1 = new Especialidad(null, "odontologia", 60, 0);
-        await especialidadRepository.create(especialidad1);
-
-        let coberturaServicio1 = new CoberturaServicio(especialidad1, NivelCobertura.TOTAL);
-        let coberturaServicio2 = new CoberturaServicio(practica1, NivelCobertura.PARCIAL);
+        let coberturaServicio1 = new CoberturaServicio(servicio1, NivelCobertura.TOTAL);
+        let coberturaServicio2 = new CoberturaServicio(servicio2, NivelCobertura.PARCIAL);
         await coberturaRepository.create(coberturaServicio1);
         await coberturaRepository.create(coberturaServicio2);
 
@@ -99,8 +95,8 @@ const seedDatabase = async () => {
         await disponibilidadRepository.create(disponibilidad3);
         await disponibilidadRepository.create(disponibilidad4);
 
-        let medico1 = new Medico(null, usuario1, 456, "Juan", "Pérez", [especialidad1, practica1], [sede1],  [disponibilidad1]);
-        let medico2 = new Medico(null, usuario2, 123, "Maria", "Gómez", [especialidad1, practica1], [sede2],  [disponibilidad1]);
+        let medico1 = new Medico(null, usuario1, 456, "Juan", "Pérez", [servicio1, servicio2], [sede1],  [disponibilidad1]);
+        let medico2 = new Medico(null, usuario2, 123, "Maria", "Gómez", [servicio1], [sede2],  [disponibilidad1]);
         medico1 = await medicoRepository.create(medico1);
         medico2 = await medicoRepository.create(medico2);
 
@@ -109,8 +105,8 @@ const seedDatabase = async () => {
         await notificacionRepository.create(notificacion1);
         await notificacionRepository.create(notificacion2);
 
-        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", null, paciente1, practica1,sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
-        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", null , paciente2, practica1,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
+        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", null, paciente1, servicio2,sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
+        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", null , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
         await turnoRepository.create(turno1);
         await turnoRepository.create(turno2);
 
