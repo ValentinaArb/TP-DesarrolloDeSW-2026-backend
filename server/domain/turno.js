@@ -46,7 +46,7 @@ export class Turno{
         }
     }
 
-    actualizarEstado(nuevoEstado, paciente, motivo) {
+    async actualizarEstado(nuevoEstado, paciente, motivo) {
         let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;
@@ -55,7 +55,9 @@ export class Turno{
             this.paciente = null;
             return null
         }
-        return FactoryNotificacion.crearSegunEstadoTurno(this)
+        const factoryNotificacion = new FactoryNotificacion();
+        console.log("llega al factory")
+        return await factoryNotificacion.crearSegunEstadoTurno(this)
     }
 
     verificarBaja() {

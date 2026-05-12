@@ -1,6 +1,7 @@
 import { TurnoService } from '../services/turnoService.js';
 import { MedicoService } from '../services/medicoService.js';
 import {MedicoRepository} from "../repositories/medicoRepository.js";
+import { EstadoTurno } from '../domain/estadoTurno.js';
 
 class TurnoController{
     constructor() {
@@ -95,19 +96,19 @@ class TurnoController{
         }
     }
 
-    async modificarEstado(req, res) {
+    async modificarEstado(req, res, next) {
     try {
         const { id } = req.params;
-        const { operacion, estado, pacienteId, motivo } = req.body; 
+        const { operacion, pacienteId, motivo } = req.body; 
 
-        if (operacion === 'alta' || estado === 'activo') {
+        if (operacion === 'alta' ) {
             if (!pacienteId) {
                 return res.status(400).json({ error: 'Falta el pacienteId para dar de alta' });
             }
             await this.turnoService.darDeAlta(id, pacienteId);
             return res.status(200).json({ mensaje: "Turno fue dado de alta con éxito" });
 
-        } else if (operacion === 'baja' || estado === 'inactivo') {
+        } else if (operacion === 'baja') {
             if (!motivo) {
                 return res.status(400).json({ error: 'Falta el motivo para dar de baja' });
             }
