@@ -220,6 +220,43 @@ const router = Router();
  *   patch:
  *     tags:
  *       - Medicos
+ *     summary: Modificar un turno
+ *     parameters:
+ *       - name: medicoId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: turnoId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               horaInicio:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2026-05-15T14:00:00Z"
+ *     responses:
+ *       200:
+ *         description: Turno modificado exitosamente
+ *       400:
+ *         description: Datos inválidos
+ *       404:
+ *         description: Médico o turno no encontrado
+ *       409:
+ *         description: El turno no puede ser modificado en este estado
+ * 
+ * /medicos/{medicoId}/turnos/{turnoId}/estado:
+ *   patch:
+ *     tags:
+ *       - Medicos
  *     summary: Marcar turno como realizado
  *     parameters:
  *       - name: medicoId
@@ -421,11 +458,12 @@ router.delete('/:id', async (req, res, next) => await medicoController.eliminarM
 router.post('/:id/disponibilidad', async (req, res, next) => await medicoController.agregarDisponibilidad(req, res, next));
 router.delete('/:id/disponibilidad/:idDisponibilidad', async (req, res, next) => await medicoController.eliminarDisponibilidad(req, res, next));
 router.put("/:medicoId/disponibilidades/:disponibilidadId", async(req, res, next) => await medicoController.modificarDisponibilidad(req, res, next));
-router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
-router.patch("/:medicoId/turnos/:turnoId/cancelar", async(req, res, next) => await medicoController.cancelarTurno(req, res, next));
+router.patch("/:medicoId/turnos/:turnoId/estado", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
+router.patch("/:medicoId/turnos/:turnoId/cancelado", async(req, res, next) => await medicoController.cancelarTurno(req, res, next));
 router.get("/:medicoId/pacientes/:pacienteId", async(req, res, next) => await medicoController.consultarHistorialTurnos(req, res, next));
 router.get("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.consultarDisponibilidad(req, res, next));
 router.put("/servicios/:servicioId", async(req, res, next) => await medicoController.modificarServicio(req, res, next));
 router.delete("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darDeBajaServicio(req, res, next));
-router.post("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darAltaServicio(req, res, next))
+router.post("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darAltaServicio(req, res, next));
+router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.modificarTurno(req, res, next));
 export default router;

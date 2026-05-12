@@ -146,10 +146,51 @@ const router = Router();
  *         description: El turno no puede ser actualizado en este estado o hay conflicto de horarios
  *       500:
  *         description: Error del servidor
+ * 
+ * /pacientes/{pacienteId}/turnos/{turnoId}/pendiente:
+ *   patch:
+ *     tags:
+ *       - Pacientes
+ *     summary: Marcar o evaluar un turno como pendiente
+ *     parameters:
+ *       - name: pacienteId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID único del paciente
+ *       - name: turnoId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID único del turno a evaluar
+ *     responses:
+ *       200:
+ *         description: Turno pendiente procesado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: "Turno pendiente procesado exitosamente"
+ *       400:
+ *         description: IDs inválidos o parámetros incorrectos
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Paciente o turno no encontrado
+ *       409:
+ *         description: El turno no puede ser evaluado en este estado
+ *       500:
+ *         description: Error del servidor
  */
 
 router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await usuarioController.reservarTurno(req, res,next));
 router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await usuarioController.actualizarTurno(req, res, next));
 router.get('/:pacienteId/turnos', async( req, res, next) => await usuarioController.obtenerHistorialTurnos(req, res, next));
+router.patch('/:pacienteId/turnos/:turnoId/pendiente', async(req, res, next) => await usuarioController.evaluarTurnoPendiente(req, res, next));
 
 export default router;

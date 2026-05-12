@@ -12,7 +12,7 @@ const sede = new Sede(1, 'Puente Saavedra', 'Abajo del puente');
 const turnoPrueba = {
     medicoId: 1,
     fechaInicio: "2026-05-05T10:10:10",
-    practica: servicio,
+    servicio: servicio,
     sede: sede
 };
 

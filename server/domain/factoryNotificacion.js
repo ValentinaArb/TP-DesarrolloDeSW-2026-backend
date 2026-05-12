@@ -11,7 +11,6 @@ export class FactoryNotificacion {
         let mensaje = "";
         let destinatario;
         let remitente;
-        console.log(turno)
         switch (turno.estado) {
             case 'REALIZADO':
                 mensaje = `Tu turno para el ${turno.fechaInicio} fue realizado.`;
@@ -38,7 +37,6 @@ export class FactoryNotificacion {
                 destinatario = turno.paciente;
                 remitente = turno.medico;
             default:
-                console.log(turno.estado)
                 throw new Error("Estado de turno no reconocido para notificar");
         }
         const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, null);

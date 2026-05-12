@@ -1,5 +1,6 @@
 import { UsuarioService } from '../services/usuarioService.js';
 import {TurnoRepository} from '../repositories/turnoRepository.js';
+import { Paciente } from '../domain/paciente.js';
 
 class UsuarioController{
        constructor() {
@@ -63,6 +64,18 @@ class UsuarioController{
             const { pacienteId, turnoId } = req.params;
             const { horaInicio } = req.body;
             await this.usuarioService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
+            res.status(200).json({ mensaje: "Cambio realizado con éxito" });
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+
+    async evaluarTurnoPendiente(req, res, next){
+        try{
+            const {turnoId, pacienteId} = req.params;
+            const {respuesta} = req.query;
+            await this.usuarioService.evaluarTurnoPendiente(turnoId, pacienteId,respuesta);
             res.status(200).json({ mensaje: "Cambio realizado con éxito" });
         }
         catch(error){

@@ -2,6 +2,7 @@ import { TurnoRepository } from "../repositories/turnoRepository.js";
 import {TurnoService} from "./turnoService.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {NotFoundError} from "../errors/AppError.js";
+import { BadRequestError } from "../errors/AppError.js";
 
 export class UsuarioService{
     constructor() {
@@ -56,4 +57,19 @@ export class UsuarioService{
         await this.turnoRepository.update(turno, turnoId);
     }
 
+    async evaluarTurnoPendiente(turnoId, pacienteId, respuestaAceptar){
+        const turno = await this.turnoRepository.findById(turnoId);
+        if(turno.paciente.id === Number(pacienteId) && turno.fechaInicio > Date.now()){
+            if(respuestaAceptar){
+                turno.estado = EstadoTurno.RESERVADO;
+                await this.turnoRepository.update(turno, turnoId);
+            }else{
+                await turno.darDeBaja("No se aceptó la reprogramación");
+                await this.turnoRepository.delete(turno);
+            }
+        }
+        else{
+            throw new BadRequestError("El paciente no esta asignado a ese turno o la fecha de inicio del turno ya paso.");
+        }
+    }
 }
