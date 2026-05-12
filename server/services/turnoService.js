@@ -135,41 +135,33 @@ export class TurnoService {
 
     async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
         if (this.validarPaginacion(pagina, limitePorPagina)) {
-            // considero obra social y plan del paciente
             const paciente = await this.pacienteRepository.findById(pacienteId);
             const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-
-            // busco los turnos en la db
             const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
 
-            // mapeo la salida (delegando al domain)
             const turnosCotizados = turnosDB.map(turno => {
-                const servicioId = turno.servicioInfo.id;
-                const costoBase = turno.servicioInfo.costoBase || 0;
+                const servicioInfo = turno.servicioInfo || turno.servicio || {};
+                const servicioId = servicioInfo.id || servicioInfo._id;
+                const costoBase = servicioInfo.costoBase ?? servicioInfo.costo ?? 0;                
                 const cotizacion = plan.calcularCostoAbonar(servicioId, costoBase);
-
-                // separo fecha y hora
                 const fechaObj = new Date(turno.fechaInicio);
-                const fechaFormateada = fechaObj.toISOString().split('T'); // YYYY-MM-DD
-                const horaFormateada = fechaObj.toTimeString().split(' '); // HH:MM:SS
-
-                // determino si el servicio es especialidad o practica --> si tiene codigo, es practica
-                const esPractica = turno.servicioInfo.codigo !== undefined;
+                const fechaFormateada = fechaObj.toISOString().split('T');
+                const horaFormateada = fechaObj.toTimeString().split(' ');
+                const medicoInfo = turno.medicoInfo || turno.medico || {};
+                const sedeInfo = turno.sedeInfo || turno.sede || {};
 
                 return {
                     turnoId: turno._id,
-                    estadoPrestacion: cotizacion.estadoPrestacion, // TOTAL, PARCIAL, o NO_CUBIERTA
+                    estadoPrestacion: cotizacion.estadoPrestacion,
                     montoAAbonar: cotizacion.monto,
-                    profesional: `${turno.medicoInfo.nombre} ${turno.medicoInfo.apellido}`,
-                    especialidad: !esPractica ? turno.servicioInfo.nombre : "N/A",
-                    practica: esPractica ? turno.servicioInfo.nombre : "N/A",
+                    profesional: `${medicoInfo.nombre || ''} ${medicoInfo.apellido || ''}`.trim(),
+                    servicio: servicioInfo.nombre || "N/A",
                     fecha: fechaFormateada,
                     hora: horaFormateada,
-                    sede: turno.sedeInfo.nombre
+                    sede: sedeInfo.nombre || "N/A"
                 };
             });
 
-            // ordeno
             turnosCotizados.sort((a, b) => {
                 let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
                 let valorB = orden.sortBy === 'costo' ? b.montoAAbonar : new Date(`${b.fecha}T${b.hora}`).getTime();
@@ -191,8 +183,7 @@ export class TurnoService {
                 totalPaginas,
                 totalTurno
             };
-        }
-        else {
+        } else {
             throw new BadRequestError("Paginación errónea");
         }
     }

@@ -112,8 +112,8 @@ const seedDatabase = async () => {
         notificacion2 = await notificacionRepository.create(notificacion2);
         console.log("Notificaciones creadas:", notificacion1.id, notificacion2.id);
 
-        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", null, paciente1, servicio1,sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
-        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", null , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
+        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", "2026-04-19T21:00:00", paciente1, servicio1,sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
+        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
         turno1 = await turnoRepository.create(turno1);
         turno2 = await turnoRepository.create(turno2);
         console.log("Turnos creados:", turno1.id, turno2.id);
@@ -125,20 +125,21 @@ const seedDatabase = async () => {
         console.log("Cambios de estado de turno creados:", cambioEstadoTurno1.id, cambioEstadoTurno2.id);
 
 
-        let practicaCara = new Practica(null, "9999", "Cirugía Compleja", 120, 50000);
-        practicaCara = await practicaRepository.create(practicaCara);
+        let practicaCara = new Servicio(null, "Cirugía Compleja", 120, 50000);
+        practicaCara = await servicioRepository.create(practicaCara);
 
         let coberturaCara = new CoberturaServicio(practicaCara, NivelCobertura.PARCIAL);
-        await coberturaRepository.create(coberturaCara);
-        plan1.coberturasServicio.push(coberturaCara);
+        coberturaCara = await coberturaRepository.create(coberturaCara);
         
+        plan1.coberturasServicio.push(coberturaCara);
         await planRepository.update(plan1, plan1.id);
 
-        let especialidad2 = new Especialidad(null, "Cardiología", 60, 5000);
-        especialidad2 = await especialidadRepository.create(especialidad2);
+        let especialidad2 = new Servicio(null, "Cardiología", 60, 5000);
+        especialidad2 = await servicioRepository.create(especialidad2);
 
         let coberturaEsp = new CoberturaServicio(especialidad2, NivelCobertura.TOTAL);
-        await coberturaRepository.create(coberturaEsp);
+        coberturaEsp = await coberturaRepository.create(coberturaEsp);
+        
         plan2.coberturasServicio.push(coberturaEsp);
         await planRepository.update(plan2, plan2.id);
 
