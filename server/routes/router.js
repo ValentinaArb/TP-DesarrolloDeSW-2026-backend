@@ -4,7 +4,7 @@ import turnoRoutes from "./turnoRoutes.js";
 import disponibilidadRoutes from "./disponibilidadRoutes.js";
 import medicoRoutes from "./medicoRoutes.js";
 import notificacionRoute from "./notificacionRoute.js";
-import usuarioRoutes from "./usuarioRoutes.js";
+import pacienteRoutes from "./pacienteRoutes.js";
 
 const router = express.Router()
 
@@ -13,6 +13,6 @@ router.use('/turnos',turnoRoutes);
 router.use('/disponibilidades',disponibilidadRoutes);
 router.use('/medicos',medicoRoutes);
 router.use('/notificaciones',notificacionRoute);
-router.use('/pacientes', usuarioRoutes);
+router.use('/pacientes', pacienteRoutes);
 
 export default router
