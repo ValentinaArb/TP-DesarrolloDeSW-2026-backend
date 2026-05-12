@@ -27,8 +27,51 @@ class TurnoController{
         catch(error){
             return next(error);
         }
+    }
 
+    async obtenerTodos(req, res, next) {
+        try {
+            const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;
+            const paginacion = this.extraerPaginacion(req.query);
+            
+            // si se recibe el id del paciente, llegaron queryparam
+            if (pacienteId) {
+                const filtros = { medicoId, servicioId, sede, fechaDesde, fechaHasta };
+                const orden = {
+                    sortBy: sortBy === 'costo' ? 'costo' : 'fecha',
+                    sortOrder: sortOrder === 'desc' ? 'desc' : 'asc'
+                };
 
+                const resultado = await this.turnoService.buscarTurnosDisponibles(pacienteId, filtros, orden, paginacion);
+
+                res.status(200).json({
+                    status: 'success',
+                    data: resultado.turno,
+                    paginacion: {
+                        numeroPagina: resultado.pagina,
+                        limitePorPagina: resultado.limitePorPagina,
+                        totalPaginas: resultado.totalPaginas,
+                        totalTurnos: resultado.totalTurno
+                    }
+                });
+            } else {
+                // sino, se devuelven todos los turnos
+                const resultado = await this.turnoService.obtenerTodos(paginacion);
+
+                res.status(200).json({
+                    status: 'success',
+                    data: resultado.turno,
+                    paginacion: {
+                        numeroPagina: resultado.pagina,
+                        limitePorPagina: resultado.limitePorPagina,
+                        totalPaginas: resultado.totalPaginas,
+                        totalTurnos: resultado.totalTurno
+                    }
+                });
+            }
+        } catch (error) {
+            return next(error);
+        }
     }
 
     extraerPaginacion(query){

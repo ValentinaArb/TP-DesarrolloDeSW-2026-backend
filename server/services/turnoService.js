@@ -7,6 +7,7 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { PlanRepository } from '../repositories/planRepository.js';
 import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
 
 export class TurnoService {
@@ -15,6 +16,7 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
         this.medicoRepository = new MedicoRepository();
         this.medicoService = new MedicoService(this.medicoRepository);
+        this.planRepository = new PlanRepository();
     }
 
     async darDeBaja(turnoId, motivo) {
@@ -130,6 +132,61 @@ export class TurnoService {
     async servicioPerteneceAMedico(medicoId, servicioId) {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.servicios.some(s => s.id === servicioId)
+    }
+
+    async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+        if (this.validarPaginacion(pagina, limitePorPagina)) {
+            const paciente = await this.pacienteRepository.findById(pacienteId);
+            const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+            const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+
+            const turnosCotizados = turnosDB.map(turno => {
+                const servicioInfo = turno.servicioInfo || turno.servicio || {};
+                const servicioId = servicioInfo.id || servicioInfo._id;
+                const costoBase = servicioInfo.costoBase ?? servicioInfo.costo ?? 0;                
+                const cotizacion = plan.calcularCostoAbonar(servicioId, costoBase);
+                const fechaObj = new Date(turno.fechaInicio);
+                const fechaFormateada = fechaObj.toISOString().split('T');
+                const horaFormateada = fechaObj.toTimeString().split(' ');
+                const medicoInfo = turno.medicoInfo || turno.medico || {};
+                const sedeInfo = turno.sedeInfo || turno.sede || {};
+
+                return {
+                    turnoId: turno._id,
+                    estadoPrestacion: cotizacion.estadoPrestacion,
+                    montoAAbonar: cotizacion.monto,
+                    profesional: `${medicoInfo.nombre || ''} ${medicoInfo.apellido || ''}`.trim(),
+                    servicio: servicioInfo.nombre || "N/A",
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    sede: sedeInfo.nombre || "N/A"
+                };
+            });
+
+            turnosCotizados.sort((a, b) => {
+                let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
+                let valorB = orden.sortBy === 'costo' ? b.montoAAbonar : new Date(`${b.fecha}T${b.hora}`).getTime();
+
+                if (valorA < valorB) return orden.sortOrder === 'asc' ? -1 : 1;
+                if (valorA > valorB) return orden.sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const totalTurno = turnosCotizados.length;
+            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+            const startIndex = (pagina - 1) * limitePorPagina;
+            const turno = turnosCotizados.slice(startIndex, startIndex + limitePorPagina);
+
+            return {
+                turno,
+                pagina,
+                limitePorPagina,
+                totalPaginas,
+                totalTurno
+            };
+        } else {
+            throw new BadRequestError("Paginación errónea");
+        }
     }
 
 }
