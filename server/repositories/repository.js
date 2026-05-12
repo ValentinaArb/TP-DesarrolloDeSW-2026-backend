@@ -15,7 +15,10 @@ export class Repository {
 
     // DELETE (DELETE)
     async delete(objetoId) {
-        await this.mongooseModel.findByIdAndDelete(objetoId);
+        const document = await this.mongooseModel.findByIdAndDelete(objetoId);
+        if (!document) {
+            this.errorNoEncontrado();
+        }
     }
 
     // READ (GET)
@@ -53,7 +56,7 @@ export class Repository {
         const documentoActualizado = await this.mongooseModel.findByIdAndUpdate(
             idObjetoViejo, 
             dataMongo, 
-            { new: true } 
+            { returnDocument: 'after' } 
         );
         
         if (!documentoActualizado) return this.errorNoEncontrado();

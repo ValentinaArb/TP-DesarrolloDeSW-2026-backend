@@ -4,14 +4,19 @@ import { Paciente } from "../domain/paciente.js";
 
 export class TurnoMapper {
     static toPersistence(turno) {
+        // Compensar offset de zona horaria al guardar
+        const offset = turno.fechaInicio.getTimezoneOffset() * 60000;
+        const fechaInicioAjustada = new Date(turno.fechaInicio.getTime() - offset);
+        const fechaFinalAjustada = new Date(turno.fechaFinal.getTime() - offset);
+        
         return {
             medicoInfo: {
                 id: turno.medico.id,
                 nombre: turno.medico.nombre,
                 apellido: turno.medico.apellido
             },
-            fechaInicio: turno.fechaInicio,
-            fechaFinal: turno.fechaFinal,
+            fechaInicio: fechaInicioAjustada,
+            fechaFinal: fechaFinalAjustada,
             pacienteInfo: turno.paciente ? {
                 id: turno.paciente.id,
                 nombre: turno.paciente.nombre,

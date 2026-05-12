@@ -131,13 +131,13 @@ class TurnoController{
         try{
             const {id} = req.params;
             await this.turnoService.eliminarTurno(id);
-            res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
+            res.status(200).json({mensaje : "Turno fue eliminado con exito"});
         }
         catch(error){
             return next(error);
         }
-    }    
-    
+    }
+
     async modificarEstado(req, res) {
     try {
         const { id } = req.params;
@@ -162,12 +162,11 @@ class TurnoController{
         }
 
     } catch (error) {
-        return next(error);
-        //res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
-        }
+            return next(error);
     }
 }
 
+}
 
 const turnoController = new TurnoController();
 export default turnoController;

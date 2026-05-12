@@ -8,6 +8,7 @@ import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { PlanRepository } from '../repositories/planRepository.js';
+import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
 
 export class TurnoService {
     constructor() {
@@ -18,13 +19,13 @@ export class TurnoService {
         this.planRepository = new PlanRepository();
     }
 
-    async darDeBaja(turnoId, motivo) {
+    async darDeBaja(turnoId, motivo, estado) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if (!turno.estado === EstadoTurno.RESERVADO) {
-                console.error("El turno no esta reservado")
+            if (turno.estado !== EstadoTurno.RESERVADO) {
+                throw new ConflictError("El turno no está reservado.");
             }
-            turno.darDeBaja(motivo);
+            turno.darDeBaja(motivo, estado);
             await this.turnoRepository.update(turno, turnoId);
         } catch (error) {
             console.error("Error al dar de baja el turno:", error);
@@ -36,11 +37,13 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            const listaTurnos = this.turnoRepository.turnosPara(paciente);
-            if (listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
-                turno.darDeAlta(paciente);
-                await this.turnoRepository.update(turno, turnoId);
+            const listaTurnos = this.turnoRepository.turnosPara(pacienteId);
+            const haySuperpocision = listaTurnos.some(t => !this.noSeSuperponen(t, turno));
+            if (haySuperpocision) {
+                throw new ConflictError("El turno se superpone con uno existente.");
             }
+            turno.darDeAlta(paciente);
+            await this.turnoRepository.update(turno, turnoId);
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
@@ -60,9 +63,9 @@ export class TurnoService {
             throw new UnprocessableEntityError("No se pueden crear turnos en fechas pasadas.");
         }
 
-        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionEnMins * 60000);
+        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionTurno * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], null);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
@@ -117,8 +120,8 @@ export class TurnoService {
             limitePagina > 0;
     }
 
-    filtrarPor(medicoId) {
-        return this.turnoRepository.turnosDe(medicoId);
+    async filtrarPor(medicoId) {
+        return await this.turnoRepository.turnosDe(medicoId);
     }
 
     noSeSuperponen(turno1, turno2) {

@@ -9,7 +9,7 @@ const turnoSchema = new mongoose.Schema({
     fechaInicio: { type: Date, required: true },
     fechaFinal: { type: Date, required: true },
     pacienteInfo: {
-        id: {type: String, required: true},
+        id: {type: String},
         nombre: { type: String },
         apellido: { type: String },
     },
