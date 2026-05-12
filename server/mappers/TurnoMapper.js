@@ -23,8 +23,11 @@ export class TurnoMapper {
                 apellido: turno.paciente.apellido
             } : null,
             servicioInfo: {
+                id: turno.servicio.id,
                 nombre: turno.servicio.nombre,
-                duracionTurno: turno.servicio.duracionTurno
+                duracion: turno.servicio.duracion,
+                costoBase: turno.servicio.costo,
+                codigo: turno.servicio.codigo
             },
             sedeInfo: {
                 nombre: turno.sede.nombre,
@@ -43,7 +46,7 @@ export class TurnoMapper {
     static toDomain(turnoDoc) {
         const medico = new Medico(turnoDoc.medicoInfo.id, turnoDoc.medicoInfo.nombre, turnoDoc.medicoInfo.apellido);
         const paciente = turnoDoc.pacienteInfo ? new Paciente(turnoDoc.pacienteInfo.id, turnoDoc.pacienteInfo.nombre, turnoDoc.pacienteInfo.apellido) : null;
-        const servicio = { nombre: turnoDoc.servicioInfo.nombre, duracionTurno: turnoDoc.servicioInfo.duracionTurno };
+        const servicio = { id: turnoDoc.servicioInfo.id, nombre: turnoDoc.servicioInfo.nombre, duracion: turnoDoc.servicioInfo.duracion, costo: turnoDoc.servicioInfo.costoBase, codigo: turnoDoc.servicioInfo.codigo };
         const sede = { nombre: turnoDoc.sedeInfo.nombre, direccion: turnoDoc.sedeInfo.direccion };
         return new Turno(turnoDoc._id.toString(), medico, turnoDoc.fechaInicio, turnoDoc.fechaFinal, paciente, servicio, sede, turnoDoc.estado, turnoDoc.historialDeEstados, turnoDoc.costo);
     }

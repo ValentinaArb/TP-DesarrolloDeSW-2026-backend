@@ -7,6 +7,7 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { PlanRepository } from '../repositories/planRepository.js';
 import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
 
 export class TurnoService {
@@ -15,6 +16,7 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
         this.medicoRepository = new MedicoRepository();
         this.medicoService = new MedicoService(this.medicoRepository);
+        this.planRepository = new PlanRepository();
     }
 
     async darDeBaja(turnoId, motivo, estado) {
@@ -129,6 +131,70 @@ export class TurnoService {
     async servicioPerteneceAMedico(medicoId, servicioId) {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.servicios.some(s => s.id === servicioId)
+    }
+
+    async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+        if (this.validarPaginacion(pagina, limitePorPagina)) {
+            // considero obra social y plan del paciente
+            const paciente = await this.pacienteRepository.findById(pacienteId);
+            const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+
+            // busco los turnos en la db
+            const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+
+            // mapeo la salida (delegando al domain)
+            const turnosCotizados = turnosDB.map(turno => {
+                const servicioId = turno.servicioInfo.id;
+                const costoBase = turno.servicioInfo.costoBase || 0;
+                const cotizacion = plan.calcularCostoAbonar(servicioId, costoBase);
+
+                // separo fecha y hora
+                const fechaObj = new Date(turno.fechaInicio);
+                const fechaFormateada = fechaObj.toISOString().split('T'); // YYYY-MM-DD
+                const horaFormateada = fechaObj.toTimeString().split(' '); // HH:MM:SS
+
+                // determino si el servicio es especialidad o practica --> si tiene codigo, es practica
+                const esPractica = turno.servicioInfo.codigo !== undefined;
+
+                return {
+                    turnoId: turno._id,
+                    estadoPrestacion: cotizacion.estadoPrestacion, // TOTAL, PARCIAL, o NO_CUBIERTA
+                    montoAAbonar: cotizacion.monto,
+                    profesional: `${turno.medicoInfo.nombre} ${turno.medicoInfo.apellido}`,
+                    especialidad: !esPractica ? turno.servicioInfo.nombre : "N/A",
+                    practica: esPractica ? turno.servicioInfo.nombre : "N/A",
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    sede: turno.sedeInfo.nombre
+                };
+            });
+
+            // ordeno
+            turnosCotizados.sort((a, b) => {
+                let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
+                let valorB = orden.sortBy === 'costo' ? b.montoAAbonar : new Date(`${b.fecha}T${b.hora}`).getTime();
+
+                if (valorA < valorB) return orden.sortOrder === 'asc' ? -1 : 1;
+                if (valorA > valorB) return orden.sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const totalTurno = turnosCotizados.length;
+            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+            const startIndex = (pagina - 1) * limitePorPagina;
+            const turno = turnosCotizados.slice(startIndex, startIndex + limitePorPagina);
+
+            return {
+                turno,
+                pagina,
+                limitePorPagina,
+                totalPaginas,
+                totalTurno
+            };
+        }
+        else {
+            throw new BadRequestError("Paginación errónea");
+        }
     }
 
 }
