@@ -47,6 +47,7 @@ export class Turno{
     }
 
     async actualizarEstado(nuevoEstado, paciente, motivo) {
+        console.log("nuevo estado:", nuevoEstado)
         let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;

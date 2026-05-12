@@ -35,8 +35,9 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            const listaTurnos = this.turnoRepository.turnosPara(pacienteId);
-            const haySuperposicion = listaTurnos.some(t => !this.noSeSuperponen(t, turno));
+            const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
+            console.log(listaTurnos)
+            const haySuperposicion = listaTurnos.find(t => !this.noSeSuperponen(t, turno));
             if (haySuperposicion) {
                 throw new ConflictError("El turno se superpone con uno existente.");
             }

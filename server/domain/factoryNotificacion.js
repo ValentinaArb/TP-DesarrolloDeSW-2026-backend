@@ -14,24 +14,22 @@ export class FactoryNotificacion {
         console.log(turno)
         switch (turno.estado) {
             case 'REALIZADO':
-                mensaje = `Tu turno para el ${turno.fecha} fue realizado.`;
+                mensaje = `Tu turno para el ${turno.fechaInicio} fue realizado.`;
                 destinatario = turno.paciente;
                 remitente = turno.medico;
                 break;
             case 'CANCELADO':
-                mensaje = `El turno del día ${turno.fecha} fue cancelado.`;
+                mensaje = `El turno del día ${turno.fechaInicio} fue cancelado.`;
                 destinatario = turno.paciente;
                 remitente = turno.medico;
                 break;
             case 'DISPONIBLE':
-                mensaje = `El turno del ${turno.fecha} fue cancelado.`;
+                mensaje = `El turno del ${turno.fechaInicio} fue cancelado.`;
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
             case 'RESERVADO':
-                mensaje = `El turno del ${turno.fecha} fue reservado. 
-                Paciente: ${turno.paciente}
-                Servicio: ${turno.servicio}`;
+                mensaje = `El turno del ${turno.fechaInicio} fue reservado por el paciente ${turno.paciente.nombre} para el servicio ${turno.servicio.nombre}.`;
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
@@ -44,7 +42,7 @@ export class FactoryNotificacion {
         return notificacion
     }
     async crearRecordatorio(turno) {
-        const mensaje = `Te recordamos el turno de mañana ${turno.fecha} a las ${turno.hora}.`;
+        const mensaje = `Te recordamos el turno de mañana ${turno.fechaInicio} a las ${turno.fechaInicio.getHours()}.`;
 
         const destinatario = [turno.paciente, turno.medico];
 
