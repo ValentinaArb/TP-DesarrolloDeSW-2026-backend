@@ -33,6 +33,10 @@ export class FactoryNotificacion {
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
+            case 'PENDIENTE':
+                mensaje = `El turno del ${turno.fechaInicio} fue modificado por el médico ${turno.medico.nombre}. Por favor, revisa los detalles del turno y acepta o rechaza.`;
+                destinatario = turno.paciente;
+                remitente = turno.medico;
             default:
                 console.log(turno.estado)
                 throw new Error("Estado de turno no reconocido para notificar");
