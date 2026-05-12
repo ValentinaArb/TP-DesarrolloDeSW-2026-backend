@@ -1,4 +1,3 @@
-import {DisponibilidadRepository} from "../repositories/disponibilidadRepository.js";
 import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
@@ -12,7 +11,6 @@ export class MedicoService {
     constructor(medicoRepository) {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
-        this.disponibilidadRepository = new DisponibilidadRepository();
         this.servicioRepository = new ServicioRepository();
     }
 
@@ -26,7 +24,6 @@ export class MedicoService {
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
         const medico = await this.medicoRepository.findById(id);
         const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
-        await this.disponibilidadRepository.create(nuevaDisponibilidad);
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
@@ -34,10 +31,15 @@ export class MedicoService {
 
     async eliminarDisponibilidad(idMedico, idDisponibilidad) {
         const medico = await this.medicoRepository.findById(idMedico);
-        const disponibilidad = await this.disponibilidadRepository.findById(idDisponibilidad);
+        
+        // Buscar la disponibilidad dentro del médico por ID
+        const disponibilidad = medico.disponibilidades.find(d => d.id === idDisponibilidad);
+        
+        if (!disponibilidad) {
+            throw new NotFoundError("La disponibilidad no existe");
+        }
 
         medico.eliminarDisponibilidad(disponibilidad);
-        await this.disponibilidadRepository.delete(idDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
     }
@@ -90,15 +92,28 @@ export class MedicoService {
     }
 
     async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
-        const disponibilidadNueva = new DisponibilidadHoraria(diaSemana, horaDesde, horaHasta);
         const medico = await this.medicoRepository.findById(medicoId);
-        medico.eliminarDisponibilidad(disponibilidadAModificarId);
+        
+        // Buscar la disponibilidad dentro del médico por ID
+        const disponibilidadExistente = medico.disponibilidades.find(d => d.id === disponibilidadAModificarId);
+        
+        if (!disponibilidadExistente) {
+            throw new NotFoundError("La disponibilidad no existe");
+        }
+        
+        // Eliminar la disponibilidad existente
+        medico.eliminarDisponibilidad(disponibilidadExistente);
+        
+        // Agregar la nueva disponibilidad con los datos actualizados
+        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
         medico.agregarDisponibilidad(disponibilidadNueva);
+        
+        return await this.medicoRepository.update(medico, medico.id);
     }
 
     async marcarTurnoComo(medicoId, turnoId, estado){
-        const turnosDeMedico = this.turnoRepository.turnosDe(medicoId);
-        const turno = turnosDeMedico.find(t => t.id === Number(turnoId));
+        const turnosDeMedico = await this.turnoRepository.turnosDe(medicoId);
+        const turno = turnosDeMedico.find(t => String(t.id) === String(turnoId));
         if (!turno) {
             throw new NotFoundError("El turno no pertenece a este médico.");
         }
@@ -107,13 +122,13 @@ export class MedicoService {
     }
     async cancelarTurno(medicoId, turnoId, motivo){
         const turno = await this.turnoRepository.findById(turnoId);
-        console.log("turno encontrado:", turno?.id, "medico.id:", turno?.medico?.id, "medicoId:", Number(medicoId));
+        console.log("turno encontrado:", turno?.id, "medico.id:", turno?.medico?.id, "medicoId:", medicoId);
         try {
-            if (turno.medico.id === Number(medicoId)) {
+            if (String(turno.medico.id) === String(medicoId)) {
                 console.log("estado", turno?.estado);
                 await this.marcarTurnoComo(medicoId, turnoId, EstadoTurno.CANCELADO);
                 console.log("turno estado despues de marcar turno:", turno?.estado);
-                turno.actualizarEstado(EstadoTurno.CANCELADO, turno.paciente, motivo);
+                await turno.actualizarEstado(EstadoTurno.CANCELADO, turno.paciente, motivo);
             }
         }
         catch(error){

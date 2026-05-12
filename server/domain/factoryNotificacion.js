@@ -1,4 +1,5 @@
 import { NotificacionRepository } from "../repositories/notificacionRepository.js";
+import { Notificacion } from "./notificacion.js";
 
 export class FactoryNotificacion {
 
@@ -6,48 +7,47 @@ export class FactoryNotificacion {
         this.notificacionRepository = new NotificacionRepository()
     }
 
-    static crearSegunEstadoTurno(turno) {
+    async crearSegunEstadoTurno(turno) {
         let mensaje = "";
         let destinatario;
         let remitente;
-
+        console.log(turno)
         switch (turno.estado) {
-            case 'CONFIRMADO':
-                mensaje = `Tu turno para el ${turno.fecha} fue confirmado.`;
+            case 'REALIZADO':
+                mensaje = `Tu turno para el ${turno.fechaInicio} fue realizado.`;
                 destinatario = turno.paciente;
                 remitente = turno.medico;
                 break;
             case 'CANCELADO':
-                mensaje = `El turno del día ${turno.fecha} fue cancelado.`;
+                mensaje = `El turno del día ${turno.fechaInicio} fue cancelado.`;
                 destinatario = turno.paciente;
                 remitente = turno.medico;
                 break;
             case 'DISPONIBLE':
-                mensaje = `El turno del ${turno.fecha} fue cancelado.`;
+                mensaje = `El turno del ${turno.fechaInicio} fue cancelado.`;
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
             case 'RESERVADO':
-                mensaje = `El turno del ${turno.fecha} fue reservado. 
-                Paciente: ${turno.paciente}
-                Servicio: ${turno.servicio}`;
+                mensaje = `El turno del ${turno.fechaInicio} fue reservado por el paciente ${turno.paciente.nombre} para el servicio ${turno.servicio.nombre}.`;
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
             default:
+                console.log(turno.estado)
                 throw new Error("Estado de turno no reconocido para notificar");
         }
         const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, null);
-        this.notificacionRepository.create(notificacion)
+        await this.notificacionRepository.create(notificacion);
         return notificacion
     }
-    static crearRecordatorio(turno) {
-        const mensaje = `Te recordamos el turno de mañana ${turno.fecha} a las ${turno.hora}.`;
+    async crearRecordatorio(turno) {
+        const mensaje = `Te recordamos el turno de mañana ${turno.fechaInicio} a las ${turno.fechaInicio.getHours()}.`;
 
         const destinatario = [turno.paciente, turno.medico];
 
         const notificacion = new Notificacion(null, destinatario, null, mensaje, new Date(), null, false);
-        this.notificacionRepository.create(notificacion)
+        await this.notificacionRepository.create(notificacion)
         return notificacion
     }    
 }

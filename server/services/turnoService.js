@@ -19,13 +19,13 @@ export class TurnoService {
         this.planRepository = new PlanRepository();
     }
 
-    async darDeBaja(turnoId, motivo, estado) {
+    async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
             if (turno.estado !== EstadoTurno.RESERVADO) {
                 throw new ConflictError("El turno no está reservado.");
             }
-            turno.darDeBaja(motivo, estado);
+            turno.darDeBaja(motivo, EstadoTurno.DISPONIBLE);
             await this.turnoRepository.update(turno, turnoId);
         } catch (error) {
             console.error("Error al dar de baja el turno:", error);
@@ -37,9 +37,10 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            const listaTurnos = this.turnoRepository.turnosPara(pacienteId);
-            const haySuperpocision = listaTurnos.some(t => !this.noSeSuperponen(t, turno));
-            if (haySuperpocision) {
+            const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
+            console.log(listaTurnos)
+            const haySuperposicion = listaTurnos.find(t => !this.noSeSuperponen(t, turno));
+            if (haySuperposicion) {
                 throw new ConflictError("El turno se superpone con uno existente.");
             }
             turno.darDeAlta(paciente);

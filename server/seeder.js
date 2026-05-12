@@ -18,7 +18,6 @@ import { CambioEstadoTurnoRepository } from "./repositories/cambioEstadoTurnoRep
 import { CoberturaRepository } from "./repositories/coberturaRepository.js";
 import { ServicioRepository } from "./repositories/servicioRepository.js";
 import { ObraSocialRepository } from "./repositories/obraSocialRepository.js";
-import { DisponibilidadRepository } from "./repositories/disponibilidadRepository.js";
 import { NotificacionRepository } from "./repositories/notificacionRepository.js";
 import { PacienteRepository } from "./repositories/pacienteRepository.js";
 import { MedicoRepository } from "./repositories/medicoRepository.js";
@@ -31,7 +30,6 @@ const cambioEstadoTurnoRepository = new CambioEstadoTurnoRepository();
 const coberturaRepository = new CoberturaRepository();
 const servicioRepository = new ServicioRepository();
 const obraSocialRepository = new ObraSocialRepository();
-const disponibilidadRepository = new DisponibilidadRepository();
 const notificacionRepository = new NotificacionRepository();
 const pacienteRepository = new PacienteRepository();
 const medicoRepository = new MedicoRepository();
@@ -91,14 +89,7 @@ const seedDatabase = async () => {
         console.log("Pacientes creados:", paciente1.id, paciente2.id);
 
         let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00");
-        let disponibilidad2 = new DisponibilidadHoraria(null, 4, "14:00:00", "18:00:00");
-        let disponibilidad3 = new DisponibilidadHoraria(null, 4, "09:00:00", "16:00:00");
-        let disponibilidad4 = new DisponibilidadHoraria(null, 5, "09:00:00", "16:00:00");
-        disponibilidad1 = await disponibilidadRepository.create(disponibilidad1);
-        disponibilidad2 = await disponibilidadRepository.create(disponibilidad2);
-        disponibilidad3 = await disponibilidadRepository.create(disponibilidad3);
-        disponibilidad4 = await disponibilidadRepository.create(disponibilidad4);
-        console.log("Disponibilidades horarias creadas:", disponibilidad1.id, disponibilidad2.id, disponibilidad3.id, disponibilidad4.id);
+        console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
         let medico1 = new Medico(null, usuario1, 456, "Juan", "Pérez", [servicio1, servicio2], [sede1],  [disponibilidad1]);
         let medico2 = new Medico(null, usuario2, 123, "Maria", "Gómez", [servicio1], [sede2],  [disponibilidad1]);

@@ -85,10 +85,10 @@ class MedicoController {
     //PUT /medicos/:medicoId/disponibilidades/:disponibilidadAModificarId
     async modificarDisponibilidad(req, res, next){
         try {
-            const {medicoId, disponibilidadAModificarId} = req.params;
+            const {medicoId, disponibilidadId} = req.params;
             const {diaSemana, horaDesde, horaHasta} = req.body
 
-            await this.medicoService.modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta);
+            await this.medicoService.modificarDisponibilidad(medicoId, disponibilidadId, diaSemana, horaDesde, horaHasta);
             res.status(200).json({mensaje: "Disponibilidad Modificada"})
         }
         catch (error){
