@@ -121,24 +121,12 @@ export class MedicoService {
         if (!turno) {
             throw new NotFoundError("El turno no pertenece a este médico.");
         }
-        turno.estado = estado;
-        await this.turnoRepository.update(turno, turnoId);
-    }
-    async cancelarTurno(medicoId, turnoId, motivo){
-        const turno = await this.turnoRepository.findById(turnoId);
-        console.log("turno encontrado:", turno?.id, "medico.id:", turno?.medico?.id, "medicoId:", medicoId);
-        try {
-            if (String(turno.medico.id) === String(medicoId)) {
-                console.log("estado", turno?.estado);
-                await this.marcarTurnoComo(medicoId, turnoId, EstadoTurno.CANCELADO);
-                console.log("turno estado despues de marcar turno:", turno?.estado);
-                await turno.actualizarEstado(EstadoTurno.CANCELADO, turno.paciente, motivo);
-            }
+        if(estado === "CANCELADO"){
+            await turno.darDeBaja("El médico canceló el turno");
+        }else{
+            await turno.actualizarEstado(estado, turno.paciente, `El médico marcó el turno como ${estado}`);
         }
-        catch(error){
-            console.error("No se pudo dar de baja el turno", error);
-            throw error;
-        }
+        return await this.turnoRepository.update(turno, turnoId);
     }
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){

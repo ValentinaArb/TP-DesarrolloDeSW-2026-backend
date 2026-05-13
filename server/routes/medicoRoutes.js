@@ -263,7 +263,7 @@ const router = Router();
  *   patch:
  *     tags:
  *       - Medicos
- *     summary: Marcar turno como realizado
+ *     summary: Cambiar estado del turno
  *     parameters:
  *       - name: medicoId
  *         in: path
@@ -294,42 +294,6 @@ const router = Router();
  *         description: Médico o turno no encontrado
  *       409:
  *         description: El turno no puede ser modificado en este estado
- * 
- * /medicos/{medicoId}/turnos/{turnoId}/cancelado:
- *   patch:
- *     tags:
- *       - Medicos
- *     summary: Cancelar un turno
- *     parameters:
- *       - name: medicoId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *       - name: turnoId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               motivo:
- *                 type: string
- *                 example: "Motivo de cancelación"
- *     responses:
- *       200:
- *         description: Turno cancelado exitosamente
- *       400:
- *         description: Datos inválidos
- *       404:
- *         description: Médico o turno no encontrado
- *       409:
- *         description: El turno no puede ser cancelado en este estado
  * 
  * /medicos/{medicoId}/pacientes/{pacienteId}:
  *   get:
@@ -479,7 +443,6 @@ router.put("/servicios/:servicioId", async(req, res, next) => await medicoContro
 
 //PATCH
 router.patch("/:medicoId/turnos/:turnoId/estado", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
-router.patch("/:medicoId/turnos/:turnoId/cancelado", async(req, res, next) => await medicoController.cancelarTurno(req, res, next));
 router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.modificarTurno(req, res, next));
 
 export default router;

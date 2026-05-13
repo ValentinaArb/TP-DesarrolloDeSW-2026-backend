@@ -110,19 +110,6 @@ class MedicoController {
         }
     }
 
-    //PATCH /medicos/:medicoId/turnos/:turnoId/cancelar
-    async cancelarTurno(req, res, next){
-        try{
-            const {medicoId, turnoId} = req.params;
-            const {motivo} = req.body;
-            await this.medicoService.cancelarTurno(medicoId, turnoId, motivo);
-            const turnoCancelado = await this.turnoRepository.findById(turnoId);
-            res.status(200).json(turnoCancelado);
-        }
-        catch(error){
-            return next(error);
-        }
-    }
     //GET /medicos/:MedicoId/pacientes/:pacienteId
     async consultarHistorialTurnos(req, res, next){
         try{

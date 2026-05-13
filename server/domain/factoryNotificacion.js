@@ -41,6 +41,17 @@ export class FactoryNotificacion {
             default:
                 throw new BadRequestError("Estado de turno no reconocido para notificar");
         }
+
+        const validarPersona = (persona, rol) => {
+            const tieneDatosBasicos = persona?.id && persona?.nombre && persona?.apellido;
+            if (!tieneDatosBasicos) {
+                throw new BadRequestError(`No se puede crear la notificación porque ${rol} no tiene id, nombre o apellido completos.`);
+            }
+        };
+
+        validarPersona(destinatario, "el destinatario");
+        validarPersona(remitente, "el remitente");
+
         const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, false);
         await this.notificacionRepository.create(notificacion);
         return notificacion
