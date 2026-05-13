@@ -1,3 +1,5 @@
+import { BadRequestError } from "../errors/AppError";
+
 export class DisponibilidadHoraria{
     id;
     diaSemana;
@@ -9,7 +11,7 @@ export class DisponibilidadHoraria{
         this.diaSemana = diaSemana;
 
         if (typeof horaDesde !== 'string' || typeof horaHasta !== 'string') {
-            throw new Error('horaDesde y horaHasta deben ser strings en formato HH:MM:SS');
+            throw new BadRequestError('horaDesde y horaHasta deben ser strings en formato HH:MM:SS');
         }
         this.horaDesde = horaDesde;
         this.horaHasta = horaHasta;

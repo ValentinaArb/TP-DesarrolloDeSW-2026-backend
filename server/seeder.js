@@ -91,8 +91,8 @@ const seedDatabase = async () => {
         let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00");
         console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
-        let medico1 = new Medico(null, usuario1, 456, "Valentina", "Arbarello", [servicio1, servicio2], [sede1],  [disponibilidad1]);
-        let medico2 = new Medico(null, usuario2, 123, "Sofia", "Baudo", [servicio1], [sede2],  [disponibilidad1]);
+        let medico1 = new Medico(null, usuario1, 456, "Dra. Valentina", "Arbarello", [servicio1, servicio2], [sede1],  [disponibilidad1]);
+        let medico2 = new Medico(null, usuario2, 123, "Dra. Sofia", "Baudo", [servicio1], [sede2],  [disponibilidad1]);
         medico1 = await medicoRepository.create(medico1);
         medico2 = await medicoRepository.create(medico2);
         console.log("Médicos creados:", medico1.id, medico2.id);

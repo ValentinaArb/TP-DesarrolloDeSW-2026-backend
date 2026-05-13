@@ -1,7 +1,7 @@
 import { TurnoRepository } from "../repositories/turnoRepository.js";
 import {TurnoService} from "./turnoService.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
-import {NotFoundError} from "../errors/AppError.js";
+import {ConflictError, NotFoundError} from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
 
 export class UsuarioService{
@@ -38,7 +38,7 @@ export class UsuarioService{
         const turno = await this.turnoRepository.findById(turnoId);
         const horaFinal = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
         if (!turno.medico.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))) {
-            throw new Error("El médico no tiene disponibilidad en el horario solicitado.");
+            throw new NotFoundError("El médico no tiene disponibilidad en el horario solicitado.");
         }
         const turnosDelMedico = await this.turnoRepository.turnosDe(turno.medico.id);
         const turnoNuevo = {
@@ -50,7 +50,7 @@ export class UsuarioService{
             return !this.turnoService.noSeSuperponen(t, turnoNuevo);
         });
         if (tieneConflicto) {
-            throw new Error("El médico ya tiene un turno asignado en ese horario.");
+            throw new ConflictError("El médico ya tiene un turno asignado en ese horario.");
         }
         turno.fechaInicio = horaInicio;
         turno.fechaFinal = horaFinal;
