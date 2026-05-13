@@ -123,6 +123,7 @@ const router = Router();
  *                   - id
  *                   - nombre
  *                   - duracionTurno
+ *                   - costo
  *                 properties:
  *                   id:
  *                     type: string

@@ -41,12 +41,6 @@ export class UsuarioService{
         const horaFinal = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
         const medicoId = turno.medico.id;
         const medico = await this.medicoRepository.findById(medicoId);
-        console.log("turno",turno);
-        console.log(turno.servicio);
-        console.log(turno.medico);
-        console.log(medico.disponibilidades);
-        console.log(horaInicio);
-        console.log(horaFinal);
         if (!medico.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))) {
             throw new NotFoundError("El médico no tiene disponibilidad en el horario solicitado.");
         }
@@ -70,8 +64,7 @@ export class UsuarioService{
     async evaluarTurnoPendiente(turnoId, pacienteId, respuestaAceptar){
         const turno = await this.turnoRepository.findById(turnoId);
         if(String(turno.paciente.id) === String(pacienteId) && turno.fechaInicio > Date.now()){
-            console.log("respuesta del paciente:", respuestaAceptar);
-            if(respuestaAceptar){
+            if(respuestaAceptar == "true"){
                 turno.actualizarEstado(EstadoTurno.RESERVADO, turno.paciente, "Reprogramación aceptada");
                 await this.turnoRepository.update(turno, turnoId);
             }else{

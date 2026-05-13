@@ -12,7 +12,6 @@ export class FactoryNotificacion {
         let mensaje = "";
         let destinatario;
         let remitente;
-        console.log(turno.estado)
         switch (turno.estado) {
             case 'REALIZADO':
                 mensaje = `Tu turno para el ${turno.fechaInicio} fue realizado.`;

@@ -27,16 +27,16 @@ const router = Router();
  *             properties:
  *               nombre:
  *                 type: string
- *                 example: "Juan"
+ *                 example: "Dr Bautista"
  *               apellido:
  *                 type: string
- *                 example: "Pérez"
+ *                 example: "Leguia"
  *               usuario:
  *                 type: string
- *                 example: "jperez_med"
+ *                 example: "bleguia_med"
  *               matricula:
  *                 type: string
- *                 example: "MN12345"
+ *                 example: "MN110903"
  *               servicios:
  *                 type: array
  *                 items:
@@ -45,6 +45,12 @@ const router = Router();
  *                     nombre:
  *                       type: string
  *                       example: "Cardiología"
+ *                     duracionTurno:
+ *                        type: integer
+ *                        example: 30
+ *                     costo:
+ *                         type: number
+ *                         example: 0
  *               sedes:
  *                 type: array
  *                 items:
