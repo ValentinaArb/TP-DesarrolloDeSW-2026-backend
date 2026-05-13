@@ -2,9 +2,11 @@ import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
-import {ConflictError, NotFoundError} from "../errors/AppError.js";
+import {BadRequestError, ConflictError, NotFoundError} from "../errors/AppError.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {UsuarioService} from "./usuarioService.js";
+import {Turno} from "../domain/turno.js";
+import {FactoryNotificacion} from "../domain/factoryNotificacion.js";
 
 
 export class MedicoService {
@@ -12,6 +14,8 @@ export class MedicoService {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.servicioRepository = new ServicioRepository();
+        this.factoryNotificacion = new FactoryNotificacion();
+
     }
 
     get usuarioService() {
@@ -157,7 +161,6 @@ export class MedicoService {
     async darDeAltaServicio(medicoId, servicioId){
         console.log("entre a la alta de servicio:");
         console.log("medico id", medicoId);
-        console.log
         const medico = await this.medicoRepository.findById(Number(medicoId));
         console.log("despues del medico find by id");
         const servicio = await this.servicioRepository.findById(Number(servicioId));
@@ -172,6 +175,22 @@ export class MedicoService {
         const servicio = await this.servicioRepository.findById(servicioId);
         servicio.modificarServicio(this,nombre, duracionTurno, costo);
         return servicio;
+    }
+
+    async modificarTurno(medicoId, turnoId, horaInicio){
+        const turno = await this.turnoRepository.findById(turnoId);
+        if(turno.medico.id === medicoId && turno.horaHasta !== horaInicio) {
+            const horaFinalPropuesta = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
+            
+            turno.fechaInicio = horaInicio;
+            turno.fechaFinal = horaFinalPropuesta;
+            turno.estado = EstadoTurno.PENDIENTE;
+            await this.turnoRepository.update(turno, turnoId);
+            return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
+        }
+        else{
+            throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
+        }
     }
 
 

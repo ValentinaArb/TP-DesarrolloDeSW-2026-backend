@@ -13,13 +13,15 @@ export class NotificacionController {
             const {estaLeida} = req.query;
 
             const notificacionesUsuario = await this.notificacionService.obtenerTodosFiltrados(id);
-            
+             
             // Si se proporciona estaLeida, filtrar por ese valor
-            const notificacionesFiltradas = estaLeida !== undefined 
-                ? notificacionesUsuario.filter((n) => n.estaLeida === (estaLeida === 'true'))
-                : notificacionesUsuario;
+            if (estaLeida !== undefined){
+                const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida === (estaLeida));
+                res.status(200).json(notificacionesFiltradas);
+            }else{
+                throw new Error("El parámetro 'estaLeida' es requerido");
+            }
 
-            res.status(200).json(notificacionesFiltradas);
         } catch(error) {
             return next(error);
         }

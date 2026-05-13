@@ -1,3 +1,4 @@
+import { BadRequestError } from "../errors/AppError.js";
 import { NotificacionRepository } from "../repositories/notificacionRepository.js";
 import { Notificacion } from "./notificacion.js";
 
@@ -11,7 +12,7 @@ export class FactoryNotificacion {
         let mensaje = "";
         let destinatario;
         let remitente;
-        console.log(turno)
+        console.log(turno.estado)
         switch (turno.estado) {
             case 'REALIZADO':
                 mensaje = `Tu turno para el ${turno.fechaInicio} fue realizado.`;
@@ -33,11 +34,15 @@ export class FactoryNotificacion {
                 destinatario = turno.medico;
                 remitente = turno.paciente;
                 break;
+            case 'PENDIENTE':
+                mensaje = `El turno del ${turno.fechaInicio} fue modificado por el médico ${turno.medico.nombre}. Por favor, revisa los detalles del turno y acepta o rechaza.`;
+                destinatario = turno.paciente;
+                remitente = turno.medico;
+                break;
             default:
-                console.log(turno.estado)
-                throw new Error("Estado de turno no reconocido para notificar");
+                throw new BadRequestError("Estado de turno no reconocido para notificar");
         }
-        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, null);
+        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, false);
         await this.notificacionRepository.create(notificacion);
         return notificacion
     }

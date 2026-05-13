@@ -28,9 +28,9 @@ export class Turno{
         this.costo = costo;
     }
 
-    darDeBaja(motivo, estado) {
+    darDeBaja(motivo) {
         if(this.verificarBaja()) {
-            this.actualizarEstado(estado, this.paciente, motivo);
+            this.actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
         }
         else {
             throw new ConflictError("Los turnos se deben cancelar con al menos una hora de antelación.");
@@ -57,7 +57,6 @@ export class Turno{
             return null
         }
         const factoryNotificacion = new FactoryNotificacion();
-        console.log("llega al factory")
         return await factoryNotificacion.crearSegunEstadoTurno(this)
     }
 
