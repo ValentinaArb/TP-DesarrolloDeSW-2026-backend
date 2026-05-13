@@ -147,11 +147,11 @@ export class MedicoService {
     }
 
     async consultarDisponibilidad(medicoId, servicioId){
-        const medico = await this.medicoRepository.findById(Number(medicoId));
+        const medico = await this.medicoRepository.findById(medicoId);
         console.log("servicios:", JSON.stringify(medico.servicios));
-        console.log("buscando servicioId:", Number(servicioId), typeof Number(servicioId));
+        console.log("buscando servicioId:", (servicioId), typeof (servicioId));
         console.log("s.id:", medico.servicios[0]?.id, typeof medico.servicios[0]?.id);
-        return (medico.servicios.filter(s => s.id === Number(servicioId)))
+        return (medico.servicios.filter(s => s.id === servicioId))
     }
 
     async darDeBajaServicio(medicoId, servicioId){
@@ -161,12 +161,12 @@ export class MedicoService {
     async darDeAltaServicio(medicoId, servicioId){
         console.log("entre a la alta de servicio:");
         console.log("medico id", medicoId);
-        const medico = await this.medicoRepository.findById(Number(medicoId));
+        const medico = await this.medicoRepository.findById(medicoId);
         console.log("despues del medico find by id");
-        const servicio = await this.servicioRepository.findById(Number(servicioId));
+        const servicio = await this.servicioRepository.findById(servicioId);
         console.log("medico:", medico?.id, "servicio:", servicio?.id);
         medico.darDeAltaServicio(medico, servicio);
-        await this.medicoRepository.update(medico, Number(medicoId));
+        await this.medicoRepository.update(medico, medicoId);
         console.log("servicios despues:", medico.servicios);
 
     }

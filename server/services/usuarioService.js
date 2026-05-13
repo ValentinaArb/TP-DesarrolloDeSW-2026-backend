@@ -17,7 +17,7 @@ export class UsuarioService{
     async cancelarTurno(pacienteId,turnoId, motivo){
         const turno = await this.turnoRepository.findById(turnoId);
         try{
-            if(turno.paciente.id !== Number(pacienteId)) {
+            if(turno.paciente.id !== pacienteId) {
                 throw new NotFoundError("El turno no pertenece a este paciente.");
             }
             await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
@@ -31,9 +31,6 @@ export class UsuarioService{
 
     async obtenerTurnosPorEstado(pacienteId, estadoPedido){
         const turnos = await this.turnoRepository.turnosPara(pacienteId);
-        console.log(estadoPedido);
-        console.log(pacienteId);
-        console.log(turnos);
         return turnos.filter(t => String(t.estado) === String(estadoPedido))
     }
 
