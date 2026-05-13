@@ -16,7 +16,7 @@ const turnoSchema = new mongoose.Schema({
     servicioInfo: {
         id: { type: String, required: true },
         nombre: { type: String, required: true },
-        duracion: { type: Number, required: true },
+        duracionTurno: { type: Number, required: true },
         costo: { type: Number, required: true },
         codigo: { type: String }
     },

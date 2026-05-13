@@ -23,7 +23,7 @@ export class TurnoMapper {
             servicioInfo: {
                 id: turno.servicio.id,
                 nombre: turno.servicio.nombre,
-                duracion: turno.servicio.duracionTurno,
+                duracionTurno: turno.servicio.duracionTurno,
                 costo: turno.servicio.costo,
                 codigo: turno.servicio.codigo
             },

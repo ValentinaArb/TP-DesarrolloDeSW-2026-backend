@@ -103,8 +103,8 @@ const seedDatabase = async () => {
         notificacion2 = await notificacionRepository.create(notificacion2);
         console.log("Notificaciones creadas:", notificacion1.id, notificacion2.id);
 
-        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", "2026-04-19T21:00:00", paciente1, servicio1,sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
-        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], null);
+        let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", "2026-04-19T21:00:00", paciente1, servicio1,sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], 2000);
+        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], 3000);
         turno1 = await turnoRepository.create(turno1);
         turno2 = await turnoRepository.create(turno2);
         console.log("Turnos creados:", turno1.id, turno2.id);
@@ -134,8 +134,8 @@ const seedDatabase = async () => {
         plan2.coberturasServicio.push(coberturaEsp);
         await planRepository.update(plan2, plan2.id);
 
-        let turno3 = new Turno(null, medico1, "2026-05-12T09:00:00", "2026-05-12T11:00:00", paciente1, servicioCaro, sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
-        let turno4 = new Turno(null, medico1, "2026-05-20T15:00:00", "2026-05-20T16:00:00", paciente2, especialidad2, sede1, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], null);
+        let turno3 = new Turno(null, medico1, "2026-05-12T09:00:00", "2026-05-12T11:00:00", paciente1, servicioCaro, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 50000);
+        let turno4 = new Turno(null, medico1, "2026-05-20T15:00:00", "2026-05-20T16:00:00", paciente2, especialidad2, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 5000);
 
         await turnoRepository.create(turno3);
         await turnoRepository.create(turno4);

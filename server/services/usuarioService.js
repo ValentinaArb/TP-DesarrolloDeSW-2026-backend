@@ -1,4 +1,5 @@
 import { TurnoRepository } from "../repositories/turnoRepository.js";
+import { MedicoRepository } from "../repositories/medicoRepository.js";
 import {TurnoService} from "./turnoService.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
@@ -8,6 +9,7 @@ export class UsuarioService{
     constructor() {
         this.turnoService = new TurnoService();
         this.turnoRepository = new TurnoRepository();
+        this.medicoRepository = new MedicoRepository();
     }
 
     async reservarTurno(turnoId, pacienteId){
@@ -37,7 +39,15 @@ export class UsuarioService{
     async hacerCambio(pacienteId, turnoId, horaInicio) {
         const turno = await this.turnoRepository.findById(turnoId);
         const horaFinal = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
-        if (!turno.medico.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))) {
+        const medicoId = turno.medico.id;
+        const medico = await this.medicoRepository.findById(medicoId);
+        console.log("turno",turno);
+        console.log(turno.servicio);
+        console.log(turno.medico);
+        console.log(medico.disponibilidades);
+        console.log(horaInicio);
+        console.log(horaFinal);
+        if (!medico.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))) {
             throw new NotFoundError("El médico no tiene disponibilidad en el horario solicitado.");
         }
         const turnosDelMedico = await this.turnoRepository.turnosDe(turno.medico.id);
