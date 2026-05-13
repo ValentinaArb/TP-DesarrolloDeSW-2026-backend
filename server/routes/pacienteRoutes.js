@@ -151,7 +151,7 @@ const router = Router();
  *   patch:
  *     tags:
  *       - Pacientes
- *     summary: Marcar o evaluar un turno como pendiente
+ *     summary: Evaluar un turno pendiente
  *     parameters:
  *       - name: pacienteId
  *         in: path
@@ -165,6 +165,12 @@ const router = Router();
  *         schema:
  *           type: string
  *         description: ID único del turno a evaluar
+ *       - name: respuesta
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: Aceptar (true) o rechazar (false)
  *     responses:
  *       200:
  *         description: Turno pendiente procesado exitosamente

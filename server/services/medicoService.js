@@ -181,8 +181,9 @@ export class MedicoService {
         const turno = await this.turnoRepository.findById(turnoId);
         if(turno.medico.id === medicoId && turno.horaHasta !== horaInicio) {
             const horaFinalPropuesta = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
-            turno.horaDesde = horaInicio;
-            turno.horaHaste = horaFinalPropuesta;
+            
+            turno.fechaInicio = horaInicio;
+            turno.fechaFinal = horaFinalPropuesta;
             turno.estado = EstadoTurno.PENDIENTE;
             await this.turnoRepository.update(turno, turnoId);
             return await this.factoryNotificacion.crearSegunEstadoTurno(turno);

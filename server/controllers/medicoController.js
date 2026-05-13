@@ -188,7 +188,7 @@ class MedicoController {
         try{
             const{medicoId, turnoId} = req.params;
             const {horaInicio} = req.body;
-            await this.medicoService.modificarTurno(medicoId, turnoId, Date(horaInicio));
+            await this.medicoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
             res.status(200).json("El turno fue modificado");
         }catch(error){
             return next(error);

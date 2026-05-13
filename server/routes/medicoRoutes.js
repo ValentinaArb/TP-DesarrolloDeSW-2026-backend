@@ -289,7 +289,7 @@ const router = Router();
  *       409:
  *         description: El turno no puede ser modificado en este estado
  * 
- * /medicos/{medicoId}/turnos/{turnoId}/cancelar:
+ * /medicos/{medicoId}/turnos/{turnoId}/cancelado:
  *   patch:
  *     tags:
  *       - Medicos
