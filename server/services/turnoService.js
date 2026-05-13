@@ -65,7 +65,7 @@ export class TurnoService {
 
         const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionTurno * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], servicio.costo);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
         const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
@@ -142,8 +142,8 @@ export class TurnoService {
             const turnosCotizados = turnosDB.map(turno => {
                 const servicioInfo = turno.servicioInfo || turno.servicio || {};
                 const servicioId = servicioInfo.id || servicioInfo._id;
-                const costoBase = servicioInfo.costoBase ?? servicioInfo.costo ?? 0;                
-                const cotizacion = plan.calcularCostoAbonar(servicioId, costoBase);
+                const costo = servicioInfo.costo ?? servicioInfo.costo ?? 0;                
+                const cotizacion = plan.calcularCostoAbonar(servicioId, costo);
                 const fechaObj = new Date(turno.fechaInicio);
                 const fechaFormateada = fechaObj.toISOString().split('T');
                 const horaFormateada = fechaObj.toTimeString().split(' ');

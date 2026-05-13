@@ -19,7 +19,7 @@ export class Plan{
         return this.obtenerNivelDeLista(this.coberturasServicio, 'servicio', servicio);
     }
 
-    calcularCostoAbonar(servicioId, costoBase) {
+    calcularCostoAbonar(servicioId, costo) {
         // busco cobertura comparando por el id del servicio (practica o especialidad)
         const cobertura = this.coberturasServicio.find(item => item.servicio.id === servicioId);
         const nivel = cobertura?.nivel || "NO_CUBIERTA";
@@ -28,10 +28,10 @@ export class Plan{
             case "TOTAL":
                 return { monto: 0, estadoPrestacion: "TOTAL" };
             case "PARCIAL":
-                return { monto: costoBase * 0.5, estadoPrestacion: "PARCIAL" };
+                return { monto: costo * 0.5, estadoPrestacion: "PARCIAL" };
             case "NO_CUBIERTA":
             default:
-                return { monto: costoBase, estadoPrestacion: "NO_CUBIERTA" };
+                return { monto: costo, estadoPrestacion: "NO_CUBIERTA" };
         }
     }
 }
