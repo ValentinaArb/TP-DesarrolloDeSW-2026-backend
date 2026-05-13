@@ -9,22 +9,86 @@ const router = Router();
  *   get:
  *     tags:
  *       - Turnos
- *     summary: Obtiene todos los turnos paginados
- *     description: Retorna una lista de turnos desde MongoDB con información de paginación.
+ *     summary: Obtiene todos los turnos paginados y filtrados
+ *     description: Retorna una lista de turnos. Nota interna del backend - Para aplicar filtros de médico, servicio, sede o fechas, actualmente es obligatorio enviar también el **pacienteId**.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Número de página para la paginación
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Cantidad de documentos por página
+ *       - in: query
+ *         name: pacienteId
+ *         schema:
+ *           type: string
+ *         description: ID del paciente (Requerido para activar el resto de los filtros)
+ *       - in: query
+ *         name: medicoId
+ *         schema:
+ *           type: string
+ *         description: ID del médico para filtrar
+ *       - in: query
+ *         name: servicioId
+ *         schema:
+ *           type: string
+ *         description: ID del servicio (práctica médica)
+ *       - in: query
+ *         name: sede
+ *         schema:
+ *           type: string
+ *         description: Nombre o ID de la sede
+ *       - in: query
+ *         name: fechaDesde
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filtrar turnos desde esta fecha (ej. 2026-05-01)
+ *       - in: query
+ *         name: fechaHasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filtrar turnos hasta esta fecha (ej. 2026-05-31)
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - fecha
+ *             - costo
+ *         description: Campo por el cual ordenar los resultados (por defecto es fecha)
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - asc
+ *             - desc
+ *         description: Orden ascendente o descendente (por defecto es asc)
  *     responses:
- *       200:
+ *       '200':
  *         description: Operación exitosa
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status: { type: string }
- *                 data: { type: array, items: { type: object } }
- *                 paginacion: { type: object }
- *       400:
+ *                 status:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 paginacion:
+ *                   type: object
+ *       '400':
  *         description: Parámetros de consulta inválidos
- *       500:
+ *       '500':
  *         description: Error interno del servidor
  * 
  *   post:
