@@ -17,6 +17,13 @@ const router = Router();
  *         schema:
  *           type: string
  *         description: ID único del paciente
+ *       - name: estado
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [DISPONIBLE, RESERVADO, CANCELADO, PENDIENTE, REALIZADO]
+ *         description: Filtrar turnos por estado 
  *     responses:
  *       200:
  *         description: Historial de turnos obtenido exitosamente

@@ -16,12 +16,11 @@ export class NotificacionController {
              
             // Si se proporciona estaLeida, filtrar por ese valor
             if (estaLeida !== undefined){
-                const notificacionesFiltradas = notificacionesUsuario.filter((n) => n.estaLeida === (estaLeida));
+                const notificacionesFiltradas = notificacionesUsuario.filter((n) => String(n.estaLeida) === String(estaLeida));
                 res.status(200).json(notificacionesFiltradas);
             }else{
-                throw new Error("El parámetro 'estaLeida' es requerido");
+                res.status(200).json(notificacionesUsuario);
             }
-
         } catch(error) {
             return next(error);
         }

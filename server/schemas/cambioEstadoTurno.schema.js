@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const cambioEstadoTurnoSchema = new mongoose.Schema({
     fechaInicioIngreso: { type: Date, required: true },
-    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "CONFIRMADO", "REALIZADO"], required: true },
+    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO"], required: true },
     turno: {
         fechaInicio: { type: Date, required: true },
         fechaFinal: { type: Date, required: true },

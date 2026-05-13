@@ -1,6 +1,7 @@
 import { UsuarioService } from '../services/usuarioService.js';
 import {TurnoRepository} from '../repositories/turnoRepository.js';
 import { Paciente } from '../domain/paciente.js';
+import { BadRequestError } from '../errors/AppError.js';
 
 class UsuarioController{
        constructor() {
@@ -27,7 +28,7 @@ class UsuarioController{
             const { motivo, horaInicio } = req.body;
 
             if (horaInicio !== undefined && motivo !== undefined) {
-                return next(new Error("No se pueden enviar motivo y horaInicio al mismo tiempo"));
+                throw new BadRequestError("No se pueden enviar motivo y horaInicio al mismo tiempo");
             }
 
             if (horaInicio !== undefined) {
@@ -40,7 +41,7 @@ class UsuarioController{
                 return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
             }
 
-            return next(new Error("Se debe enviar horaInicio o motivo"));
+            throw new BadRequestError("Se debe enviar horaInicio o motivo");
 
         } catch (error) {
             next(error);

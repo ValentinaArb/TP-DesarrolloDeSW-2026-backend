@@ -83,7 +83,7 @@ const seedDatabase = async () => {
         console.log("Obras sociales creadas:", obraSocial1.id, obraSocial2.id);
 
         let paciente1 = new Paciente(null, usuario1, "Juan", "Pérez", "12345678", "1990-01-01", obraSocial1, plan1, "M");
-        let paciente2 = new Paciente(null, usuario2, "María", "Gómez", "87654321", "1985-05-15", obraSocial2, plan2, "F");
+        let paciente2 = new Paciente(null, usuario2, "Maria", "Gómez", "87654321", "1985-05-15", obraSocial2, plan2, "F");
         paciente1 = await pacienteRepository.create(paciente1);
         paciente2 = await pacienteRepository.create(paciente2);
         console.log("Pacientes creados:", paciente1.id, paciente2.id);
@@ -91,8 +91,8 @@ const seedDatabase = async () => {
         let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00");
         console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
-        let medico1 = new Medico(null, usuario1, 456, "Juan", "Pérez", [servicio1, servicio2], [sede1],  [disponibilidad1]);
-        let medico2 = new Medico(null, usuario2, 123, "Maria", "Gómez", [servicio1], [sede2],  [disponibilidad1]);
+        let medico1 = new Medico(null, usuario1, 456, "Valentina", "Arbarello", [servicio1, servicio2], [sede1],  [disponibilidad1]);
+        let medico2 = new Medico(null, usuario2, 123, "Sofia", "Baudo", [servicio1], [sede2],  [disponibilidad1]);
         medico1 = await medicoRepository.create(medico1);
         medico2 = await medicoRepository.create(medico2);
         console.log("Médicos creados:", medico1.id, medico2.id);

@@ -11,7 +11,7 @@ cron.schedule('0 8 * * *', async () => {
     
     const maniana = new Date().setDate(maniana.getDate() + 1);
 
-    const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'CONFIRMADO');
+    const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'RESERVADO');
 
     for (const turno of turnosParaRecordar) {
         factoryNotificacion.crearRecordatorio(turno);
