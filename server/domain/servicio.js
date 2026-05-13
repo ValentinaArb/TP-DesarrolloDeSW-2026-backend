@@ -11,10 +11,10 @@ export class Servicio{
         this.costo = costo;
     }
 
-    modificarServicio(servicioAModificar, nombre, duracionTurno, costo){
-        servicioAModificar.nombre = nombre;
-        servicioAModificar.duracionTurno = duracionTurno;
-        servicioAModificar.costo = costo;
+    modificarServicio(nombre, duracionTurno, costo){
+        this.nombre = nombre;
+        this.duracionTurno = duracionTurno;
+        this.costo = costo;
     }
 
 }

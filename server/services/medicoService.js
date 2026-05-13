@@ -142,18 +142,20 @@ export class MedicoService {
     async darDeBajaServicio(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
         medico.darDeBajaServicio(servicioId);
-        this.medicoRepository.update(medico, medicoId);
+        return await this.medicoRepository.update(medico, medicoId);
     }
     async darDeAltaServicio(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
         const servicio = await this.servicioRepository.findById(servicioId);
-        medico.darDeAltaServicio(medico, servicio);
-        await this.medicoRepository.update(medico, medicoId);
+
+        medico.darDeAltaServicio(servicio);
+        return await this.medicoRepository.update(medico, medicoId);
     }
 
     async modificarServicio(servicioId, nombre, duracionTurno, costo){
         const servicio = await this.servicioRepository.findById(servicioId);
-        servicio.modificarServicio(this,nombre, duracionTurno, costo);
+        servicio.modificarServicio(nombre, duracionTurno, costo);
+        await this.servicioRepository.update(servicio, servicioId);
         return servicio;
     }
 
