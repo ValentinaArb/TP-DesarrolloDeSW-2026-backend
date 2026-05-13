@@ -192,6 +192,4 @@ export class MedicoService {
             throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
         }
     }
-
-
 }
