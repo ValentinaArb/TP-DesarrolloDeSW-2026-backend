@@ -194,9 +194,14 @@ const router = Router();
  *         description: Error del servidor
  */
 
-router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await usuarioController.reservarTurno(req, res,next));
-router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await usuarioController.actualizarTurno(req, res, next));
+//GET
 router.get('/:pacienteId/turnos', async( req, res, next) => await usuarioController.obtenerHistorialTurnos(req, res, next));
+
+//POST
+router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await usuarioController.reservarTurno(req, res,next));
+
+//PATCH
+router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await usuarioController.actualizarTurno(req, res, next));
 router.patch('/:pacienteId/turnos/:turnoId/pendiente', async(req, res, next) => await usuarioController.evaluarTurnoPendiente(req, res, next));
 
 export default router;

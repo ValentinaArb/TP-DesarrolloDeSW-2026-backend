@@ -287,10 +287,18 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
+
+//GET
 router.get('/', async (req, res, next) => await turnoController.obtenerTodos(req, res, next));
 router.get('/:id', async (req, res,next) => await turnoController.obtenerTurno(req, res,next));
-router.patch('/:id', async (req, res,next) => await turnoController.modificarEstado(req, res,next));
-router.delete('/:id', async (req, res,next) => await turnoController.eliminarTurno(req, res,next));
+
+//POST
 router.post('/', async (req, res,next) => await turnoController.crearTurno(req, res,next));
+
+//DELETE
+router.delete('/:id', async (req, res,next) => await turnoController.eliminarTurno(req, res,next));
+
+//PATCH
+router.patch('/:id', async (req, res,next) => await turnoController.modificarEstado(req, res,next));
 
 export default router;

@@ -62,8 +62,11 @@ const notificacionController = new NotificacionController()
  *         description: Notificación no encontrada
  */
 
+//GET
 router.get('/:id', async (req, res, next) => await notificacionController.obtenerTodosFiltrados(req, res, next));
 router.get('/', async (req, res, next) => await notificacionController.obtenerTodos(req, res, next));
+
+//PATCH
 router.patch('/:id',async (req, res, next) => await notificacionController.marcarComoLeida(req, res, next));
 
 export default router;
