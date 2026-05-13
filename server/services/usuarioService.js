@@ -30,8 +30,11 @@ export class UsuarioService{
     }
 
     async obtenerTurnosPorEstado(pacienteId, estadoPedido){
-        const turnos = this.turnoRepository.turnosPara(Number(pacienteId));
-        return turnos.filter(t => t.estado === estadoPedido)
+        const turnos = await this.turnoRepository.turnosPara(pacienteId);
+        console.log(estadoPedido);
+        console.log(pacienteId);
+        console.log(turnos);
+        return turnos.filter(t => String(t.estado) === String(estadoPedido))
     }
 
     async hacerCambio(pacienteId, turnoId, horaInicio) {

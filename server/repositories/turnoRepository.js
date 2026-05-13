@@ -12,8 +12,8 @@ export class TurnoRepository extends Repository {
         return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
-    async turnosPara(paciente){
-        const documentos = await this.mongooseModel.find({"pacienteInfo.id": paciente.id});
+    async turnosPara(pacienteId){
+        const documentos = await this.mongooseModel.find({"pacienteInfo.id": pacienteId});
         return documentos.map(doc => this.mapper.toDomain(doc));
     }
 
