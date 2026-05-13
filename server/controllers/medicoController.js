@@ -150,8 +150,8 @@ class MedicoController {
     // DELETE /medicos/:id/servicios/:id
     async darDeBajaServicio(req, res, next){
         try{
-            const{medicoId, ServicioId} = req.params;
-            await this.medicoService.darDeBajaServicio(medicoId, ServicioId)
+            const{medicoId, servicioId} = req.params;
+            await this.medicoService.darDeBajaServicio(medicoId, servicioId)
             res.status(200).json({mensaje: "Servicio dado de baja"})
         }
         catch(error){

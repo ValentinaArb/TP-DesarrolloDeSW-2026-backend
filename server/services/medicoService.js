@@ -136,27 +136,19 @@ export class MedicoService {
 
     async consultarDisponibilidad(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
-        console.log("servicios:", JSON.stringify(medico.servicios));
-        console.log("buscando servicioId:", (servicioId), typeof (servicioId));
-        console.log("s.id:", medico.servicios[0]?.id, typeof medico.servicios[0]?.id);
         return (medico.servicios.filter(s => s.id === servicioId))
     }
 
     async darDeBajaServicio(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
         medico.darDeBajaServicio(servicioId);
+        this.medicoRepository.update(medico, medicoId);
     }
     async darDeAltaServicio(medicoId, servicioId){
-        console.log("entre a la alta de servicio:");
-        console.log("medico id", medicoId);
         const medico = await this.medicoRepository.findById(medicoId);
-        console.log("despues del medico find by id");
         const servicio = await this.servicioRepository.findById(servicioId);
-        console.log("medico:", medico?.id, "servicio:", servicio?.id);
         medico.darDeAltaServicio(medico, servicio);
         await this.medicoRepository.update(medico, medicoId);
-        console.log("servicios despues:", medico.servicios);
-
     }
 
     async modificarServicio(servicioId, nombre, duracionTurno, costo){

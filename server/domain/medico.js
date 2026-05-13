@@ -1,3 +1,5 @@
+import { NotFoundError } from "../errors/AppError.js"
+
 export class Medico {
     id
     usuario
@@ -35,9 +37,11 @@ export class Medico {
         this.servicios.push(servicio);
     }
 
-    darDeBajaServicio(servicio){
-        if(this.servicios.some(s => s === servicio)){
-            this.servicios.pop(servicio);
+    darDeBajaServicio(servicioId){
+        if(this.servicios.some(s => String(s.id) === String(servicioId))){
+            this.servicios.pop(this.servicios.find(s => String(s.id) === String(servicioId)));
+        }else{
+            throw new NotFoundError("no se encontró el servicio en la lista de servicios del médico");
         }
     }
 }
