@@ -1,10 +1,10 @@
 import { describe, expect, test, beforeEach, jest } from "@jest/globals"
-import { UsuarioService } from "../../../services/usuarioService.js";
+import { PacienteService } from "../../../services/pacienteService.js";
 import { ConflictError, NotFoundError, BadRequestError } from "../../../errors/AppError.js";
 import { EstadoTurno } from "../../../domain/estadoTurno.js";
 
-describe("usuarioService", () => {
-    let usuarioService;
+describe("pacienteService", () => {
+    let pacienteService;
     let mockTurnoService;
     let mockTurnoRepository;
     let mockMedicoRepository;
@@ -26,17 +26,17 @@ describe("usuarioService", () => {
             findById: jest.fn()
         };
 
-        usuarioService = new UsuarioService();
-        usuarioService.turnoService = mockTurnoService;
-        usuarioService.turnoRepository = mockTurnoRepository;
-        usuarioService.medicoRepository = mockMedicoRepository;
+        pacienteService = new PacienteService();
+        pacienteService.turnoService = mockTurnoService;
+        pacienteService.turnoRepository = mockTurnoRepository;
+        pacienteService.medicoRepository = mockMedicoRepository;
     });
 
     describe("reservarTurno", () => {
         test("debe reservar un turno exitosamente", async () => {
             mockTurnoService.darDeAlta.mockResolvedValue(true);
 
-            await usuarioService.reservarTurno(1, 1);
+            await pacienteService.reservarTurno(1, 1);
 
             expect(mockTurnoService.darDeAlta).toHaveBeenCalledWith(1, 1);
         });
@@ -44,7 +44,7 @@ describe("usuarioService", () => {
         test("debe lanzar error si la reserva falla", async () => {
             mockTurnoService.darDeAlta.mockRejectedValue(new ConflictError("Turno no disponible"));
 
-            await expect(usuarioService.reservarTurno(1, 1)).rejects.toThrow(ConflictError);
+            await expect(pacienteService.reservarTurno(1, 1)).rejects.toThrow(ConflictError);
         });
     });
 
@@ -55,7 +55,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoService.darDeBaja.mockResolvedValue(true);
 
-            await usuarioService.cancelarTurno(1, 1, "Motivo de cancelación");
+            await pacienteService.cancelarTurno(1, 1, "Motivo de cancelación");
 
             expect(mockTurnoRepository.findById).toHaveBeenCalledWith(1);
             expect(mockTurnoService.darDeBaja).toHaveBeenCalledWith(1, "Motivo de cancelación", EstadoTurno.DISPONIBLE);
@@ -66,7 +66,7 @@ describe("usuarioService", () => {
             const turno = { id: 1, paciente };
             mockTurnoRepository.findById.mockResolvedValue(turno);
 
-            await expect(usuarioService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(NotFoundError);
+            await expect(pacienteService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(NotFoundError);
         });
 
         test("debe lanzar error si la cancelación falla", async () => {
@@ -75,7 +75,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoService.darDeBaja.mockRejectedValue(new ConflictError("Turno no puede ser cancelado"));
 
-            await expect(usuarioService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(ConflictError);
+            await expect(pacienteService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(ConflictError);
         });
     });
 
@@ -88,7 +88,7 @@ describe("usuarioService", () => {
             ];
             mockTurnoRepository.turnosPara.mockResolvedValue(turnos);
 
-            const resultado = await usuarioService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
+            const resultado = await pacienteService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
 
             expect(resultado.length).toBe(2);
             expect(resultado.every(t => String(t.estado) === String(EstadoTurno.RESERVADO))).toBe(true);
@@ -100,7 +100,7 @@ describe("usuarioService", () => {
             ];
             mockTurnoRepository.turnosPara.mockResolvedValue(turnos);
 
-            const resultado = await usuarioService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
+            const resultado = await pacienteService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
 
             expect(resultado.length).toBe(0);
         });
@@ -108,7 +108,7 @@ describe("usuarioService", () => {
         test("debe retornar lista vacía si el paciente no tiene turnos", async () => {
             mockTurnoRepository.turnosPara.mockResolvedValue([]);
 
-            const resultado = await usuarioService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
+            const resultado = await pacienteService.obtenerTurnosPorEstado(1, EstadoTurno.RESERVADO);
 
             expect(resultado.length).toBe(0);
         });
@@ -138,7 +138,7 @@ describe("usuarioService", () => {
             mockTurnoService.noSeSuperponen.mockReturnValue(true);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await usuarioService.hacerCambio(1, 1, horaInicio);
+            await pacienteService.hacerCambio(1, 1, horaInicio);
 
             expect(turno.fechaInicio).toEqual(horaInicio);
             expect(turno.fechaFinal).toEqual(horaFinal);
@@ -160,7 +160,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockMedicoRepository.findById.mockResolvedValue(medico);
 
-            await expect(usuarioService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(NotFoundError);
+            await expect(pacienteService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(NotFoundError);
         });
 
         test("debe lanzar ConflictError si hay conflicto con otro turno del médico", async () => {
@@ -191,7 +191,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.turnosDe.mockResolvedValue([turnoExistente]);
             mockTurnoService.noSeSuperponen.mockReturnValue(false);
 
-            await expect(usuarioService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(ConflictError);
+            await expect(pacienteService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(ConflictError);
         });
 
         test("debe ignorar conflicto con el mismo turno", async () => {
@@ -215,7 +215,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.turnosDe.mockResolvedValue([turno]);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await usuarioService.hacerCambio(1, 1, horaInicio);
+            await pacienteService.hacerCambio(1, 1, horaInicio);
 
             expect(mockTurnoRepository.update).toHaveBeenCalled();
         });
@@ -234,7 +234,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await usuarioService.evaluarTurnoPendiente(1, 1, "true");
+            await pacienteService.evaluarTurnoPendiente(1, 1, "true");
 
             expect(turno.actualizarEstado).toHaveBeenCalledWith(
                 EstadoTurno.RESERVADO,
@@ -256,7 +256,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.delete.mockResolvedValue(true);
 
-            await usuarioService.evaluarTurnoPendiente(1, 1, "false");
+            await pacienteService.evaluarTurnoPendiente(1, 1, "false");
 
             expect(turno.darDeBaja).toHaveBeenCalledWith("No se aceptó la reprogramación");
             expect(mockTurnoRepository.delete).toHaveBeenCalledWith(1);
@@ -271,7 +271,7 @@ describe("usuarioService", () => {
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
 
-            await expect(usuarioService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
+            await expect(pacienteService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
         });
 
         test("debe lanzar BadRequestError si la fecha de inicio ya pasó", async () => {
@@ -283,7 +283,7 @@ describe("usuarioService", () => {
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
 
-            await expect(usuarioService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
+            await expect(pacienteService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
         });
 
         test("debe manejar comparación de IDs numéricos como strings", async () => {
@@ -298,7 +298,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await usuarioService.evaluarTurnoPendiente(1, "1", "true");
+            await pacienteService.evaluarTurnoPendiente(1, "1", "true");
 
             expect(turno.actualizarEstado).toHaveBeenCalled();
         });
@@ -315,7 +315,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await usuarioService.evaluarTurnoPendiente(1, 1, "true");
+            await pacienteService.evaluarTurnoPendiente(1, 1, "true");
 
             expect(turno.actualizarEstado).toHaveBeenCalled();
         });
@@ -332,7 +332,7 @@ describe("usuarioService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.delete.mockResolvedValue(true);
 
-            await usuarioService.evaluarTurnoPendiente(1, 1, "false");
+            await pacienteService.evaluarTurnoPendiente(1, 1, "false");
 
             expect(turno.darDeBaja).toHaveBeenCalled();
             expect(mockTurnoRepository.delete).toHaveBeenCalled();

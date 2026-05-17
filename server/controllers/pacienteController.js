@@ -1,11 +1,11 @@
-import { UsuarioService } from '../services/usuarioService.js';
+import { PacienteService } from '../services/pacienteService.js';
 import {TurnoRepository} from '../repositories/turnoRepository.js';
 import { Paciente } from '../domain/paciente.js';
 import { BadRequestError } from '../errors/AppError.js';
 
-class UsuarioController{
+class PacienteController{
        constructor() {
-           this.usuarioService = new UsuarioService();
+           this.pacienteService = new PacienteService();
            this.turnoRepository = new TurnoRepository();
        }
 
@@ -13,7 +13,7 @@ class UsuarioController{
     async reservarTurno(req, res, next){
         try{
             const {pacienteId, turnoId} = req.params;
-            await this.usuarioService.reservarTurno(turnoId, pacienteId);
+            await this.pacienteService.reservarTurno(turnoId, pacienteId);
             const turno = await this.turnoRepository.findById(turnoId)
             res.status(200).json(turno);
         }
@@ -32,12 +32,12 @@ class UsuarioController{
             }
 
             if (horaInicio !== undefined) {
-                await this.usuarioService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
+                await this.pacienteService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
                 return res.status(200).json({ mensaje: "Cambio realizado con éxito" });
             }
 
             if (motivo !== undefined) {
-                await this.usuarioService.cancelarTurno(pacienteId, turnoId, motivo);
+                await this.pacienteService.cancelarTurno(pacienteId, turnoId, motivo);
                 return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
             }
 
@@ -53,7 +53,7 @@ class UsuarioController{
         try{
             const { pacienteId} = req.params;
             const { estado } = req.query;
-            const turnosHistorial = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
+            const turnosHistorial = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
             res.status(200).json(turnosHistorial);
         }
         catch(error){
@@ -64,7 +64,7 @@ class UsuarioController{
         try{
             const { pacienteId, turnoId } = req.params;
             const { horaInicio } = req.body;
-            await this.usuarioService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
+            await this.pacienteService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
             res.status(200).json({ mensaje: "Cambio realizado con éxito" });
         }
         catch(error){
@@ -76,7 +76,7 @@ class UsuarioController{
         try{
             const {turnoId, pacienteId} = req.params;
             const {respuesta} = req.query;
-            await this.usuarioService.evaluarTurnoPendiente(turnoId, pacienteId,respuesta);
+            await this.pacienteService.evaluarTurnoPendiente(turnoId, pacienteId,respuesta);
             res.status(200).json({ mensaje: "Cambio realizado con éxito" });
         }
         catch(error){
@@ -85,5 +85,5 @@ class UsuarioController{
     }
 
 }
-const usuarioController = new UsuarioController();
-export default usuarioController;
+const pacienteController = new PacienteController();
+export default pacienteController;

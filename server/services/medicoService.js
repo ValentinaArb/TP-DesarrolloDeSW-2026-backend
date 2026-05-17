@@ -4,7 +4,7 @@ import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {BadRequestError, ConflictError, NotFoundError} from "../errors/AppError.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
-import {UsuarioService} from "./usuarioService.js";
+import {PacienteService} from "./pacienteService.js";
 import {Turno} from "../domain/turno.js";
 import {FactoryNotificacion} from "../domain/factoryNotificacion.js";
 
@@ -18,9 +18,9 @@ export class MedicoService {
 
     }
 
-    get usuarioService() {
+    get pacienteService() {
         if (!this._usuarioService) {
-            this._usuarioService = new UsuarioService();
+            this._usuarioService = new PacienteService();
         }
         return this._usuarioService;
     }
@@ -130,7 +130,7 @@ export class MedicoService {
     }
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){
-        const turnosPaciente = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
+        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
         return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
     }
 

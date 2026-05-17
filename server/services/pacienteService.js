@@ -5,7 +5,7 @@ import {EstadoTurno} from "../domain/estadoTurno.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
 
-export class UsuarioService{
+export class PacienteService{
     constructor() {
         this.turnoService = new TurnoService();
         this.turnoRepository = new TurnoRepository();

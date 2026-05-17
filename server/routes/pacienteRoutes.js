@@ -1,5 +1,5 @@
 import { Router } from "express";
-import usuarioController from "../controllers/usuarioController.js";
+import pacienteController from "../controllers/pacienteController.js";
 
 const router = Router();
 
@@ -202,13 +202,13 @@ const router = Router();
  */
 
 //GET
-router.get('/:pacienteId/turnos', async( req, res, next) => await usuarioController.obtenerHistorialTurnos(req, res, next));
+router.get('/:pacienteId/turnos', async( req, res, next) => await pacienteController.obtenerHistorialTurnos(req, res, next));
 
 //POST
-router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await usuarioController.reservarTurno(req, res,next));
+router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await pacienteController.reservarTurno(req, res,next));
 
 //PATCH
-router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await usuarioController.actualizarTurno(req, res, next));
-router.patch('/:pacienteId/turnos/:turnoId/pendiente', async(req, res, next) => await usuarioController.evaluarTurnoPendiente(req, res, next));
+router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await pacienteController.actualizarTurno(req, res, next));
+router.patch('/:pacienteId/turnos/:turnoId/pendiente', async(req, res, next) => await pacienteController.evaluarTurnoPendiente(req, res, next));
 
 export default router;
