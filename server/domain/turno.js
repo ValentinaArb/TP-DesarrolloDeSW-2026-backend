@@ -71,4 +71,8 @@ export class Turno{
     estaReservado() {
         return this.estado === EstadoTurno.RESERVADO;
     }
+
+    async servicioPerteneceAMedico(servicioId) {
+        return this.medico.servicios.some(s => s.id === servicioId);
+    }
 }
