@@ -1,4 +1,5 @@
 import { MedicoService } from '../services/medicoService.js';
+import { TurnoService } from '../services/turnoService.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import { TurnoRepository} from "../repositories/turnoRepository.js";
@@ -8,6 +9,7 @@ class MedicoController {
         this.medicoService = new MedicoService(new MedicoRepository());
         this.servicioRepository = new ServicioRepository();
         this.turnoRepository = new TurnoRepository();
+        this.turnoService = new TurnoService();
     }
 
     // GET /medicos
@@ -174,7 +176,7 @@ class MedicoController {
         try{
             const{medicoId, turnoId} = req.params;
             const {horaInicio} = req.body;
-            await this.medicoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
+            await this.turnoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
             res.status(200).json("El turno fue modificado");
         }catch(error){
             return next(error);
