@@ -68,4 +68,7 @@ export class Turno{
         
         return tiempoQueFaltaParaTurno >= unaHora;
     }
+    estaReservado() {
+        return this.estado === EstadoTurno.RESERVADO;
+    }
 }

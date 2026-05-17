@@ -22,9 +22,9 @@ export class TurnoService {
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if (turno.estado !== EstadoTurno.RESERVADO) { //rompe el encapsulamiento, deberia hacerlo el turno.EstaReservado(), que chequee esto
+            if (turno.estaReservado()) {
                 throw new ConflictError("El turno no está reservado.");
-            } // hasta acá
+            }
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
         } catch (error) {
