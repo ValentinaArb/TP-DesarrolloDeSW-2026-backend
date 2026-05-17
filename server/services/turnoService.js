@@ -128,7 +128,7 @@ export class TurnoService {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
-    async servicioPerteneceAMedico(medicoId, servicioId) { //eliminar este metodo luego de que la linea 133 haya sido otro metodo en el domain
+    async servicioPerteneceAMedico(medicoId, servicioId) { //eliminar este metodo luego de que la linea 133 haya sido otro metodo en el
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.servicios.some(s => s.id === servicioId) 
     }
