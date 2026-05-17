@@ -12,18 +12,35 @@ export class PacienteService{
         this.medicoRepository = new MedicoRepository();
     }
 
+    async orquestrador(turnoId, pacienteId, motivo, horaInicio, estado, respuesta) {
+        if (horaInicio !== undefined && motivo !== undefined && estado !== undefined && respuesta !== undefined) {
+            throw new BadRequestError("No se pueden enviar motivo, horaInicio, estado y respuesta al mismo tiempo");
+        }
+        if (horaInicio !== undefined) {
+            return await this.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
+        }
+        if (motivo !== undefined) {
+            return await this.cancelarTurno(pacienteId, turnoId, motivo);
+        }
+        if (estado === "PENDIENTE" && respuesta !== undefined) {
+            return await this.evaluarTurnoPendiente(turnoId, respuesta);
+        }
+        throw new BadRequestError("Se debe enviar horaInicio, motivo o estado y respuesta");
+    }
+
+
     async reservarTurno(turnoId, pacienteId){
         await this.turnoService.darDeAlta(turnoId, pacienteId);
     }
 
     async cancelarTurno(pacienteId,turnoId, motivo){
         const turno = await this.turnoRepository.findById(turnoId);
+        if(turno.paciente.id !== pacienteId) {
+            throw new NotFoundError("El turno no pertenece a este paciente.");
+        }
         try{
-            if(turno.paciente.id !== pacienteId) {
-                throw new NotFoundError("El turno no pertenece a este paciente.");
-            }
             await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
-
+            return turno;
         }
         catch(error) {
             console.error("El turno no pertenece a este paciente:", error);
@@ -59,6 +76,7 @@ export class PacienteService{
         turno.fechaInicio = horaInicio;
         turno.fechaFinal = horaFinal;
         await this.turnoRepository.update(turno, turnoId);
+        return turno;
     }
 
     async evaluarTurnoPendiente(turnoId, respuestaAceptar){

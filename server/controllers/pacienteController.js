@@ -1,7 +1,5 @@
 import { PacienteService } from '../services/pacienteService.js';
 import {TurnoRepository} from '../repositories/turnoRepository.js';
-import { Paciente } from '../domain/paciente.js';
-import { BadRequestError } from '../errors/AppError.js';
 
 class PacienteController{
        constructor() {
@@ -25,24 +23,9 @@ class PacienteController{
     async actualizarTurno(req, res, next) {
         try {
             const { pacienteId, turnoId } = req.params;
-            const { motivo, horaInicio } = req.body;
-
-            if (horaInicio !== undefined && motivo !== undefined) { // [FIX] en service
-                throw new BadRequestError("No se pueden enviar motivo y horaInicio al mismo tiempo");
-            }
-
-            if (horaInicio !== undefined) {
-                await this.pacienteService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
-                return res.status(200).json({ mensaje: "Cambio realizado con éxito" });
-            }
-
-            if (motivo !== undefined) {
-                await this.pacienteService.cancelarTurno(pacienteId, turnoId, motivo);
-                return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
-            } // [FIX] hasta acá
-
-            throw new BadRequestError("Se debe enviar horaInicio o motivo");
-
+            const { motivo, horaInicio, estado, respuesta} = req.body;
+            const turnoActualizado = await this.pacienteService.orquestrador(turnoId, pacienteId, motivo, horaInicio, estado, respuesta);
+            res.status(200).json(turnoActualizado);
         } catch (error) {
             next(error);
         }
@@ -72,6 +55,7 @@ class PacienteController{
         }
     }
 
+    /*
     async evaluarTurnoPendiente(req, res, next){
         try{
             const {turnoId, pacienteId} = req.params;
@@ -83,6 +67,7 @@ class PacienteController{
             return next(error);
         }
     }
+     */
 
 }
 const pacienteController = new PacienteController();

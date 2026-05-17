@@ -165,7 +165,6 @@ describe("pacienteService", () => {
 
         test("debe lanzar ConflictError si hay conflicto con otro turno del médico", async () => {
             const horaInicio = new Date(Date.now() + 86400000);
-            const horaFinal = new Date(horaInicio.getTime() + 30 * 60000);
             const disponibilidad = {
                 abarca: jest.fn()
                     .mockReturnValueOnce(true)
@@ -196,7 +195,6 @@ describe("pacienteService", () => {
 
         test("debe ignorar conflicto con el mismo turno", async () => {
             const horaInicio = new Date(Date.now() + 86400000);
-            const horaFinal = new Date(horaInicio.getTime() + 30 * 60000);
             const disponibilidad = {
                 abarca: jest.fn()
                     .mockReturnValueOnce(true)
@@ -227,14 +225,14 @@ describe("pacienteService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await pacienteService.evaluarTurnoPendiente(1, 1, "true");
+            await pacienteService.evaluarTurnoPendiente(1,"true");
 
             expect(turno.actualizarEstado).toHaveBeenCalledWith(
                 EstadoTurno.RESERVADO,
@@ -249,29 +247,17 @@ describe("pacienteService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 darDeBaja: jest.fn()
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.delete.mockResolvedValue(true);
 
-            await pacienteService.evaluarTurnoPendiente(1, 1, "false");
+            await pacienteService.evaluarTurnoPendiente(1, "false");
 
             expect(turno.darDeBaja).toHaveBeenCalledWith("No se aceptó la reprogramación");
             expect(mockTurnoRepository.delete).toHaveBeenCalledWith(1);
-        });
-
-        test("debe lanzar BadRequestError si el turno no pertenece al paciente", async () => {
-            const paciente = { id: 2 };
-            const turno = {
-                id: 1,
-                paciente,
-                fechaInicio: new Date(Date.now() + 86400000)
-            };
-            mockTurnoRepository.findById.mockResolvedValue(turno);
-
-            await expect(pacienteService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
         });
 
         test("debe lanzar BadRequestError si la fecha de inicio ya pasó", async () => {
@@ -283,7 +269,7 @@ describe("pacienteService", () => {
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
 
-            await expect(pacienteService.evaluarTurnoPendiente(1, 1, "true")).rejects.toThrow(BadRequestError);
+            await expect(pacienteService.evaluarTurnoPendiente(1, "true")).rejects.toThrow(BadRequestError);
         });
 
         test("debe manejar comparación de IDs numéricos como strings", async () => {
@@ -291,14 +277,14 @@ describe("pacienteService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await pacienteService.evaluarTurnoPendiente(1, "1", "true");
+            await pacienteService.evaluarTurnoPendiente(1, "true");
 
             expect(turno.actualizarEstado).toHaveBeenCalled();
         });
@@ -308,14 +294,14 @@ describe("pacienteService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await pacienteService.evaluarTurnoPendiente(1, 1, "true");
+            await pacienteService.evaluarTurnoPendiente(1,  "true");
 
             expect(turno.actualizarEstado).toHaveBeenCalled();
         });
@@ -325,14 +311,14 @@ describe("pacienteService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 darDeBaja: jest.fn()
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.delete.mockResolvedValue(true);
 
-            await pacienteService.evaluarTurnoPendiente(1, 1, "false");
+            await pacienteService.evaluarTurnoPendiente(1, "false");
 
             expect(turno.darDeBaja).toHaveBeenCalled();
             expect(mockTurnoRepository.delete).toHaveBeenCalled();
