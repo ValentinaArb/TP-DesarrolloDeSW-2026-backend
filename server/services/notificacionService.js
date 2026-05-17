@@ -6,9 +6,14 @@ export class NotificacionService {
         this.notificacionRepository = new NotificacionRepository();
     }
 
-    async obtenerTodosFiltrados(usuarioId){
-        const notificaciones = await this.notificacionRepository.findAll()
-        return notificaciones.filter((n) => n.destinatario.id == usuarioId);
+    async obtenerTodosFiltrados(usuarioId, estaLeida){
+        const notificaciones = await this.notificacionRepository.findAll()        
+        let notificacionesFiltradas = notificaciones.filter((n) => n.destinatario.id == usuarioId);
+
+        if (estaLeida !== undefined){
+            notificacionesFiltradas = notificacionesFiltradas.filter((n) => String(n.estaLeida) === String(estaLeida));
+        }
+        return notificacionesFiltradas
     }
 
     async obtenerTodos(){

@@ -12,15 +12,9 @@ export class NotificacionController {
             const {id} = req.params;
             const {estaLeida} = req.query;
 
-            const notificacionesUsuario = await this.notificacionService.obtenerTodosFiltrados(id);
-             
-            // Si se proporciona estaLeida, filtrar por ese valor
-            if (estaLeida !== undefined){
-                const notificacionesFiltradas = notificacionesUsuario.filter((n) => String(n.estaLeida) === String(estaLeida));
-                res.status(200).json(notificacionesFiltradas);
-            }else{
-                res.status(200).json(notificacionesUsuario);
-            }
+            const notificacionesUsuario = await this.notificacionService.obtenerTodosFiltrados(id, estaLeida);
+
+            res.status(200).json(notificacionesUsuario);
         } catch(error) {
             return next(error);
         }
