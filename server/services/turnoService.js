@@ -22,9 +22,9 @@ export class TurnoService {
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if (turno.estado !== EstadoTurno.RESERVADO) {
+            if (turno.estado !== EstadoTurno.RESERVADO) { //rompe el encapsulamiento, deberia hacerlo el turno.EstaReservado(), que chequee esto
                 throw new ConflictError("El turno no está reservado.");
-            }
+            } // hasta acá
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
         } catch (error) {
@@ -128,9 +128,9 @@ export class TurnoService {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
-    async servicioPerteneceAMedico(medicoId, servicioId) {
+    async servicioPerteneceAMedico(medicoId, servicioId) { //eliminar este metodo luego de que la linea 133 haya sido otro metodo en el domain
         const medico = await this.medicoRepository.findById(medicoId);
-        return medico.servicios.some(s => s.id === servicioId)
+        return medico.servicios.some(s => s.id === servicioId) 
     }
 
     async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
