@@ -27,7 +27,7 @@ class PacienteController{
             const { pacienteId, turnoId } = req.params;
             const { motivo, horaInicio } = req.body;
 
-            if (horaInicio !== undefined && motivo !== undefined) {
+            if (horaInicio !== undefined && motivo !== undefined) { // [FIX] en service
                 throw new BadRequestError("No se pueden enviar motivo y horaInicio al mismo tiempo");
             }
 
@@ -39,7 +39,7 @@ class PacienteController{
             if (motivo !== undefined) {
                 await this.pacienteService.cancelarTurno(pacienteId, turnoId, motivo);
                 return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
-            }
+            } // [FIX] hasta acá
 
             throw new BadRequestError("Se debe enviar horaInicio o motivo");
 
