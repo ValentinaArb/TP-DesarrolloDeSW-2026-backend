@@ -61,10 +61,10 @@ export class PacienteService{
         await this.turnoRepository.update(turno, turnoId);
     }
 
-    async evaluarTurnoPendiente(turnoId, pacienteId, respuestaAceptar){
+    async evaluarTurnoPendiente(turnoId, respuestaAceptar){
         const turno = await this.turnoRepository.findById(turnoId);
-        if(String(turno.paciente.id) === String(pacienteId) && turno.fechaInicio > Date.now()){
-            if(respuestaAceptar == "true"){
+        if(turno.fechaInicio > Date.now()){
+            if(respuestaAceptar === "true"){
                 turno.actualizarEstado(EstadoTurno.RESERVADO, turno.paciente, "Reprogramación aceptada");
                 await this.turnoRepository.update(turno, turnoId);
             }else{
