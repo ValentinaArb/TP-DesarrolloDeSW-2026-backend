@@ -13,8 +13,8 @@ class PacienteController{
     async reservarTurno(req, res, next){
         try{
             const {pacienteId, turnoId} = req.params;
-            await this.pacienteService.reservarTurno(turnoId, pacienteId);
-            const turno = await this.turnoRepository.findById(turnoId)
+            await this.pacienteService.reservarTurno(turnoId, pacienteId); // [FIX] turnoService.darDeAlta(...,...) y sacarlo de pacienteService
+            const turno = await this.turnoRepository.findById(turnoId) // [FIX] no llamar al repository desde controller 
             res.status(200).json(turno);
         }
         catch(error){
