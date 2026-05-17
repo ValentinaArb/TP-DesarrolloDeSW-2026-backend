@@ -5,7 +5,6 @@ import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {BadRequestError, ConflictError, NotFoundError} from "../errors/AppError.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {UsuarioService} from "./usuarioService.js";
-import {Turno} from "../domain/turno.js";
 import {FactoryNotificacion} from "../domain/factoryNotificacion.js";
 
 
@@ -115,9 +114,8 @@ export class MedicoService {
         return await this.medicoRepository.update(medico, medico.id);
     }
 
-    async marcarTurnoComo(medicoId, turnoId, estado){
-        const turnosDeMedico = await this.turnoRepository.turnosDe(medicoId);
-        const turno = turnosDeMedico.find(t => String(t.id) === String(turnoId));
+    async marcarTurnoComo(turnoId, estado){
+        const turno = await this.turnoRepository.findById(turnoId);
         if (!turno) {
             throw new NotFoundError("El turno no pertenece a este médico.");
         }
@@ -126,7 +124,8 @@ export class MedicoService {
         }else{
             await turno.actualizarEstado(estado, turno.paciente, `El médico marcó el turno como ${estado}`);
         }
-        return await this.turnoRepository.update(turno, turnoId);
+        await this.turnoRepository.update(turno, turnoId);
+        return turno;
     }
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){

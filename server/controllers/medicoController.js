@@ -99,10 +99,9 @@ class MedicoController {
     //PATCH /medicos/:medicoId/turnos/:turnoId
     async marcarTurnoComo(req, res, next){
         try{
-            const {medicoId, turnoId} = req.params;
+            const {turnoId} = req.params;
             const {estado} = req.body;
-            await this.medicoService.marcarTurnoComo(medicoId, turnoId, estado);
-            const turnoCambiado = await this.turnoRepository.findById(turnoId)
+            const turnoCambiado = await this.medicoService.marcarTurnoComo(turnoId, estado);
             res.status(200).json(turnoCambiado)
         }
         catch (error){
