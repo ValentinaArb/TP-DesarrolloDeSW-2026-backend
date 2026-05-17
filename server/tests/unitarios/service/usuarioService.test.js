@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, jest } from "@jest/globals"
-import { UsuarioService } from "../../services/usuarioService.js";
-import { ConflictError, NotFoundError, BadRequestError } from "../../errors/AppError.js";
-import { EstadoTurno } from "../../domain/estadoTurno.js";
+import { UsuarioService } from "../../../services/usuarioService.js";
+import { ConflictError, NotFoundError, BadRequestError } from "../../../errors/AppError.js";
+import { EstadoTurno } from "../../../domain/estadoTurno.js";
 
 describe("usuarioService", () => {
     let usuarioService;

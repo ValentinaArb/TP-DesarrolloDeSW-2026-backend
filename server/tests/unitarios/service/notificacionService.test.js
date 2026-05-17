@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, jest } from "@jest/globals"
-import { NotificacionService } from "../../services/notificacionService.js";
-import { NotFoundError } from "../../errors/AppError.js";
+import { NotificacionService } from "../../../services/notificacionService.js";
+import { NotFoundError } from "../../../errors/AppError.js";
 
 describe("notificacionService", () => {
     let notificacionService;

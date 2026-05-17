@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, jest } from "@jest/globals"
-import { TurnoService } from "../../services/turnoService.js";
-import { ConflictError, UnprocessableEntityError, BadRequestError } from "../../errors/AppError.js";
-import { EstadoTurno } from "../../domain/estadoTurno.js";
+import { TurnoService } from "../../../services/turnoService.js";
+import { ConflictError, UnprocessableEntityError, BadRequestError } from "../../../errors/AppError.js";
+import { EstadoTurno } from "../../../domain/estadoTurno.js";
 
 describe("turnoService", () => {
     let turnoService;
