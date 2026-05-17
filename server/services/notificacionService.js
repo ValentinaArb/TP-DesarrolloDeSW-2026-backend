@@ -26,12 +26,7 @@ export class NotificacionService {
         if(!notificacion){
             throw new NotFoundError(`No se encontró la notificación con ID: ${id}`);
         }
-        try{
-            notificacion.marcarComoLeida()
-            await this.notificacionRepository.update(notificacion,id)
-        }catch(error){
-            console.error("Error al marcar como leido el turno:", error);
-            throw error;
-        }
+        notificacion.marcarComoLeida()
+        await this.notificacionRepository.update(notificacion,id)
     }
 }
