@@ -3,6 +3,7 @@ import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {UsuarioService} from "./usuarioService.js";
+import {ConflictError, NotFoundError} from "../errors/AppError.js";
 
 
 export class MedicoService {
@@ -91,18 +92,12 @@ export class MedicoService {
 
     async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
         const medico = await this.medicoRepository.findById(medicoId);
-        
-        // Buscar la disponibilidad dentro del médico por ID
-        const disponibilidadExistente = medico.disponibilidades.find(d => d.id === disponibilidadAModificarId);
-        
-        if (!disponibilidadExistente) {
+
+        if (!medico.tieneEsaDisponibilidad(disponibilidadAModificarId)) {
             throw new NotFoundError("La disponibilidad no existe");
         }
-        
-        // Eliminar la disponibilidad existente
-        medico.eliminarDisponibilidad(disponibilidadExistente);
-        
-        // Agregar la nueva disponibilidad con los datos actualizados
+        medico.eliminarDisponibilidad(disponibilidadAModificarId);
+
         const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
         medico.agregarDisponibilidad(disponibilidadNueva);
         

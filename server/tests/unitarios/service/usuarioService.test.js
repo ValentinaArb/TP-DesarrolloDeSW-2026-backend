@@ -165,7 +165,6 @@ describe("usuarioService", () => {
 
         test("debe lanzar ConflictError si hay conflicto con otro turno del médico", async () => {
             const horaInicio = new Date(Date.now() + 86400000);
-            const horaFinal = new Date(horaInicio.getTime() + 30 * 60000);
             const disponibilidad = {
                 abarca: jest.fn()
                     .mockReturnValueOnce(true)
@@ -196,7 +195,6 @@ describe("usuarioService", () => {
 
         test("debe ignorar conflicto con el mismo turno", async () => {
             const horaInicio = new Date(Date.now() + 86400000);
-            const horaFinal = new Date(horaInicio.getTime() + 30 * 60000);
             const disponibilidad = {
                 abarca: jest.fn()
                     .mockReturnValueOnce(true)
@@ -227,7 +225,7 @@ describe("usuarioService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
@@ -249,7 +247,7 @@ describe("usuarioService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 darDeBaja: jest.fn()
             };
@@ -291,7 +289,7 @@ describe("usuarioService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
@@ -308,7 +306,7 @@ describe("usuarioService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 actualizarEstado: jest.fn()
             };
@@ -325,7 +323,7 @@ describe("usuarioService", () => {
             const turno = {
                 id: 1,
                 paciente,
-                estado: EstadoTurno.PENDIENTE_ACEPTACION,
+                estado: EstadoTurno.PENDIENTE,
                 fechaInicio: new Date(Date.now() + 86400000),
                 darDeBaja: jest.fn()
             };
