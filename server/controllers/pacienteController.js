@@ -1,19 +1,18 @@
 import { PacienteService } from '../services/pacienteService.js';
-import {TurnoRepository} from '../repositories/turnoRepository.js';
+import {TurnoService} from '../services/turnoService.js';
 
 class PacienteController{
        constructor() {
            this.pacienteService = new PacienteService();
-           this.turnoRepository = new TurnoRepository();
+           this.turnoService = new TurnoService();
        }
 
     //POST /pacientes/:pacienteId/turnos/:turnoId
     async reservarTurno(req, res, next){
         try{
             const {pacienteId, turnoId} = req.params;
-            await this.pacienteService.reservarTurno(turnoId, pacienteId); // [FIX] turnoService.darDeAlta(...,...) y sacarlo de pacienteService
-            const turno = await this.turnoRepository.findById(turnoId) // [FIX] no llamar al repository desde controller 
-            res.status(200).json(turno);
+            await this.turnoService.darDeAlta(turnoId, pacienteId); // [FIX] turnoService.darDeAlta(...,...) y sacarlo de pacienteService
+            res.status(200).json({mensaje: "Turno reservado exitosamente"});
         }
         catch(error){
             return next(error);
@@ -43,18 +42,6 @@ class PacienteController{
             return next(error);
         }
     }
-    async hacerCambio(req, res, next){
-        try{
-            const { pacienteId, turnoId } = req.params;
-            const { horaInicio } = req.body;
-            await this.pacienteService.hacerCambio(pacienteId, turnoId, new Date(horaInicio));
-            res.status(200).json({ mensaje: "Cambio realizado con éxito" });
-        }
-        catch(error){
-            return next(error);
-        }
-    }
-
     /*
     async evaluarTurnoPendiente(req, res, next){
         try{

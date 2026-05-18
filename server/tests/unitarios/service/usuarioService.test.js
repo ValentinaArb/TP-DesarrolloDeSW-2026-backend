@@ -32,22 +32,6 @@ describe("pacienteService", () => {
         pacienteService.medicoRepository = mockMedicoRepository;
     });
 
-    describe("reservarTurno", () => {
-        test("debe reservar un turno exitosamente", async () => {
-            mockTurnoService.darDeAlta.mockResolvedValue(true);
-
-            await pacienteService.reservarTurno(1, 1);
-
-            expect(mockTurnoService.darDeAlta).toHaveBeenCalledWith(1, 1);
-        });
-
-        test("debe lanzar error si la reserva falla", async () => {
-            mockTurnoService.darDeAlta.mockRejectedValue(new ConflictError("Turno no disponible"));
-
-            await expect(pacienteService.reservarTurno(1, 1)).rejects.toThrow(ConflictError);
-        });
-    });
-
     describe("cancelarTurno", () => {
         test("debe cancelar un turno que pertenece al paciente", async () => {
             const paciente = { id: 1, nombre: "Juan" };
@@ -114,7 +98,7 @@ describe("pacienteService", () => {
         });
     });
 
-    describe("hacerCambio", () => {
+    describe("hacerCambioFecha", () => {
         test("debe cambiar la hora de un turno exitosamente", async () => {
             const horaInicio = new Date(Date.now() + 86400000);
             const horaFinal = new Date(horaInicio.getTime() + 30 * 60000);
@@ -138,7 +122,7 @@ describe("pacienteService", () => {
             mockTurnoService.noSeSuperponen.mockReturnValue(true);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await pacienteService.hacerCambio(1, 1, horaInicio);
+            await pacienteService.hacerCambioFecha(1, 1, horaInicio);
 
             expect(turno.fechaInicio).toEqual(horaInicio);
             expect(turno.fechaFinal).toEqual(horaFinal);
@@ -160,7 +144,7 @@ describe("pacienteService", () => {
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockMedicoRepository.findById.mockResolvedValue(medico);
 
-            await expect(pacienteService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(NotFoundError);
+            await expect(pacienteService.hacerCambioFecha(1, 1, horaInicio)).rejects.toThrow(NotFoundError);
         });
 
         test("debe lanzar ConflictError si hay conflicto con otro turno del médico", async () => {
@@ -190,7 +174,7 @@ describe("pacienteService", () => {
             mockTurnoRepository.turnosDe.mockResolvedValue([turnoExistente]);
             mockTurnoService.noSeSuperponen.mockReturnValue(false);
 
-            await expect(pacienteService.hacerCambio(1, 1, horaInicio)).rejects.toThrow(ConflictError);
+            await expect(pacienteService.hacerCambioFecha(1, 1, horaInicio)).rejects.toThrow(ConflictError);
         });
 
         test("debe ignorar conflicto con el mismo turno", async () => {
@@ -213,7 +197,7 @@ describe("pacienteService", () => {
             mockTurnoRepository.turnosDe.mockResolvedValue([turno]);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await pacienteService.hacerCambio(1, 1, horaInicio);
+            await pacienteService.hacerCambioFecha(1, 1, horaInicio);
 
             expect(mockTurnoRepository.update).toHaveBeenCalled();
         });
