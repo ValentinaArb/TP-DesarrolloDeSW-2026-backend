@@ -1,32 +1,53 @@
 import { TurnoService } from "./turnoService";
 import { TurnoRepository } from "../repositories/turnoRepository";
 import { UnprocessableEntityError } from "../errors/AppError"
+import { BadRequestError } from "../errors/AppError.js";
 
 class AgendaService {
     constructor() {
         this.turnoRepository = new TurnoRepository();
-    }
-
-    generarTurnosPara(servicio, medico, sede){  //!! VER CON GRUPO
-        const turnosMedico = this.turnoRepository.turnosDe(medico.id);
-        const sedesMedico = medico.sedes;
-        const medicoId = medico.id;
-        try{
-            if(!sedesMedico.includes(sede)){
-                throw new UnprocessableEntityError("El medico no tiene la sede indicada.");
-            }
-            turnosMedico.forEach(turno => {
-                if(medico.yaTieneTurno(medicoId, turno)){
-                    turnoService.crearTurno({medico,fechaInicio,servicio,sede});
-            }});
-        }
-        catch(error){
-            console.error("Error al generar turnos para el servicio:", error);
-            throw error;
-        }
+        this.medicoService = new MedicoService();
+        this.turnoService = new TurnoService();
     }
     
-    refrescarTurnosSegunDisponibilidadDe(medico){ 
+    async generarTurnosPara(medico){
+        const turnosMedico = await this.turnoRepository.turnosDe(medico.id);
+        const disponibilidadesMedico = medico.disponibilidades;
+        try{
+            disponibilidadesMedico.forEach(d  => {
+                const fechas = this.obtenerFechasPorDia(d.diaSemana);
+                fechas.forEach(fecha => {
+                    const fechaInicio = new Date(fecha.getFullYear(),fecha.getMonth(),fecha.getDate(),d.inicio.getHours(),d.inicio.getMinutes(),d.inicio.getSeconds());
+                    const fechaFin = new Date(fechaInicio.getTime() + d.duracion * 60000);
+                    const turno = new Turno(null, medico, fechaInicio, fechaFin, null, d.servicio, d.sede, EstadoTurno.DISPONIBLE, [], d.obtenerCosto()); 
+                    if(!this.medicoService.yaTieneTurno(medico.id, turno, this.turnoService)){
+                        this.turnoRepository.create(turno);
+                    }
+                });
+            });
+        }
+        catch(error){
+            return next(error);
+        }
+    }
+
+    obtenerFechasPorDia(diaSemana) {
+        const fechas = [];
+        const hoy = new Date();
+        const fin = new Date();
+        fin.setFullYear(fin.getFullYear() + 1);
+
+        while (hoy.getDay() !== diaSemana) {
+            hoy.setDate(hoy.getDate() + 1);
+        }
+        while (hoy <= fin) {
+            fechas.push(new Date(hoy));
+            hoy.setDate(hoy.getDate() + 7);
+        }
+        return fechas;
+    }
+    
+    refrescarTurnosSegunDisponibilidadDe(medico){
         try {
             turnos = this.turnoRepository.findByMedico(medico); 
             for(const turno of turnos){
@@ -42,7 +63,7 @@ class AgendaService {
             }
         }
         catch(error){
-            console.error("Error al refrescar turnos según disponibilidad del médico:", error);
+            return next(error);
         }
     }
 }

@@ -5,8 +5,10 @@ export class DisponibilidadHoraria{
     diaSemana;
     horaDesde;
     horaHasta;
+    servicio;
+    sede;
 
-    constructor(id=null, diaSemana, horaDesde, horaHasta) {
+    constructor(id=null, diaSemana, horaDesde, horaHasta, servicio, sede) {
         this.id = id;
         this.diaSemana = diaSemana;
 
@@ -15,6 +17,8 @@ export class DisponibilidadHoraria{
         }
         this.horaDesde = horaDesde;
         this.horaHasta = horaHasta;
+        this.servicio = servicio;
+        this.sede = sede;
     }
 
     abarca(fecha) {
@@ -27,5 +31,9 @@ export class DisponibilidadHoraria{
         return (fecha.getDay() === this.diaSemana) &&
             (horaFecha >= desde) &&
             (horaFecha <= hasta);
+    }
+
+    obtenerCosto() {
+        return this.servicio.costo;
     }
 }
