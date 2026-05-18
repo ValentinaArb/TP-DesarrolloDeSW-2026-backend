@@ -50,13 +50,13 @@ export class Turno{
         let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;
-        this.paciente = paciente;
-        const factoryNotificacion = new FactoryNotificacion();
-        const notificacion = await factoryNotificacion.crearSegunEstadoTurno(this);
         if(nuevoEstado === EstadoTurno.DISPONIBLE) {
             this.paciente = null;
+        }else{
+            this.paciente = paciente;
         }
-        return notificacion;
+        const factoryNotificacion = new FactoryNotificacion();
+        return await factoryNotificacion.crearNotificacion(this);
     }
 
     verificarBaja() {
@@ -67,5 +67,41 @@ export class Turno{
         const unaHora = 60 * 60 * 1000;
         
         return tiempoQueFaltaParaTurno >= unaHora;
+    }
+
+    crearMensaje(){
+        let mensaje = "";
+        let destinatario;
+        let remitente;
+        switch (this.estado) {
+            case 'REALIZADO':
+                mensaje = `Tu turno para el ${this.fechaInicio} fue realizado.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            case 'CANCELADO':
+                mensaje = `El turno del día ${this.fechaInicio} fue cancelado.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            case 'DISPONIBLE':
+                mensaje = `El turno del ${this.fechaInicio} fue cancelado.`;
+                destinatario = this.medico;
+                remitente = this.paciente;
+                break;
+            case 'RESERVADO':
+                mensaje = `El turno del ${this.fechaInicio} fue reservado por el paciente ${this.paciente.nombre} para el servicio ${this.servicio.nombre}.`;
+                destinatario = this.medico;
+                remitente = this.paciente;
+                break;
+            case 'PENDIENTE':
+                mensaje = `El turno del ${this.fechaInicio} fue modificado por el médico ${this.medico.nombre}. Por favor, revisa los detalles del turno y acepta o rechaza.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            default:
+                throw new BadRequestError("Estado de turno no reconocido para notificar");
+        }
+        return {mensaje, destinatario, remitente};
     }
 }
