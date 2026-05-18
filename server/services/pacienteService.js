@@ -20,27 +20,16 @@ export class PacienteService{
             return await this.hacerCambioFecha(pacienteId, turnoId, new Date(horaInicio));
         }
         if (motivo !== undefined) {
-            return await this.cancelarTurno(pacienteId, turnoId, motivo);
+            const turno = await this.turnoRepository.findById(turnoId);
+            if(turno.paciente.id !== pacienteId) {
+                throw new NotFoundError("El turno no pertenece a este paciente.");
+            }
+            return await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
         }
         if (estado === "PENDIENTE" && respuesta !== undefined) {
             return await this.evaluarTurnoPendiente(turnoId, respuesta);
         }
         throw new BadRequestError("Se debe enviar horaInicio, motivo o estado y respuesta");
-    }
-
-    async cancelarTurno(pacienteId,turnoId, motivo){
-        const turno = await this.turnoRepository.findById(turnoId);
-        if(turno.paciente.id !== pacienteId) {
-            throw new NotFoundError("El turno no pertenece a este paciente.");
-        }
-        try{
-            await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
-            return turno;
-        }
-        catch(error) {
-            console.error("Error al cancelar el turno:", error);
-            throw error;
-        }
     }
 
     async obtenerTurnosPorEstado(pacienteId, estadoPedido){
@@ -53,7 +42,7 @@ export class PacienteService{
         const horaFinal = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
         const medicoId = turno.medico.id;
         const medico = await this.medicoRepository.findById(medicoId);
-        if (!medico.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))) {
+        if (!medico.tieneDisponibilidadEnHorario(horaInicio, horaFinal)) {
             throw new NotFoundError("El médico no tiene disponibilidad en el horario solicitado.");
         }
         const turnosDelMedico = await this.turnoRepository.turnosDe(turno.medico.id);

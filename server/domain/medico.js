@@ -44,4 +44,7 @@ export class Medico {
             throw new NotFoundError("no se encontró el servicio en la lista de servicios del médico");
         }
     }
+    tieneDisponibilidadEnHorario(horaInicio, horaFinal) {
+         return this.disponibilidades.some((d) => d.abarca(horaInicio) || d.abarca(horaFinal))
+    }
 }

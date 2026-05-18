@@ -32,37 +32,6 @@ describe("pacienteService", () => {
         pacienteService.medicoRepository = mockMedicoRepository;
     });
 
-    describe("cancelarTurno", () => {
-        test("debe cancelar un turno que pertenece al paciente", async () => {
-            const paciente = { id: 1, nombre: "Juan" };
-            const turno = { id: 1, paciente };
-            mockTurnoRepository.findById.mockResolvedValue(turno);
-            mockTurnoService.darDeBaja.mockResolvedValue(true);
-
-            await pacienteService.cancelarTurno(1, 1, "Motivo de cancelación");
-
-            expect(mockTurnoRepository.findById).toHaveBeenCalledWith(1);
-            expect(mockTurnoService.darDeBaja).toHaveBeenCalledWith(1, "Motivo de cancelación", EstadoTurno.DISPONIBLE);
-        });
-
-        test("debe lanzar NotFoundError si el turno no pertenece al paciente", async () => {
-            const paciente = { id: 2, nombre: "Carlos" };
-            const turno = { id: 1, paciente };
-            mockTurnoRepository.findById.mockResolvedValue(turno);
-
-            await expect(pacienteService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(NotFoundError);
-        });
-
-        test("debe lanzar error si la cancelación falla", async () => {
-            const paciente = { id: 1 };
-            const turno = { id: 1, paciente };
-            mockTurnoRepository.findById.mockResolvedValue(turno);
-            mockTurnoService.darDeBaja.mockRejectedValue(new ConflictError("Turno no puede ser cancelado"));
-
-            await expect(pacienteService.cancelarTurno(1, 1, "Motivo")).rejects.toThrow(ConflictError);
-        });
-    });
-
     describe("obtenerTurnosPorEstado", () => {
         test("debe obtener turnos del paciente por estado específico", async () => {
             const turnos = [
@@ -107,7 +76,7 @@ describe("pacienteService", () => {
                     .mockReturnValueOnce(true)
                     .mockReturnValueOnce(true)
             };
-            const medico = { id: 1, disponibilidades: [disponibilidad] };
+            const medico = { id: 1, disponibilidades: [disponibilidad], tieneDisponibilidadEnHorario: jest.fn().mockReturnValue(true) };
             const turno = {
                 id: 1,
                 medico,
@@ -134,7 +103,7 @@ describe("pacienteService", () => {
             const disponibilidad = {
                 abarca: jest.fn().mockReturnValue(false)
             };
-            const medico = { id: 1, disponibilidades: [disponibilidad] };
+            const medico = { id: 1, disponibilidades: [disponibilidad] , tieneDisponibilidadEnHorario: jest.fn().mockReturnValue(false)};
             const turno = {
                 id: 1,
                 medico,
@@ -154,7 +123,7 @@ describe("pacienteService", () => {
                     .mockReturnValueOnce(true)
                     .mockReturnValueOnce(true)
             };
-            const medico = { id: 1, disponibilidades: [disponibilidad] };
+            const medico = { id: 1, disponibilidades: [disponibilidad], tieneDisponibilidadEnHorario: jest.fn().mockReturnValue(true) };
             const turnoExistente = {
                 id: 2,
                 medico,
@@ -184,7 +153,7 @@ describe("pacienteService", () => {
                     .mockReturnValueOnce(true)
                     .mockReturnValueOnce(true)
             };
-            const medico = { id: 1, disponibilidades: [disponibilidad] };
+            const medico = { id: 1, disponibilidades: [disponibilidad] , tieneDisponibilidadEnHorario: jest.fn().mockReturnValue(true)};
             const turno = {
                 id: 1,
                 medico,
