@@ -25,9 +25,9 @@ export class MedicoService {
         return this._usuarioService;
     }
 
-    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
+    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
         const medico = await this.medicoRepository.findById(id);
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
@@ -95,7 +95,7 @@ export class MedicoService {
         return medico.sedes.some(s => s.id === sedeId);
     }
 
-    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
+    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta, servicio, sede){
         const medico = await this.medicoRepository.findById(medicoId);
         
         // Buscar la disponibilidad dentro del médico por ID
@@ -109,7 +109,7 @@ export class MedicoService {
         medico.eliminarDisponibilidad(disponibilidadExistente);
         
         // Agregar la nueva disponibilidad con los datos actualizados
-        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(disponibilidadNueva);
         
         return await this.medicoRepository.update(medico, medico.id);
