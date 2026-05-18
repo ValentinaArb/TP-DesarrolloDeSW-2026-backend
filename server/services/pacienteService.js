@@ -4,6 +4,7 @@ import {TurnoService} from "./turnoService.js";
 import {EstadoTurno} from "../domain/estadoTurno.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { actualizarTurnoSchema } from "../schemas/actualizarTurno.schema.js";
 
 export class PacienteService{
     constructor() {
@@ -13,23 +14,32 @@ export class PacienteService{
     }
 
     async orquestrador(turnoId, pacienteId, motivo, horaInicio, estado, respuesta) {
-        if (horaInicio !== undefined && motivo !== undefined && estado !== undefined && respuesta !== undefined) {
-            throw new BadRequestError("No se pueden enviar motivo, horaInicio, estado y respuesta al mismo tiempo");
+        const resultado = actualizarTurnoSchema.safeParse({
+            horaInicio,
+            motivo,
+            estado,
+            respuesta
+        });
+
+        if (!resultado.success) {
+            throw new BadRequestError(resultado.error.errors.map(e => e.message).join(", "));
         }
-        if (horaInicio !== undefined) {
-            return await this.hacerCambioFecha(pacienteId, turnoId, new Date(horaInicio));
+
+        const validado = resultado.data;
+
+        if (validado.horaInicio !== undefined) {
+            return await this.hacerCambioFecha(pacienteId, turnoId, new Date(validado.horaInicio));
         }
-        if (motivo !== undefined) {
+        if (validado.motivo !== undefined) {
             const turno = await this.turnoRepository.findById(turnoId);
             if(turno.paciente.id !== pacienteId) {
                 throw new NotFoundError("El turno no pertenece a este paciente.");
             }
-            return await this.turnoService.darDeBaja(turnoId, motivo, EstadoTurno.DISPONIBLE);
+            return await this.turnoService.darDeBaja(turnoId, validado.motivo, EstadoTurno.DISPONIBLE);
         }
-        if (estado === "PENDIENTE" && respuesta !== undefined) {
-            return await this.evaluarTurnoPendiente(turnoId, respuesta);
+        if (validado.estado === "PENDIENTE" && validado.respuesta !== undefined) {
+            return await this.evaluarTurnoPendiente(turnoId, validado.respuesta);
         }
-        throw new BadRequestError("Se debe enviar horaInicio, motivo o estado y respuesta");
     }
 
     async obtenerTurnosPorEstado(pacienteId, estadoPedido){
