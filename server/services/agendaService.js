@@ -11,7 +11,6 @@ class AgendaService {
     }
     
     async generarTurnosPara(medico){
-        const turnosMedico = await this.turnoRepository.turnosDe(medico.id);
         const disponibilidadesMedico = medico.disponibilidades;
         try{
             disponibilidadesMedico.forEach(d  => {
@@ -48,19 +47,14 @@ class AgendaService {
     }
     
     refrescarTurnosSegunDisponibilidadDe(medico){
+        const turnosMedico = await this.turnoRepository.turnosDe(medico.id);       
         try {
-            turnos = this.turnoRepository.findByMedico(medico); 
-            for(const turno of turnos){
-                if(!medicoService.estaDisponible(medico.id, turno)) {
-                    if(turno.paciente === null)  {
-                        this.turnoRepository.delete(turno)
-                    }
-                }
-                else {
-                    turno.estado =EstadoTurno.CANCELADO;
-                    this.turnoRepository.update(turno); 
-                }
-            }
+            turnosMedico.forEach(turno => {
+                if(turno.estado !== EstadoTurno.RESERVADO){
+                    this.turnoRepository.delete(turno.id);
+                }   
+            });
+            this.generarTurnosPara(medico);
         }
         catch(error){
             return next(error);
