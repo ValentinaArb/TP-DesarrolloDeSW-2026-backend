@@ -1,15 +1,13 @@
-class Plan{
+export class Plan{
     id;
     nombre;
-    coberturasEspecialidad
-    coberturasPractica;
+    coberturasServicio;
 
 
-    constructor(id = null, nombre, coberturasEspecialidad, coberturasPractica) {
+    constructor(id = null, nombre, coberturasServicio) {
         this.id = id;
         this.nombre = nombre;
-        this.coberturasEspecialidad = coberturasEspecialidad;
-        this.coberturasPractica = coberturasPractica;
+        this.coberturasServicio = coberturasServicio;
     }
 
     obtenerNivelDeLista(lista, propiedad, valorBuscado) {
@@ -17,11 +15,23 @@ class Plan{
         return cobertura?.nivel || null;
     }
 
-    obtenerCoberturaPorEspecialidad(especialidad) {
-        return this.obtenerNivelDeLista(this.coberturasEspecialidad, 'especialidad', especialidad);
+    obtenerCoberturaPorServicio(servicio) {
+        return this.obtenerNivelDeLista(this.coberturasServicio, 'servicio', servicio);
     }
 
-    obtenerCoberturaPorPractica(practica) {
-        return this.obtenerNivelDeLista(this.coberturasPractica, 'practica', practica);
+    calcularCostoAbonar(servicioId, costo) {
+        // busco cobertura comparando por el id del servicio (practica o especialidad)
+        const cobertura = this.coberturasServicio.find(item => item.servicio.id === servicioId);
+        const nivel = cobertura?.nivel || "NO_CUBIERTA";
+
+        switch (nivel) {
+            case "TOTAL":
+                return { monto: 0, estadoPrestacion: "TOTAL" };
+            case "PARCIAL":
+                return { monto: costo * 0.5, estadoPrestacion: "PARCIAL" };
+            case "NO_CUBIERTA":
+            default:
+                return { monto: costo, estadoPrestacion: "NO_CUBIERTA" };
+        }
     }
 }

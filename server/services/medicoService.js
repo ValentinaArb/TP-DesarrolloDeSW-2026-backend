@@ -1,21 +1,28 @@
-import { DisponibilidadRepository } from "../repositories/disponibilidadRepository.js";
-import { TurnoRepository } from "../repositories/turnoRepository.js";
-import { Medico } from "../domain/medico.js";
-import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
-import { ConflictError } from "../errors/AppError.js";
-import { NotFoundError } from "../errors/AppError.js";
+import {TurnoRepository} from "../repositories/turnoRepository.js";
+import {ServicioRepository} from "../repositories/servicioRepository.js";
+import {Medico} from "../domain/medico.js";
+import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
+import {PacienteService} from "./pacienteService.js";
+import {ConflictError, NotFoundError} from "../errors/AppError.js";
+
 
 export class MedicoService {
     constructor(medicoRepository) {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
-        this.disponibilidadRepository = new DisponibilidadRepository();
+        this.servicioRepository = new ServicioRepository();
     }
 
-    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
+    get pacienteService() {
+        if (!this._pacienteService) {
+            this._pacienteService = new PacienteService();
+        }
+        return this._pacienteService;
+    }
+
+    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
         const medico = await this.medicoRepository.findById(id);
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
-        await this.disponibilidadRepository.create(nuevaDisponibilidad);
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
@@ -23,10 +30,15 @@ export class MedicoService {
 
     async eliminarDisponibilidad(idMedico, idDisponibilidad) {
         const medico = await this.medicoRepository.findById(idMedico);
-        const disponibilidad = await this.disponibilidadRepository.findById(idDisponibilidad);
+        
+        // Buscar la disponibilidad dentro del médico por ID
+        const disponibilidad = medico.disponibilidades.find(d => d.id === idDisponibilidad);
+        
+        if (!disponibilidad) {
+            throw new NotFoundError("La disponibilidad no existe");
+        }
 
         medico.eliminarDisponibilidad(disponibilidad);
-        await this.disponibilidadRepository.delete(idDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
     }
@@ -37,33 +49,26 @@ export class MedicoService {
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
 
-        console.log("[DEBUG] fechaInicio:", fechaInicio);
-        console.log("[DEBUG] fechaFinal:", fechaFinal);
-        console.log("[DEBUG] diaSemana fechaInicio:", fechaInicio.getDay());
-        console.log("[DEBUG] diaSemana fechaFinal:", fechaFinal.getDay());
-        console.log("[DEBUG] disponibilidades:", JSON.stringify(disponibilidadesMedico, null, 2));
-
         return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
     }
 
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
-        const turnosYaDados = turnoService.filtrarPor(medicoId);
+        const turnosYaDados = await turnoService.filtrarPor(medicoId);
 
         return turnosYaDados.some((t) => !turnoService.noSeSuperponen(t, turnoChequear));
     }
-    async crearMedico(usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades) {
+    async crearMedico(usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         try {
             const medicoExistente = await this.medicoRepository.findByMatricula(matricula);
             if (medicoExistente) {
                 throw new ConflictError("El médico que intentas crear ya existe.");
             }
-        }
-        catch (error) {
-            if (error instanceof NotFoundError) {
-                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, especialidades, practicas, sedes, disponibilidades);
+            else {
+                const nuevoMedico = new Medico(null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades);
                 return await this.medicoRepository.create(nuevoMedico);
             }
-
+        }
+        catch (error) {
             throw error;
         }
     }
@@ -83,5 +88,63 @@ export class MedicoService {
     async perteneceASede(medicoId, sedeId) {
         const medico = await this.medicoRepository.findById(medicoId);
         return medico.sedes.some(s => s.id === sedeId);
+    }
+
+    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta, servicio, sede){
+        const medico = await this.medicoRepository.findById(medicoId);
+
+        if (!medico.tieneEsaDisponibilidad(disponibilidadAModificarId)) {
+            throw new NotFoundError("La disponibilidad no existe");
+        }
+        medico.eliminarDisponibilidad(disponibilidadAModificarId);
+
+        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        medico.agregarDisponibilidad(disponibilidadNueva);
+        
+        return await this.medicoRepository.update(medico, medico.id);
+    }
+
+    async marcarTurnoComo(turnoId, estado){
+        const turno = await this.turnoRepository.findById(turnoId);
+        if (!turno) {
+            throw new NotFoundError("El turno no pertenece a este médico.");
+        }
+        if(estado === "CANCELADO"){
+            await turno.darDeBaja("El médico canceló el turno");
+        }else{
+            await turno.actualizarEstado(estado, turno.paciente, `El médico marcó el turno como ${estado}`);
+        }
+        await this.turnoRepository.update(turno, turnoId);
+        return turno;
+    }
+
+    async consultarHistorialTurnos(pacienteId, medicoId, estado){
+        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
+        return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
+    }
+
+    async consultarDisponibilidad(medicoId, servicioId){
+        const medico = await this.medicoRepository.findById(medicoId);
+        return (medico.servicios.filter(s => s.id === servicioId))
+    }
+
+    async darDeBajaServicio(medicoId, servicioId){
+        const medico = await this.medicoRepository.findById(medicoId);
+        medico.darDeBajaServicio(servicioId);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+    async darDeAltaServicio(medicoId, servicioId){
+        const medico = await this.medicoRepository.findById(medicoId);
+        const servicio = await this.servicioRepository.findById(servicioId);
+
+        medico.darDeAltaServicio(servicio);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async modificarServicio(servicioId, nombre, duracionTurno, costo){
+        const servicio = await this.servicioRepository.findById(servicioId);
+        servicio.modificarServicio(nombre, duracionTurno, costo);
+        await this.servicioRepository.update(servicio, servicioId);
+        return servicio;
     }
 }

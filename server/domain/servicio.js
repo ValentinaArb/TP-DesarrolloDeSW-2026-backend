@@ -1,4 +1,4 @@
-export class Especialidad {
+export class Servicio{
     id;
     nombre;
     duracionTurno;
@@ -6,6 +6,12 @@ export class Especialidad {
 
     constructor(id = null, nombre, duracionTurno, costo) {
         this.id = id;
+        this.nombre = nombre;
+        this.duracionTurno = duracionTurno;
+        this.costo = costo;
+    }
+
+    modificarServicio(nombre, duracionTurno, costo){
         this.nombre = nombre;
         this.duracionTurno = duracionTurno;
         this.costo = costo;

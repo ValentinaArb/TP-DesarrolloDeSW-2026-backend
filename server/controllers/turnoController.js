@@ -1,6 +1,7 @@
 import { TurnoService } from '../services/turnoService.js';
 import { MedicoService } from '../services/medicoService.js';
 import {MedicoRepository} from "../repositories/medicoRepository.js";
+import { EstadoTurno } from '../domain/estadoTurno.js';
 
 class TurnoController{
     constructor() {
@@ -8,10 +9,19 @@ class TurnoController{
         this.medicoService = new MedicoService(new MedicoRepository());
     }
 
-    async obtenerTodos(req,res,next){
-        try{
+    async obtenerTodos(req, res, next) {
+        try {
+            const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;
             const paginacion = this.extraerPaginacion(req.query);
-            const resultado = await this.turnoService.obtenerTodos(paginacion);
+
+            const filtros = { medicoId, servicioId, sede, fechaDesde, fechaHasta };
+            const orden = {
+                sortBy: sortBy === 'costo' ? 'costo' : 'fecha',
+                sortOrder: sortOrder === 'desc' ? 'desc' : 'asc'
+            };
+
+            const resultado = await this.turnoService.obtenerTodos({ pacienteId, filtros, orden, ...paginacion });
+
             res.status(200).json({
                 status: 'success',
                 data: resultado.turno,
@@ -22,12 +32,9 @@ class TurnoController{
                     totalTurnos: resultado.totalTurno
                 }
             });
-        }
-        catch(error){
+        } catch (error) {
             return next(error);
         }
-
-
     }
 
     extraerPaginacion(query){
@@ -51,7 +58,7 @@ class TurnoController{
     //POST /turnos
     async crearTurno(req, res,next){
         try{
-            //const {medicoId, fechaInicio, practica, sede} = req.body
+            //const {medicoId, fechaInicio, servicio, sede} = req.body
             const turnoCreado = await this.turnoService.crearTurno(req.body, this.medicoService);
             res.status(201).json({mensaje: "Turno creado exitosamente.", data: turnoCreado})
         }
@@ -88,46 +95,24 @@ class TurnoController{
         try{
             const {id} = req.params;
             await this.turnoService.eliminarTurno(id);
-            res.status(200).json({mensaje : "Turno fue dado eliminado con exito"});
+            res.status(200).json({mensaje : "Turno fue eliminado con exito"});
         }
         catch(error){
             return next(error);
         }
-    }    
-    
-    async modificarEstado(req, res) {
-    try {
-        const { id } = req.params;
-        // pacienteId y motivo para extraerlos del body
-        const { operacion, estado, pacienteId, motivo } = req.body; 
-
-        if (operacion === 'alta' || estado === 'activo') {
-            // nos deben mandar si o si el pacienteId
-            if (!pacienteId) {
-                return res.status(400).json({ error: 'Falta el pacienteId para dar de alta' });
-            }
-            await this.turnoService.darDeAlta(id, pacienteId);
-            return res.status(200).json({ mensaje: "Turno fue dado de alta con éxito" });
-
-        } else if (operacion === 'baja' || estado === 'inactivo') {
-            // nos deben mandar si o si el motivo
-            if (!motivo) {
-                return res.status(400).json({ error: 'Falta el motivo para dar de baja' });
-            }
-            await this.turnoService.darDeBaja(id, motivo);
-            return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
-
-        } else {
-            return res.status(400).json({ error: 'Operación no válida' });
-        }
-
-    } catch (error) {
-        res.status(ERRORES.BAD_REQUEST.status).json({ mensaje: ERRORES.BAD_REQUEST.mensaje });
     }
-}
+
+    async modificarEstado(req, res, next) {
+        try {
+            const { id } = req.params;
+            await this.turnoService.modificarEstado(id, req.body);
+            res.status(200).json({ mensaje: "Estado del turno modificado con éxito" });
+        } catch (error) {
+            return next(error);
+        }
+    }
 
 }
-
 
 const turnoController = new TurnoController();
 export default turnoController;

@@ -1,5 +1,5 @@
-const nivelCobertura = Object.freeze({
-    TOTAL: "total",
-    PARCIAL: "parcial",
-    NO_CUBIERTA: "no_cubierta"
+export const NivelCobertura = Object.freeze({
+    TOTAL: "TOTAL",
+    PARCIAL: "PARCIAL",
+    NO_CUBIERTA: "NO_CUBIERTA"
 });

@@ -7,6 +7,9 @@ import { MedicoService } from './medicoService.js';
 import { UnprocessableEntityError } from "../errors/AppError.js";
 import { ConflictError } from "../errors/AppError.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { PlanRepository } from '../repositories/planRepository.js';
+import { CambioEstadoTurno } from '../domain/cambioEstadoTurno.js';
+import {FactoryNotificacion} from "../domain/factoryNotificacion.js";
 
 export class TurnoService {
     constructor() {
@@ -14,16 +17,19 @@ export class TurnoService {
         this.pacienteRepository = new PacienteRepository();
         this.medicoRepository = new MedicoRepository();
         this.medicoService = new MedicoService(this.medicoRepository);
+        this.planRepository = new PlanRepository();
+        this.factoryNotificacion = new FactoryNotificacion();
     }
 
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if (!turno.estado === EstadoTurno.RESERVADO) {
-                console.error("El turno no esta reservado")
+            if (!turno.estaReservado()) {
+                throw new ConflictError("El turno no está reservado.");
             }
             turno.darDeBaja(motivo);
             await this.turnoRepository.update(turno, turnoId);
+            return turno;
         } catch (error) {
             console.error("Error al dar de baja el turno:", error);
             throw error;
@@ -34,11 +40,13 @@ export class TurnoService {
         try {
             const paciente = await this.pacienteRepository.findById(pacienteId)
             const turno = await this.turnoRepository.findById(turnoId);
-            const listaTurnos = this.turnoRepository.turnosPara(paciente);
-            if (listaTurnos.some(t => this.noSeSuperponen(t, turno))) {
-                turno.darDeAlta(paciente);
-                await this.turnoRepository.update(turno, turnoId);
+            const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
+            const haySuperposicion = listaTurnos.find(t => !this.noSeSuperponen(t, turno));
+            if (haySuperposicion) {
+                throw new ConflictError("El turno se superpone con uno existente.");
             }
+            turno.darDeAlta(paciente);
+            await this.turnoRepository.update(turno, turnoId);
         }
         catch (error) {
             console.error("Error al dar de alta el turno:", error);
@@ -46,7 +54,7 @@ export class TurnoService {
         }
     }
 
-    async crearTurno({ medicoId, fechaInicio, practica, sede }, medicoService = this.medicoService) {
+    async crearTurno({ medicoId, fechaInicio, servicio, sede }, medicoService = this.medicoService) {
         const medico = await this.medicoRepository.findById(medicoId);
         fechaInicio = new Date(fechaInicio);
 
@@ -58,18 +66,17 @@ export class TurnoService {
             throw new UnprocessableEntityError("No se pueden crear turnos en fechas pasadas.");
         }
 
-        const fechaFinal = new Date(fechaInicio.getTime() + practica.duracionEnMins * 60000);
+        const fechaFinal = new Date(fechaInicio.getTime() + servicio.duracionTurno * 60000);
 
-        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, practica, sede, EstadoTurno.DISPONIBLE, [EstadoTurno.DISPONIBLE], null);
+        const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], servicio.costo);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
-        const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, practica.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
             throw new UnprocessableEntityError("El medico no esta disponible en la fecha y hora indicada.");
         }
-        if (!servicioPerteneceAMedico) {
-            throw new UnprocessableEntityError("El medico no realiza esa practica especifica");
+        if (!await nuevoTurno.servicioPerteneceAMedico(servicio.id)) {
+            throw new UnprocessableEntityError("El medico no realiza ese servicio especifico");
         }
         if (!perteneceASede) {
             throw new UnprocessableEntityError("El medico no pertenece a esa sede");
@@ -90,21 +97,30 @@ export class TurnoService {
         return await this.turnoRepository.findById(turnoId);
     }
 
-    async obtenerTodos({ pagina = 1, limitePorPagina = 10 } = {}) {
-        if (this.validarPaginacion(pagina, limitePorPagina)) {
-            const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
-            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-
-            return {
-                turno,
-                pagina,
-                limitePorPagina,
-                totalPaginas,
-                totalTurno
-            }
-        }
-        else {
+    async obtenerTodos({ pacienteId, filtros, orden, pagina = 1, limitePorPagina = 10 } = {}) {
+        if (!this.validarPaginacion(pagina, limitePorPagina)) {
             throw new BadRequestError("Paginación errónea");
+        }
+
+        if (pacienteId) {
+            return await this.buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina, limitePorPagina });
+        }
+
+        const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
+        const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+
+        return { turno, pagina, limitePorPagina, totalPaginas, totalTurno };
+    }
+
+    async modificarEstado(turnoId, { operacion, pacienteId, motivo }) {
+        if (operacion === 'alta') {
+            if (!pacienteId) throw new BadRequestError("Falta el pacienteId para dar de alta");
+            await this.darDeAlta(turnoId, pacienteId);
+        } else if (operacion === 'baja') {
+            if (!motivo) throw new BadRequestError("Falta el motivo para dar de baja");
+            await this.darDeBaja(turnoId, motivo);
+        } else {
+            throw new BadRequestError("Operación no válida");
         }
     }
 
@@ -115,17 +131,77 @@ export class TurnoService {
             limitePagina > 0;
     }
 
-    filtrarPor(medicoId) {
-        return this.turnoRepository.turnosDe(medicoId);
+    async filtrarPor(medicoId) {
+        return await this.turnoRepository.turnosDe(medicoId);
     }
 
     noSeSuperponen(turno1, turno2) {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
     }
 
-    async servicioPerteneceAMedico(medicoId, practicaId) { //que el médico brinde la práctica por la cual quieren usarlo
-        const medico = await this.medicoRepository.findById(medicoId);
-        return medico.practicas.some(p => p.id === practicaId)
+    async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+        if (this.validarPaginacion(pagina, limitePorPagina)) {
+            const paciente = await this.pacienteRepository.findById(pacienteId);
+            const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+            const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+
+            const turnosCotizados = turnosDB.map(turno => this._cotizarTurno(turno, plan));
+
+            turnosCotizados.sort((a, b) => {
+                let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
+                let valorB = orden.sortBy === 'costo' ? b.montoAAbonar : new Date(`${b.fecha}T${b.hora}`).getTime();
+
+                if (valorA < valorB) return orden.sortOrder === 'asc' ? -1 : 1;
+                if (valorA > valorB) return orden.sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const totalTurno = turnosCotizados.length;
+            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+            const startIndex = (pagina - 1) * limitePorPagina;
+            const turno = turnosCotizados.slice(startIndex, startIndex + limitePorPagina);
+
+            return {
+                turno,
+                pagina,
+                limitePorPagina,
+                totalPaginas,
+                totalTurno
+            };
+        } else {
+            throw new BadRequestError("Paginación errónea");
+        }
+    }
+
+    async modificarTurno(turnoId, horaInicio){
+        const turno = await this.turnoRepository.findById(turnoId);
+        if(turno.horaHasta !== horaInicio) {
+            const horaFinalPropuesta = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
+            turno.fechaInicio = horaInicio;
+            turno.fechaFinal = horaFinalPropuesta;
+            turno.estado = EstadoTurno.PENDIENTE;
+            await this.turnoRepository.update(turno, turnoId);
+            return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
+        }
+        else{
+            throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
+        }
+    }
+
+    _cotizarTurno(turno, plan) {
+        const cotizacion = plan.calcularCostoAbonar(turno.servicio.id, turno.costo);
+        const fechaObj = new Date(turno.fechaInicio);
+
+        return {
+            turnoId: turno.id,
+            estadoPrestacion: cotizacion.estadoPrestacion,
+            montoAAbonar: cotizacion.monto,
+            profesional: `${turno.medico.nombre || ''} ${turno.medico.apellido || ''}`.trim(),
+            servicio: turno.servicio.nombre || "N/A",
+            fecha: fechaObj.toISOString().split('T')[0],
+            hora: fechaObj.toTimeString().split(' ')[0],
+            sede: turno.sede?.nombre || "N/A"
+        };
     }
 
 }
