@@ -60,9 +60,9 @@ class MedicoController {
     async agregarDisponibilidad(req, res, next) {
         try{
             const { id } = req.params;
-            const { diaSemana, horaDesde, horaHasta } = req.body;
+            const { diaSemana, horaDesde, horaHasta, servicio, sede } = req.body;
 
-            await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta);
+            await this.medicoService.agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede);
             res.status(200).json({mensaje: "Horario actualizado"});
         }
         catch(error) {
@@ -88,9 +88,9 @@ class MedicoController {
     async modificarDisponibilidad(req, res, next){
         try {
             const {medicoId, disponibilidadId} = req.params;
-            const {diaSemana, horaDesde, horaHasta} = req.body
+            const {diaSemana, horaDesde, horaHasta, servicio, sede} = req.body
 
-            await this.medicoService.modificarDisponibilidad(medicoId, disponibilidadId, diaSemana, horaDesde, horaHasta);
+            await this.medicoService.modificarDisponibilidad(medicoId, disponibilidadId, diaSemana, horaDesde, horaHasta, servicio, sede);
             res.status(200).json({mensaje: "Disponibilidad Modificada"})
         }
         catch (error){

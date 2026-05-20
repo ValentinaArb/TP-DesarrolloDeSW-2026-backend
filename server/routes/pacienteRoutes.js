@@ -1,5 +1,5 @@
 import { Router } from "express";
-import usuarioController from "../controllers/usuarioController.js";
+import pacienteController from "../controllers/pacienteController.js";
 
 const router = Router();
 
@@ -102,7 +102,7 @@ const router = Router();
  *     tags:
  *       - Pacientes
  *     summary: Actualizar un turno reservado
- *     description: Permite a un paciente actualizar su turno. Puede cambiar el horario o cancelarlo con motivo.
+ *     description: Permite a un paciente actualizar su turno. Puede cambiar el horario, cancelarlo con motivo, responder a un turno pendiente.
  *     parameters:
  *       - name: pacienteId
  *         in: path
@@ -132,6 +132,15 @@ const router = Router();
  *                 type: string
  *                 example: "No puedo asistir"
  *                 description: Motivo de la cancelación (si se desea cancelar el turno)
+ *               estado:
+ *                 type: string
+ *                 example: "PENDIENTE"
+ *                 description: Estado del turno (ej. PENDIENTE, REALIZADO, CANCELADO, etc.)
+ *               respuesta:
+ *                 type: string
+ *                 enum: ["true", "false"]
+ *                 example: "true"
+ *                 description: Respuesta a un turno pendiente - Aceptar (true) o rechazar (false)
  *     responses:
  *       200:
  *         description: Turno actualizado exitosamente
@@ -153,62 +162,14 @@ const router = Router();
  *         description: El turno no puede ser actualizado en este estado o hay conflicto de horarios
  *       500:
  *         description: Error del servidor
- * 
- * /pacientes/{pacienteId}/turnos/{turnoId}/pendiente:
- *   patch:
- *     tags:
- *       - Pacientes
- *     summary: Evaluar un turno pendiente
- *     parameters:
- *       - name: pacienteId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: ID único del paciente
- *       - name: turnoId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: ID único del turno a evaluar
- *       - name: respuesta
- *         in: query
- *         required: true
- *         schema:
- *           type: boolean
- *         description: Aceptar (true) o rechazar (false)
- *     responses:
- *       200:
- *         description: Turno pendiente procesado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: "Turno pendiente procesado exitosamente"
- *       400:
- *         description: IDs inválidos o parámetros incorrectos
- *       401:
- *         description: No autorizado
- *       404:
- *         description: Paciente o turno no encontrado
- *       409:
- *         description: El turno no puede ser evaluado en este estado
- *       500:
- *         description: Error del servidor
  */
 
 //GET
-router.get('/:pacienteId/turnos', async( req, res, next) => await usuarioController.obtenerHistorialTurnos(req, res, next));
+router.get('/:pacienteId/turnos', async( req, res, next) => await pacienteController.obtenerHistorialTurnos(req, res, next));
 
 //POST
-router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await usuarioController.reservarTurno(req, res,next));
+router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await pacienteController.reservarTurno(req, res,next));
 
 //PATCH
-router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await usuarioController.actualizarTurno(req, res, next));
-router.patch('/:pacienteId/turnos/:turnoId/pendiente', async(req, res, next) => await usuarioController.evaluarTurnoPendiente(req, res, next));
-
+router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await pacienteController.actualizarTurno(req, res, next));
 export default router;

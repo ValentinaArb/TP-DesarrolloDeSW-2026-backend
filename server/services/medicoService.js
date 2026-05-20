@@ -13,16 +13,16 @@ export class MedicoService {
         this.servicioRepository = new ServicioRepository();
     }
 
-    get usuarioService() {
+    get pacienteService() {
         if (!this._usuarioService) {
-            this._usuarioService = new UsuarioService();
+            this._usuarioService = new PacienteService();
         }
         return this._usuarioService;
     }
 
-    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
+    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
         const medico = await this.medicoRepository.findById(id);
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
@@ -90,7 +90,7 @@ export class MedicoService {
         return medico.sedes.some(s => s.id === sedeId);
     }
 
-    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
+    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta, servicio, sede){
         const medico = await this.medicoRepository.findById(medicoId);
 
         if (!medico.tieneEsaDisponibilidad(disponibilidadAModificarId)) {
@@ -119,7 +119,7 @@ export class MedicoService {
     }
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){
-        const turnosPaciente = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
+        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
         return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
     }
 

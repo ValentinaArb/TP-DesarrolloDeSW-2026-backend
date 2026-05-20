@@ -7,8 +7,8 @@ export class DisponibilidadService {
         this.disponibilidadRepository =  new DisponibilidadRepository();
     }
 
-    async crearDisponibilidad(diaSemana, horaDesde, horaHasta) {
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null,diaSemana, horaDesde, horaHasta);
+    async crearDisponibilidad(diaSemana, horaDesde, horaHasta, servicio, sede) {
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null,diaSemana, horaDesde, horaHasta, servicio, sede);
         if(diaSemana && horaDesde && horaHasta){
             return await this.disponibilidadRepository.create(nuevaDisponibilidad);
         }

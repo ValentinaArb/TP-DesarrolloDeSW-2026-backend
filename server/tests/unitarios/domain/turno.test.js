@@ -16,7 +16,7 @@ describe('Turno (domain)', () => {
 	})
 
 	test('actualizarEstado agrega cambio al historial y retorna notificacion (mocked)', async () => {
-		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearSegunEstadoTurno').mockResolvedValue({id: 'n1'})
+		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearNotificacion').mockResolvedValue({id: 'n1'})
 		const inicio = new Date(Date.now() + 2 * 60 * 60 * 1000)
 		const fin = new Date(inicio.getTime() + 30 * 60 * 1000)
 		const t = new Turno('t1', {id: 'm1', nombre: 'M'}, inicio, fin, null, {nombre: 'S'}, null, EstadoTurno.DISPONIBLE, [])
@@ -38,7 +38,7 @@ describe('Turno (domain)', () => {
 	})
 
 	test('darDeBaja no lanza cuando hay tiempo suficiente (actualiza asincrónicamente)', async () => {
-		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearSegunEstadoTurno').mockResolvedValue({id: 'n2'})
+		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearNotificacion').mockResolvedValue({id: 'n2'})
 		const inicio = new Date(Date.now() + 2 * 60 * 60 * 1000)
 		const fin = new Date(inicio.getTime() + 30 * 60 * 1000)
 		const t = new Turno('t3', {id: 'm1', nombre: 'M'}, inicio, fin, {id: 'p1', nombre: 'P'}, null, null, EstadoTurno.RESERVADO, [])
