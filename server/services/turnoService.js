@@ -101,7 +101,7 @@ export class TurnoService {
         }
 
         if (pacienteId) {
-            return await this._buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina, limitePorPagina });
+            return await this.buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina, limitePorPagina });
         }
 
         const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
@@ -142,7 +142,7 @@ export class TurnoService {
         return medico.servicios.some(s => s.id === servicioId)
     }
 
-    async _buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+    async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
         if (this.validarPaginacion(pagina, limitePorPagina)) {
             const paciente = await this.pacienteRepository.findById(pacienteId);
             const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
