@@ -95,21 +95,30 @@ export class TurnoService {
         return await this.turnoRepository.findById(turnoId);
     }
 
-    async obtenerTodos({ pagina = 1, limitePorPagina = 10 } = {}) {
-        if (this.validarPaginacion(pagina, limitePorPagina)) {
-            const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
-            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-
-            return {
-                turno,
-                pagina,
-                limitePorPagina,
-                totalPaginas,
-                totalTurno
-            }
-        }
-        else {
+    async obtenerTodos({ pacienteId, filtros, orden, pagina = 1, limitePorPagina = 10 } = {}) {
+        if (!this.validarPaginacion(pagina, limitePorPagina)) {
             throw new BadRequestError("Paginación errónea");
+        }
+
+        if (pacienteId) {
+            return await this._buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina, limitePorPagina });
+        }
+
+        const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
+        const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+
+        return { turno, pagina, limitePorPagina, totalPaginas, totalTurno };
+    }
+
+    async modificarEstado(turnoId, { operacion, pacienteId, motivo }) {
+        if (operacion === 'alta') {
+            if (!pacienteId) throw new BadRequestError("Falta el pacienteId para dar de alta");
+            await this.darDeAlta(turnoId, pacienteId);
+        } else if (operacion === 'baja') {
+            if (!motivo) throw new BadRequestError("Falta el motivo para dar de baja");
+            await this.darDeBaja(turnoId, motivo);
+        } else {
+            throw new BadRequestError("Operación no válida");
         }
     }
 
@@ -133,7 +142,7 @@ export class TurnoService {
         return medico.servicios.some(s => s.id === servicioId)
     }
 
-    async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+    async _buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
         if (this.validarPaginacion(pagina, limitePorPagina)) {
             const paciente = await this.pacienteRepository.findById(pacienteId);
             const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
