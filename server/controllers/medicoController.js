@@ -1,4 +1,5 @@
 import { MedicoService } from '../services/medicoService.js';
+import { TurnoService } from '../services/turnoService.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import { TurnoRepository} from "../repositories/turnoRepository.js";
@@ -8,6 +9,7 @@ class MedicoController {
         this.medicoService = new MedicoService(new MedicoRepository());
         this.servicioRepository = new ServicioRepository();
         this.turnoRepository = new TurnoRepository();
+        this.turnoService = new TurnoService();
     }
 
     // GET /medicos
@@ -99,10 +101,9 @@ class MedicoController {
     //PATCH /medicos/:medicoId/turnos/:turnoId
     async marcarTurnoComo(req, res, next){
         try{
-            const {medicoId, turnoId} = req.params;
+            const {turnoId} = req.params;
             const {estado} = req.body;
-            await this.medicoService.marcarTurnoComo(medicoId, turnoId, estado);
-            const turnoCambiado = await this.turnoRepository.findById(turnoId)
+            const turnoCambiado = await this.medicoService.marcarTurnoComo(turnoId, estado);
             res.status(200).json(turnoCambiado)
         }
         catch (error){
@@ -175,7 +176,7 @@ class MedicoController {
         try{
             const{medicoId, turnoId} = req.params;
             const {horaInicio} = req.body;
-            await this.medicoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
+            await this.turnoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
             res.status(200).json("El turno fue modificado");
         }catch(error){
             return next(error);

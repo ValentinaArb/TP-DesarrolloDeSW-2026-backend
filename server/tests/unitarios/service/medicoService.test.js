@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, jest } from "@jest/globals"
 import { MedicoService } from "../../../services/medicoService.js";
-import { ConflictError, NotFoundError, BadRequestError } from "../../../errors/AppError.js";
+import { ConflictError, NotFoundError } from "../../../errors/AppError.js";
 
 describe("medicoService", () => {
     let medicoService;
@@ -145,15 +145,15 @@ describe("medicoService", () => {
         test("debe lanzar NotFoundError si el turno no pertenece al medico", async () => {
             mockTurnoRepository.turnosDe.mockResolvedValue([]);
 
-            await expect(medicoService.marcarTurnoComo(1, 999, "COMPLETADO")).rejects.toThrow(NotFoundError);
+            await expect(medicoService.marcarTurnoComo(1, "COMPLETADO")).rejects.toThrow(NotFoundError);
         });
 
         test("debe marcar un turno como cancelado", async () => {
             const turno = { id: 1, darDeBaja: jest.fn(), actualizarEstado: jest.fn() };
-            mockTurnoRepository.turnosDe.mockResolvedValue([turno]);
+            mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await medicoService.marcarTurnoComo(1, 1, "CANCELADO");
+            await medicoService.marcarTurnoComo(1,"CANCELADO");
             
             expect(turno.darDeBaja).toHaveBeenCalled();
             expect(mockTurnoRepository.update).toHaveBeenCalled();
