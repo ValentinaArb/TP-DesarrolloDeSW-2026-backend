@@ -168,7 +168,7 @@ export class MedicoService {
             turno.fechaFinal = horaFinalPropuesta;
             turno.estado = EstadoTurno.PENDIENTE;
             await this.turnoRepository.update(turno, turnoId);
-            return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
+            return await this.factoryNotificacion.crearNotificacion(turno);
         }
         else{
             throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
