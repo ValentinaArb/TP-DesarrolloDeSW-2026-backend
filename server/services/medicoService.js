@@ -2,11 +2,8 @@ import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
-import {BadRequestError, ConflictError, NotFoundError} from "../errors/AppError.js";
-import {EstadoTurno} from "../domain/estadoTurno.js";
-import {UsuarioService} from "./usuarioService.js";
-import {Turno} from "../domain/turno.js";
-import {FactoryNotificacion} from "../domain/factoryNotificacion.js";
+import {PacienteService} from "./pacienteService.js";
+import {ConflictError, NotFoundError} from "../errors/AppError.js";
 
 
 export class MedicoService {
@@ -14,20 +11,18 @@ export class MedicoService {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.servicioRepository = new ServicioRepository();
-        this.factoryNotificacion = new FactoryNotificacion();
-
     }
 
-    get usuarioService() {
-        if (!this._usuarioService) {
-            this._usuarioService = new UsuarioService();
+    get pacienteService() {
+        if (!this._pacienteService) {
+            this._pacienteService = new PacienteService();
         }
-        return this._usuarioService;
+        return this._pacienteService;
     }
 
-    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta) {
+    async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
         const medico = await this.medicoRepository.findById(id);
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
@@ -95,29 +90,22 @@ export class MedicoService {
         return medico.sedes.some(s => s.id === sedeId);
     }
 
-    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta){
+    async modificarDisponibilidad(medicoId, disponibilidadAModificarId, diaSemana, horaDesde, horaHasta, servicio, sede){
         const medico = await this.medicoRepository.findById(medicoId);
-        
-        // Buscar la disponibilidad dentro del médico por ID
-        const disponibilidadExistente = medico.disponibilidades.find(d => d.id === disponibilidadAModificarId);
-        
-        if (!disponibilidadExistente) {
+
+        if (!medico.tieneEsaDisponibilidad(disponibilidadAModificarId)) {
             throw new NotFoundError("La disponibilidad no existe");
         }
-        
-        // Eliminar la disponibilidad existente
-        medico.eliminarDisponibilidad(disponibilidadExistente);
-        
-        // Agregar la nueva disponibilidad con los datos actualizados
+        medico.eliminarDisponibilidad(disponibilidadAModificarId);
+
         const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
         medico.agregarDisponibilidad(disponibilidadNueva);
         
         return await this.medicoRepository.update(medico, medico.id);
     }
 
-    async marcarTurnoComo(medicoId, turnoId, estado){
-        const turnosDeMedico = await this.turnoRepository.turnosDe(medicoId);
-        const turno = turnosDeMedico.find(t => String(t.id) === String(turnoId));
+    async marcarTurnoComo(turnoId, estado){
+        const turno = await this.turnoRepository.findById(turnoId);
         if (!turno) {
             throw new NotFoundError("El turno no pertenece a este médico.");
         }
@@ -126,11 +114,12 @@ export class MedicoService {
         }else{
             await turno.actualizarEstado(estado, turno.paciente, `El médico marcó el turno como ${estado}`);
         }
-        return await this.turnoRepository.update(turno, turnoId);
+        await this.turnoRepository.update(turno, turnoId);
+        return turno;
     }
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado){
-        const turnosPaciente = await this.usuarioService.obtenerTurnosPorEstado(pacienteId, estado);
+        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
         return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
     }
 
@@ -157,21 +146,5 @@ export class MedicoService {
         servicio.modificarServicio(nombre, duracionTurno, costo);
         await this.servicioRepository.update(servicio, servicioId);
         return servicio;
-    }
-
-    async modificarTurno(medicoId, turnoId, horaInicio){
-        const turno = await this.turnoRepository.findById(turnoId);
-        if(turno.medico.id === medicoId && turno.horaHasta !== horaInicio) {
-            const horaFinalPropuesta = new Date(horaInicio.getTime() + turno.servicio.duracionTurno * 60000);
-            
-            turno.fechaInicio = horaInicio;
-            turno.fechaFinal = horaFinalPropuesta;
-            turno.estado = EstadoTurno.PENDIENTE;
-            await this.turnoRepository.update(turno, turnoId);
-            return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
-        }
-        else{
-            throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
-        }
     }
 }

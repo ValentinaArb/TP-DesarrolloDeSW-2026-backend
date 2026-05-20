@@ -29,8 +29,8 @@ class DisponibilidadController {
     // POST /disponibilidades
     async crearDisponibilidad(req, res,next) {
         try {
-            const { diaSemana, horaDesde, horaHasta } = req.body;
-            const nuevaDispo = await this.disponibilidadService.crearDisponibilidad(diaSemana, horaDesde, horaHasta);
+            const { diaSemana, horaDesde, horaHasta, servicio, sede } = req.body;
+            const nuevaDispo = await this.disponibilidadService.crearDisponibilidad(diaSemana, horaDesde, horaHasta, servicio, sede);
             res.status(201).json({
                 mensaje: "Disponibilidad creada", data: nuevaDispo
             });

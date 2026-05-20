@@ -6,7 +6,6 @@ export class CambioEstadoTurno {
     paciente;
     motivo
 
-
     constructor(id, fechaInicioIngreso, estado, turno, paciente, motivo) {
         this.id = id;
         this.fechaInicioIngreso = fechaInicioIngreso;

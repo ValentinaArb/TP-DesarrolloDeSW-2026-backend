@@ -44,4 +44,7 @@ export class Medico {
             throw new NotFoundError("no se encontró el servicio en la lista de servicios del médico");
         }
     }
+    tieneEsaDisponibilidad(disponibilidadId) {
+        return this.disponibilidades.find(d => d.id === disponibilidadId);
+    }
 }

@@ -50,13 +50,13 @@ export class Turno{
         let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;
-        this.paciente = paciente;
-        const factoryNotificacion = new FactoryNotificacion();
-        const notificacion = await factoryNotificacion.crearSegunEstadoTurno(this);
         if(nuevoEstado === EstadoTurno.DISPONIBLE) {
             this.paciente = null;
+        }else{
+            this.paciente = paciente;
         }
-        return notificacion;
+        const factoryNotificacion = new FactoryNotificacion();
+        return await factoryNotificacion.crearNotificacion(this);
     }
 
     verificarBaja() {
