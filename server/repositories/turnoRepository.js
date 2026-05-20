@@ -26,16 +26,16 @@ export class TurnoRepository extends Repository {
         const query = { estado: "DISPONIBLE" };
 
         if (filtros.medicoId) query["medicoInfo.id"] = filtros.medicoId;
-        if (filtros.servicioId) query["servicioInfo.id"] = filtros.servicioId; 
+        if (filtros.servicioId) query["servicioInfo.id"] = filtros.servicioId;
         if (filtros.sede) query["sedeInfo.nombre"] = filtros.sede;
-        
+
         if (filtros.fechaDesde || filtros.fechaHasta) {
             query.fechaInicio = {};
             if (filtros.fechaDesde) query.fechaInicio.$gte = new Date(filtros.fechaDesde);
             if (filtros.fechaHasta) query.fechaInicio.$lte = new Date(filtros.fechaHasta);
         }
-        
-        // delega al schema del turno
-        return await TurnoModel.find(query).lean(); 
+
+        const documentos = await TurnoModel.find(query);
+        return documentos.map(doc => this.mapper.toDomain(doc));
     }
 }

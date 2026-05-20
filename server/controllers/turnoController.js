@@ -9,26 +9,6 @@ class TurnoController{
         this.medicoService = new MedicoService(new MedicoRepository());
     }
 
-    async obtenerTodos(req,res,next){
-        try{
-            const paginacion = this.extraerPaginacion(req.query);
-            const resultado = await this.turnoService.obtenerTodos(paginacion);
-            res.status(200).json({
-                status: 'success',
-                data: resultado.turno,
-                paginacion: {
-                    numeroPagina: resultado.pagina,
-                    limitePorPagina: resultado.limitePorPagina,
-                    totalPaginas: resultado.totalPaginas,
-                    totalTurnos: resultado.totalTurno
-                }
-            });
-        }
-        catch(error){
-            return next(error);
-        }
-    }
-
     async obtenerTodos(req, res, next) {
         try {
             const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;

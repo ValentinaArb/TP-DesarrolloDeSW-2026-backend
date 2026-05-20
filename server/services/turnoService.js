@@ -139,28 +139,7 @@ export class TurnoService {
             const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
             const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
 
-            const turnosCotizados = turnosDB.map(turno => {
-                const servicioInfo = turno.servicioInfo || turno.servicio || {};
-                const servicioId = servicioInfo.id || servicioInfo._id;
-                const costo = servicioInfo.costo ?? servicioInfo.costo ?? 0;                
-                const cotizacion = plan.calcularCostoAbonar(servicioId, costo);
-                const fechaObj = new Date(turno.fechaInicio);
-                const fechaFormateada = fechaObj.toISOString().split('T');
-                const horaFormateada = fechaObj.toTimeString().split(' ');
-                const medicoInfo = turno.medicoInfo || turno.medico || {};
-                const sedeInfo = turno.sedeInfo || turno.sede || {};
-
-                return {
-                    turnoId: turno._id,
-                    estadoPrestacion: cotizacion.estadoPrestacion,
-                    montoAAbonar: cotizacion.monto,
-                    profesional: `${medicoInfo.nombre || ''} ${medicoInfo.apellido || ''}`.trim(),
-                    servicio: servicioInfo.nombre || "N/A",
-                    fecha: fechaFormateada,
-                    hora: horaFormateada,
-                    sede: sedeInfo.nombre || "N/A"
-                };
-            });
+            const turnosCotizados = turnosDB.map(turno => this._cotizarTurno(turno, plan));
 
             turnosCotizados.sort((a, b) => {
                 let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
@@ -186,6 +165,22 @@ export class TurnoService {
         } else {
             throw new BadRequestError("Paginación errónea");
         }
+    }
+
+    _cotizarTurno(turno, plan) {
+        const cotizacion = plan.calcularCostoAbonar(turno.servicio.id, turno.costo);
+        const fechaObj = new Date(turno.fechaInicio);
+
+        return {
+            turnoId: turno.id,
+            estadoPrestacion: cotizacion.estadoPrestacion,
+            montoAAbonar: cotizacion.monto,
+            profesional: `${turno.medico.nombre || ''} ${turno.medico.apellido || ''}`.trim(),
+            servicio: turno.servicio.nombre || "N/A",
+            fecha: fechaObj.toISOString().split('T')[0],
+            hora: fechaObj.toTimeString().split(' ')[0],
+            sede: turno.sede?.nombre || "N/A"
+        };
     }
 
 }
