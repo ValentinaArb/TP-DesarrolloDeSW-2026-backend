@@ -88,7 +88,7 @@ const seedDatabase = async () => {
         paciente2 = await pacienteRepository.create(paciente2);
         console.log("Pacientes creados:", paciente1.id, paciente2.id);
 
-        let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00");
+        let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00",servicio1, sede1);
         console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
         let medico1 = new Medico(null, usuario1, 456, "Dra. Valentina", "Arbarello", [servicio1, servicio2], [sede1],  [disponibilidad1]);
