@@ -75,4 +75,40 @@ export class Turno{
     async servicioPerteneceAMedico(servicioId) {
         return this.medico.servicios.some(s => s.id === servicioId);
     }
+
+    crearMensaje(){
+        let mensaje = "";
+        let destinatario;
+        let remitente;
+        switch (this.estado) {
+            case 'REALIZADO':
+                mensaje = `Tu turno para el ${this.fechaInicio} fue realizado.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            case 'CANCELADO':
+                mensaje = `El turno del día ${this.fechaInicio} fue cancelado.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            case 'DISPONIBLE':
+                mensaje = `El turno del ${this.fechaInicio} fue cancelado.`;
+                destinatario = this.medico;
+                remitente = this.paciente;
+                break;
+            case 'RESERVADO':
+                mensaje = `El turno del ${this.fechaInicio} fue reservado por el paciente ${this.paciente.nombre} para el servicio ${this.servicio.nombre}.`;
+                destinatario = this.medico;
+                remitente = this.paciente;
+                break;
+            case 'PENDIENTE':
+                mensaje = `El turno del ${this.fechaInicio} fue modificado por el médico ${this.medico.nombre}. Por favor, revisa los detalles del turno y acepta o rechaza.`;
+                destinatario = this.paciente;
+                remitente = this.medico;
+                break;
+            default:
+                throw new BadRequestError("Estado de turno no reconocido para notificar");
+        }
+        return {mensaje, destinatario, remitente};
+    }
 }

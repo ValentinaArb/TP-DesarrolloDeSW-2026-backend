@@ -172,6 +172,7 @@ export class TurnoService {
             throw new BadRequestError("Paginación errónea");
         }
     }
+
     async modificarTurno(turnoId, horaInicio){
         const turno = await this.turnoRepository.findById(turnoId);
         if(turno.horaHasta !== horaInicio) {

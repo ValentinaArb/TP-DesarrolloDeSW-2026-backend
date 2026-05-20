@@ -1,14 +1,10 @@
 import { MedicoService } from '../services/medicoService.js';
 import { TurnoService } from '../services/turnoService.js';
 import { MedicoRepository } from '../repositories/medicoRepository.js';
-import {ServicioRepository} from "../repositories/servicioRepository.js";
-import { TurnoRepository} from "../repositories/turnoRepository.js";
 
 class MedicoController {
     constructor() {
         this.medicoService = new MedicoService(new MedicoRepository());
-        this.servicioRepository = new ServicioRepository();
-        this.turnoRepository = new TurnoRepository();
         this.turnoService = new TurnoService();
     }
 
@@ -139,8 +135,7 @@ class MedicoController {
     async darAltaServicio(req, res, next){
         try{
             const{medicoId, servicioId} = req.params;
-            await this.medicoService.darDeAltaServicio(medicoId, servicioId)
-            const servicioCreado = await this.servicioRepository.findById(servicioId);
+            const servicioCreado = await this.medicoService.darDeAltaServicio(medicoId, servicioId)
             res.status(201).json(servicioCreado);
         }
         catch(error){

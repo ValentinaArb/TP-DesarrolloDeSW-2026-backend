@@ -10,7 +10,7 @@ export class FactoryNotificacion {
 
     async crearNotificacion(turno) {
         const { mensaje, destinatario, remitente } = turno.crearMensaje();
-        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, null, null, false);
+        const notificacion = new Notificacion(null, destinatario, remitente, mensaje, new Date(), null, false);
         await this.notificacionRepository.create(notificacion);
         return notificacion
     }
@@ -24,4 +24,6 @@ export class FactoryNotificacion {
         await this.notificacionRepository.create(notificacion)
         return notificacion
     }    
+
+    
 }
