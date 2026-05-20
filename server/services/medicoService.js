@@ -2,7 +2,7 @@ import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
-import {UsuarioService} from "./usuarioService.js";
+import {PacienteService} from "./pacienteService.js";
 import {ConflictError, NotFoundError} from "../errors/AppError.js";
 
 
@@ -14,10 +14,10 @@ export class MedicoService {
     }
 
     get pacienteService() {
-        if (!this._usuarioService) {
-            this._usuarioService = new PacienteService();
+        if (!this._pacienteService) {
+            this._pacienteService = new PacienteService();
         }
-        return this._usuarioService;
+        return this._pacienteService;
     }
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
