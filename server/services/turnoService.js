@@ -97,21 +97,30 @@ export class TurnoService {
         return await this.turnoRepository.findById(turnoId);
     }
 
-    async obtenerTodos({ pagina = 1, limitePorPagina = 10 } = {}) {
-        if (this.validarPaginacion(pagina, limitePorPagina)) {
-            const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
-            const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-
-            return {
-                turno,
-                pagina,
-                limitePorPagina,
-                totalPaginas,
-                totalTurno
-            }
-        }
-        else {
+    async obtenerTodos({ pacienteId, filtros, orden, pagina = 1, limitePorPagina = 10 } = {}) {
+        if (!this.validarPaginacion(pagina, limitePorPagina)) {
             throw new BadRequestError("Paginación errónea");
+        }
+
+        if (pacienteId) {
+            return await this.buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina, limitePorPagina });
+        }
+
+        const { objetos: turno, totalObjetos: totalTurno } = await this.turnoRepository.findPaginated(pagina, limitePorPagina);
+        const totalPaginas = totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+
+        return { turno, pagina, limitePorPagina, totalPaginas, totalTurno };
+    }
+
+    async modificarEstado(turnoId, { operacion, pacienteId, motivo }) {
+        if (operacion === 'alta') {
+            if (!pacienteId) throw new BadRequestError("Falta el pacienteId para dar de alta");
+            await this.darDeAlta(turnoId, pacienteId);
+        } else if (operacion === 'baja') {
+            if (!motivo) throw new BadRequestError("Falta el motivo para dar de baja");
+            await this.darDeBaja(turnoId, motivo);
+        } else {
+            throw new BadRequestError("Operación no válida");
         }
     }
 
@@ -136,28 +145,7 @@ export class TurnoService {
             const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
             const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
 
-            const turnosCotizados = turnosDB.map(turno => {
-                const servicioInfo = turno.servicioInfo || turno.servicio || {};
-                const servicioId = servicioInfo.id || servicioInfo._id;
-                const costo = servicioInfo.costo ?? servicioInfo.costo ?? 0;                
-                const cotizacion = plan.calcularCostoAbonar(servicioId, costo);
-                const fechaObj = new Date(turno.fechaInicio);
-                const fechaFormateada = fechaObj.toISOString().split('T');
-                const horaFormateada = fechaObj.toTimeString().split(' ');
-                const medicoInfo = turno.medicoInfo || turno.medico || {};
-                const sedeInfo = turno.sedeInfo || turno.sede || {};
-
-                return {
-                    turnoId: turno._id,
-                    estadoPrestacion: cotizacion.estadoPrestacion,
-                    montoAAbonar: cotizacion.monto,
-                    profesional: `${medicoInfo.nombre || ''} ${medicoInfo.apellido || ''}`.trim(),
-                    servicio: servicioInfo.nombre || "N/A",
-                    fecha: fechaFormateada,
-                    hora: horaFormateada,
-                    sede: sedeInfo.nombre || "N/A"
-                };
-            });
+            const turnosCotizados = turnosDB.map(turno => this._cotizarTurno(turno, plan));
 
             turnosCotizados.sort((a, b) => {
                 let valorA = orden.sortBy === 'costo' ? a.montoAAbonar : new Date(`${a.fecha}T${a.hora}`).getTime();
@@ -197,6 +185,22 @@ export class TurnoService {
         else{
             throw new BadRequestError("El turno no pertenece a este médico o la hora de inicio es la misma que la actual.");
         }
+    }
+
+    _cotizarTurno(turno, plan) {
+        const cotizacion = plan.calcularCostoAbonar(turno.servicio.id, turno.costo);
+        const fechaObj = new Date(turno.fechaInicio);
+
+        return {
+            turnoId: turno.id,
+            estadoPrestacion: cotizacion.estadoPrestacion,
+            montoAAbonar: cotizacion.monto,
+            profesional: `${turno.medico.nombre || ''} ${turno.medico.apellido || ''}`.trim(),
+            servicio: turno.servicio.nombre || "N/A",
+            fecha: fechaObj.toISOString().split('T')[0],
+            hora: fechaObj.toTimeString().split(' ')[0],
+            sede: turno.sede?.nombre || "N/A"
+        };
     }
 
 }

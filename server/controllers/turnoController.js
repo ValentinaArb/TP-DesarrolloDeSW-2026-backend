@@ -9,10 +9,19 @@ class TurnoController{
         this.medicoService = new MedicoService(new MedicoRepository());
     }
 
-    async obtenerTodos(req,res,next){
-        try{
+    async obtenerTodos(req, res, next) {
+        try {
+            const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;
             const paginacion = this.extraerPaginacion(req.query);
-            const resultado = await this.turnoService.obtenerTodos(paginacion);
+
+            const filtros = { medicoId, servicioId, sede, fechaDesde, fechaHasta };
+            const orden = {
+                sortBy: sortBy === 'costo' ? 'costo' : 'fecha',
+                sortOrder: sortOrder === 'desc' ? 'desc' : 'asc'
+            };
+
+            const resultado = await this.turnoService.obtenerTodos({ pacienteId, filtros, orden, ...paginacion });
+
             res.status(200).json({
                 status: 'success',
                 data: resultado.turno,
@@ -23,52 +32,6 @@ class TurnoController{
                     totalTurnos: resultado.totalTurno
                 }
             });
-        }
-        catch(error){
-            return next(error);
-        }
-    }
-
-    async obtenerTodos(req, res, next) {
-        try {
-            const { pacienteId, medicoId, servicioId, sede, fechaDesde, fechaHasta, sortBy, sortOrder } = req.query;
-            const paginacion = this.extraerPaginacion(req.query);
-            
-            // si se recibe el id del paciente, llegaron queryparam
-            if (pacienteId) {
-                const filtros = { medicoId, servicioId, sede, fechaDesde, fechaHasta };
-                const orden = {
-                    sortBy: sortBy === 'costo' ? 'costo' : 'fecha',
-                    sortOrder: sortOrder === 'desc' ? 'desc' : 'asc'
-                };
-
-                const resultado = await this.turnoService.buscarTurnosDisponibles(pacienteId, filtros, orden, paginacion);
-
-                res.status(200).json({
-                    status: 'success',
-                    data: resultado.turno,
-                    paginacion: {
-                        numeroPagina: resultado.pagina,
-                        limitePorPagina: resultado.limitePorPagina,
-                        totalPaginas: resultado.totalPaginas,
-                        totalTurnos: resultado.totalTurno
-                    }
-                });
-            } else {
-                // sino, se devuelven todos los turnos
-                const resultado = await this.turnoService.obtenerTodos(paginacion);
-
-                res.status(200).json({
-                    status: 'success',
-                    data: resultado.turno,
-                    paginacion: {
-                        numeroPagina: resultado.pagina,
-                        limitePorPagina: resultado.limitePorPagina,
-                        totalPaginas: resultado.totalPaginas,
-                        totalTurnos: resultado.totalTurno
-                    }
-                });
-            }
         } catch (error) {
             return next(error);
         }
@@ -140,32 +103,14 @@ class TurnoController{
     }
 
     async modificarEstado(req, res, next) {
-    try {
-        const { id } = req.params;
-        const { operacion, pacienteId, motivo } = req.body; 
-
-        if (operacion === 'alta' ) {
-            if (!pacienteId) {
-                return res.status(400).json({ error: 'Falta el pacienteId para dar de alta' });
-            }
-            await this.turnoService.darDeAlta(id, pacienteId);
-            return res.status(200).json({ mensaje: "Turno fue dado de alta con éxito" });
-
-        } else if (operacion === 'baja') {
-            if (!motivo) {
-                return res.status(400).json({ error: 'Falta el motivo para dar de baja' });
-            }
-            await this.turnoService.darDeBaja(id, motivo);
-            return res.status(200).json({ mensaje: "Turno fue dado de baja con éxito" });
-
-        } else {
-            return res.status(400).json({ error: 'Operación no válida' });
-        }
-
-    } catch (error) {
+        try {
+            const { id } = req.params;
+            await this.turnoService.modificarEstado(id, req.body);
+            res.status(200).json({ mensaje: "Estado del turno modificado con éxito" });
+        } catch (error) {
             return next(error);
+        }
     }
-}
 
 }
 
