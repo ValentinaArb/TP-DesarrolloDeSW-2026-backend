@@ -50,7 +50,8 @@ describe("turnoService", () => {
             const turno = { 
                 id: 1, 
                 estado: EstadoTurno.RESERVADO, 
-                darDeBaja: jest.fn() 
+                darDeBaja: jest.fn(),
+                estaReservado: jest.fn().mockReturnValue(true)
             };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
@@ -62,7 +63,7 @@ describe("turnoService", () => {
         });
 
         test("debe lanzar ConflictError si el turno no está reservado", async () => {
-            const turno = { id: 1, estado: EstadoTurno.DISPONIBLE };
+            const turno = { id: 1, estado: EstadoTurno.DISPONIBLE, estaReservado: jest.fn().mockReturnValue(false)  };
             mockTurnoRepository.findById.mockResolvedValue(turno);
 
             await expect(turnoService.darDeBaja(1, "Motivo")).rejects.toThrow(ConflictError);
@@ -299,18 +300,28 @@ describe("turnoService", () => {
     describe("servicioPerteneceAMedico", () => {
         test("debe retornar true si el servicio pertenece al médico", async () => {
             const medico = { id: 1, servicios: [{ id: 1 }, { id: 2 }] };
-            mockMedicoRepository.findById.mockResolvedValue(medico);
+            const turno = { 
+                medico,
+                servicioPerteneceAMedico: async function(servicioId) {
+                    return this.medico.servicios.some(s => s.id === servicioId);
+                }
+            };
 
-            const resultado = await turnoService.servicioPerteneceAMedico(1, 1);
+            const resultado = await turno.servicioPerteneceAMedico(1);
 
             expect(resultado).toBe(true);
         });
 
         test("debe retornar false si el servicio no pertenece al médico", async () => {
             const medico = { id: 1, servicios: [{ id: 1 }] };
-            mockMedicoRepository.findById.mockResolvedValue(medico);
+            const turno = { 
+                medico,
+                servicioPerteneceAMedico: async function(servicioId) {
+                    return this.medico.servicios.some(s => s.id === servicioId);
+                }
+            };
 
-            const resultado = await turnoService.servicioPerteneceAMedico(1, 999);
+            const resultado = await turno.servicioPerteneceAMedico(999);
 
             expect(resultado).toBe(false);
         });

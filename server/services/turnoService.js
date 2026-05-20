@@ -24,7 +24,7 @@ export class TurnoService {
     async darDeBaja(turnoId, motivo) {
         try {
             const turno = await this.turnoRepository.findById(turnoId);
-            if (turno.estado !== EstadoTurno.RESERVADO) {
+            if (!turno.estaReservado()) {
                 throw new ConflictError("El turno no está reservado.");
             }
             turno.darDeBaja(motivo);
@@ -71,12 +71,11 @@ export class TurnoService {
         const nuevoTurno = new Turno(null, medico, fechaInicio, fechaFinal, null, servicio, sede, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, null)], servicio.costo);
 
         const estaDisponible = await medicoService.estaDisponible(medicoId, nuevoTurno);
-        const servicioPerteneceAMedico = await this.servicioPerteneceAMedico(medicoId, servicio.id);
         const perteneceASede = await medicoService.perteneceASede(medicoId, sede.id);
         if (!estaDisponible) {
             throw new UnprocessableEntityError("El medico no esta disponible en la fecha y hora indicada.");
         }
-        if (!servicioPerteneceAMedico) {
+        if (!await nuevoTurno.servicioPerteneceAMedico(servicio.id)) {
             throw new UnprocessableEntityError("El medico no realiza ese servicio especifico");
         }
         if (!perteneceASede) {
@@ -129,11 +128,6 @@ export class TurnoService {
 
     noSeSuperponen(turno1, turno2) {
         return turno2.fechaFinal < turno1.fechaInicio || turno2.fechaInicio > turno1.fechaFinal
-    }
-
-    async servicioPerteneceAMedico(medicoId, servicioId) {
-        const medico = await this.medicoRepository.findById(medicoId);
-        return medico.servicios.some(s => s.id === servicioId)
     }
 
     async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
