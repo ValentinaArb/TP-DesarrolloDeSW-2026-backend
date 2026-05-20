@@ -11,8 +11,7 @@ export class FactoryNotificacion {
     async crearNotificacion(turno) {
         const { mensaje, destinatario, remitente } = turno.crearMensaje();
         const notificacion = new Notificacion(null, destinatario, remitente, mensaje, new Date(), null, false);
-        await this.notificacionRepository.create(notificacion);
-        return notificacion
+        return await this.notificacionRepository.create(notificacion);
     }
 
     async crearRecordatorio(turno) {
@@ -21,9 +20,6 @@ export class FactoryNotificacion {
         const destinatario = [turno.paciente, turno.medico];
 
         const notificacion = new Notificacion(null, destinatario, null, mensaje, new Date(), null, false);
-        await this.notificacionRepository.create(notificacion)
-        return notificacion
+        return  await this.notificacionRepository.create(notificacion)
     }    
-
-    
 }
