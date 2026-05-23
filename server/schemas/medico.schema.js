@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {Medico} from "../domain/medico.js";
 
 const medicoSchema = new mongoose.Schema({
   usuario: {
@@ -27,7 +28,14 @@ const medicoSchema = new mongoose.Schema({
     diaSemana: { type: Number, required: true },
     horaDesde: { type: String, required: true },
     horaHasta: { type: String, required: true }
+  }],
+  disponibilidadesAnteriores: [{
+    diaSemana: { type: Number, required: true },
+    horaDesde: { type: String, required: true },
+    horaHasta: { type: String, required: true }
   }]
 });
+
+medicoSchema.loadClass(Medico);
 
 export const MedicoModel = mongoose.model("Medico", medicoSchema);
