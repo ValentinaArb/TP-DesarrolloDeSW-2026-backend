@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {ObraSocial} from "../domain/obraSocial.js";
 
 const obraSocialSchema = new mongoose.Schema({
     nombre: {
@@ -12,5 +13,7 @@ const obraSocialSchema = new mongoose.Schema({
         }
     ]
 });
+
+obraSocialSchema.loadClass(ObraSocial);
 
 export const ObraSocialModel = mongoose.model("ObraSocial", obraSocialSchema);
