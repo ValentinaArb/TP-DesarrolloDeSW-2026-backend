@@ -1,26 +1,26 @@
 import mongoose from "mongoose";
+import {Turno} from "../domain/turno.js";
 
 const turnoSchema = new mongoose.Schema({
-    medicoInfo: {
-        id: {type: String, required: true},
+    medico: {
+        _id: {type: String, required: true},
         nombre: { type: String, required: true },
         apellido: { type: String, required: true },
     },
     fechaInicio: { type: Date, required: true },
     fechaFinal: { type: Date, required: true },
-    pacienteInfo: {
-        id: {type: String},
+    paciente: {
+        _id: {type: String},
         nombre: { type: String },
         apellido: { type: String },
     },
-    servicioInfo: {
-        id: { type: String, required: true },
+    servicio: {
+        _id: { type: String, required: true },
         nombre: { type: String, required: true },
         duracionTurno: { type: Number, required: true },
-        costo: { type: Number, required: true },
-        codigo: { type: String }
+        costo: { type: Number, required: true }
     },
-    sedeInfo: {
+    sede: {
         nombre: { type: String, required: true },
         direccion: { type: String, required: true }
     },
@@ -34,5 +34,7 @@ const turnoSchema = new mongoose.Schema({
     ],
     costo: { type: Number }
 });
+
+turnoSchema.loadClass(Turno);
 
 export const TurnoModel = mongoose.model("Turno", turnoSchema);

@@ -201,13 +201,13 @@ const router = Router();
  *               properties:
  *                 id:
  *                   type: string
- *                 medicoInfo:
+ *                 medico:
  *                   type: object
- *                 pacienteInfo:
+ *                 paciente:
  *                   type: object
- *                 servicioInfo:
+ *                 servicio:
  *                   type: object
- *                 sedeInfo:
+ *                 sede:
  *                   type: object
  *                 estado:
  *                   type: string
