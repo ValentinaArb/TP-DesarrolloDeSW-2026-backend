@@ -32,9 +32,8 @@ export class Repository {
                 .skip(skip)
                 .limit(limitePorPagina)
         ]);
-        const objetosDeDominio = documentos.map(doc => this.mapper.toDomain(doc));
         return {
-            objetos: objetosDeDominio,
+            objetos: documentos,
             totalObjetos: totalObjetos
         };
     }
