@@ -19,4 +19,4 @@ const cambioEstadoTurnoSchema = new mongoose.Schema({
 
 cambioEstadoTurnoSchema.loadClass(CambioEstadoTurno);
 
-export const CambioEstadoTurnoModel = mongoose.model("CambioEstadoTurno", cambioEstadoTurnoSchema);
+export const CambioEstadoTurnoModel = mongoose.model("CambioEstadoTurno", cambioEstadoTurnoSchema, "cambioestadoturnos");

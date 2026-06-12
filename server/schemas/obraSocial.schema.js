@@ -16,4 +16,4 @@ const obraSocialSchema = new mongoose.Schema({
 
 obraSocialSchema.loadClass(ObraSocial);
 
-export const ObraSocialModel = mongoose.model("ObraSocial", obraSocialSchema);
+export const ObraSocialModel = mongoose.model("ObraSocial", obraSocialSchema,"obrasocials");

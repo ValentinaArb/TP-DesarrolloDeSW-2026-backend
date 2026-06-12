@@ -140,10 +140,27 @@ export class TurnoService {
     }
 
     async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
-        if (this.validarPaginacion(pagina, limitePorPagina)) {
-            const paciente = await this.pacienteRepository.findById(pacienteId);
-            const plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-            const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+    if (this.validarPaginacion(pagina, limitePorPagina)) {
+        const paciente = await this.pacienteRepository.findById(pacienteId);
+        
+        // Buscar el plan, pero si no existe no tirar error
+        let plan = null;
+        try {
+            plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+        } catch (e) {
+            // plan no encontrado → devolvemos vacío con mensaje claro
+            return {
+                turno: [],
+                pagina,
+                limitePorPagina,
+                totalPaginas: 0,
+                totalTurno: 0,
+                mensaje: `Tu plan "${paciente.plan?.nombre}" no tiene cobertura disponible.`
+            };
+        }
+
+        const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+        // ... resto igual
 
             const turnosCotizados = turnosDB.map(turno => this._cotizarTurno(turno, plan));
 

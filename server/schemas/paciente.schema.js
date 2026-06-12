@@ -38,4 +38,4 @@ const pacienteSchema = new mongoose.Schema({
 
 pacienteSchema.loadClass(Paciente);
 
-export const PacienteModel = mongoose.model("Paciente", pacienteSchema);
+export const PacienteModel = mongoose.model("Paciente", pacienteSchema, "pacientes");

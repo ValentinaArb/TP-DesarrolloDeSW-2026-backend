@@ -8,4 +8,4 @@ const sedeSchema = new mongoose.Schema({
 
 sedeSchema.loadClass(Sede);
 
-export const SedeModel = mongoose.model("Sede", sedeSchema);
+export const SedeModel = mongoose.model("Sede", sedeSchema,"sedes");

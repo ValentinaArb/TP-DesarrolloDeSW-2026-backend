@@ -11,4 +11,4 @@ const coberturaSchema = new mongoose.Schema({
 
 coberturaSchema.loadClass(CoberturaServicio);
 
-export const CoberturaModel = new mongoose.model("Cobertura", coberturaSchema);
+export const CoberturaModel = new mongoose.model("Cobertura", coberturaSchema, "coberturas");

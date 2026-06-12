@@ -78,8 +78,8 @@ const seedDatabase = async () => {
         let coberturaEsp = new CoberturaServicio(servicio6, NivelCobertura.TOTAL);
         coberturaEsp = await coberturaRepository.create(coberturaEsp);
 
-        let plan1 = new Plan(null, "Plan 100", [coberturaServicio1, coberturaServicio2]);
-        let plan2 = new Plan(null, "Plan 200", [coberturaServicio2]);
+        let plan1 = new Plan(null, "100", [coberturaServicio1, coberturaServicio2]);
+        let plan2 = new Plan(null, "200", [coberturaServicio2]);
         plan1 = await planRepository.create(plan1);
         plan2 = await planRepository.create(plan2);
         console.log("Planes creados:", plan1.id, plan2.id);

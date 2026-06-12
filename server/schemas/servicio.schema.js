@@ -9,4 +9,4 @@ const servicioSchema = new mongoose.Schema({
 
 servicioSchema.loadClass(Servicio);
 
-export const ServicioModel = mongoose.model("Servicio", servicioSchema);
+export const ServicioModel = mongoose.model("Servicio", servicioSchema,"servicios");
