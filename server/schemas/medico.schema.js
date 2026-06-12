@@ -3,7 +3,8 @@ import {Medico} from "../domain/medico.js";
 
 const medicoSchema = new mongoose.Schema({
   usuario: {
-    mail: String
+      nombre: String,
+      mail: String
   },
   nombre: {
     type: String,
