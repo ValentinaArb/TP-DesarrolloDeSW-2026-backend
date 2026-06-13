@@ -7,8 +7,10 @@ export class PlanRepository extends Repository {
     }
 
     async findByNombre(nombre) {
-        const documento = await this.mongooseModel.findOne({ nombre: nombre });
-        if (!documento) return this.errorNoEncontrado();
+        const documento = await this.mongooseModel.findOne({
+            nombre: { $regex: nombre, $options: "i" }
+        });
+        if (!documento) return null;
         return documento;
     }
 }
