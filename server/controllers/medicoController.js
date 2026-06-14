@@ -79,7 +79,6 @@ class MedicoController {
         }
     }
 
-
     //PUT /medicos/:medicoId/disponibilidades/:disponibilidadAModificarId
     async modificarDisponibilidad(req, res, next){
         try {
@@ -91,19 +90,6 @@ class MedicoController {
         }
         catch (error){
             return next(error)
-        }
-    }
-
-    //PATCH /medicos/:medicoId/turnos/:turnoId
-    async marcarTurnoComo(req, res, next){
-        try{
-            const {turnoId} = req.params;
-            const {estado} = req.body;
-            const turnoCambiado = await this.medicoService.marcarTurnoComo(turnoId, estado);
-            res.status(200).json(turnoCambiado)
-        }
-        catch (error){
-            return next(error);
         }
     }
 
@@ -131,6 +117,7 @@ class MedicoController {
             return next(error);
         }
     }
+
     //POST /medicos/:idMedicos/servicios/servicios:id
     async darAltaServicio(req, res, next){
         try{
@@ -154,6 +141,7 @@ class MedicoController {
             return next(error);
         }
     }
+
     //PATCH /servicios/:id
     async modificarServicio(req, res, next){
         try{
@@ -170,8 +158,8 @@ class MedicoController {
     async modificarTurno(req, res, next){
         try{
             const{medicoId, turnoId} = req.params;
-            const {horaInicio} = req.body;
-            await this.turnoService.modificarTurno(medicoId, turnoId, new Date(horaInicio));
+            const {horaInicio, estado} = req.body;
+            await this.medicoService.orquestradorMedico(medicoId, turnoId, new Date(horaInicio), estado, this.turnoService);
             res.status(200).json("El turno fue modificado");
         }catch(error){
             return next(error);

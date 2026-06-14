@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
+import {Sede} from "../domain/sede.js";
 
 const sedeSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
     direccion: { type: String, required: true }
 });
 
-export const SedeModel = mongoose.model("Sede", sedeSchema);
+sedeSchema.loadClass(Sede);
+
+export const SedeModel = mongoose.model("Sede", sedeSchema,"sedes");

@@ -3,8 +3,8 @@ import {ServicioRepository} from "../repositories/servicioRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {PacienteService} from "./pacienteService.js";
-import {ConflictError, NotFoundError} from "../errors/AppError.js";
-
+import {ConflictError, NotFoundError, BadRequestError} from "../errors/AppError.js";
+import { modificarTurnoMedicoSchema } from "../schemas/modificarTurnoMedico.schema.js";
 
 export class MedicoService {
     constructor(medicoRepository) {
@@ -18,6 +18,26 @@ export class MedicoService {
             this._pacienteService = new PacienteService();
         }
         return this._pacienteService;
+    }
+
+    async orquestradorMedico(medicoId, turnoId, horaInicio, estado, turnoService){
+        const resultado = modificarTurnoMedicoSchema.safeParse({
+            horaInicio,
+            estado
+        });
+
+        if (!resultado.success) {
+            throw new BadRequestError(resultado.error.errors.map(e => e.message).join(", "));
+        }
+
+        const validado = resultado.data;
+
+        if (validado.horaInicio !== undefined) {
+            return await turnoService.modificarTurno(medicoId, turnoId, validado.horaInicio);
+        }
+        if (validado.estado !== undefined) {
+            return await this.marcarTurnoComo(turnoId, validado.estado);
+        }
     }
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
@@ -98,7 +118,7 @@ export class MedicoService {
         }
         medico.eliminarDisponibilidad(disponibilidadAModificarId);
 
-        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta);
+        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
         medico.agregarDisponibilidad(disponibilidadNueva);
         
         return await this.medicoRepository.update(medico, medico.id);

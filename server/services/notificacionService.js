@@ -22,7 +22,7 @@ export class NotificacionService {
     }
 
     async marcarComoLeida(id){
-        const notificacion = await this.notificacionRepository.findById(id)
+        let notificacion = await this.notificacionRepository.findById(id)
         if(!notificacion){
             throw new NotFoundError(`No se encontró la notificación con ID: ${id}`);
         }

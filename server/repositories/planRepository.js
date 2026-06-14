@@ -1,15 +1,16 @@
 import { Repository } from "./repository.js";
-import { PlanMapper } from "../mappers/PlanMapper.js";
 import { PlanModel } from "../schemas/plan.schema.js";
 
 export class PlanRepository extends Repository {
     constructor() {
-        super(PlanModel, PlanMapper);
+        super(PlanModel);
     }
 
     async findByNombre(nombre) {
-        const documento = await this.mongooseModel.findOne({ nombre: nombre });
-        if (!documento) return this.errorNoEncontrado();
-        return this.mapper.toDomain(documento);
+        const documento = await this.mongooseModel.findOne({
+            nombre: { $regex: nombre, $options: "i" }
+        });
+        if (!documento) return null;
+        return documento;
     }
 }

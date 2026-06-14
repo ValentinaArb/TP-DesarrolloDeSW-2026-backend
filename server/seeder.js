@@ -64,17 +64,29 @@ const seedDatabase = async () => {
         let servicio2 = new Servicio(null, "odontologia", 60, 0);
         servicio1 = await servicioRepository.create(servicio1);
         servicio2 = await servicioRepository.create(servicio2);
+        let servicioCaro = new Servicio(null, "Cirugía Compleja", 120, 50000);
+        servicioCaro = await servicioRepository.create(servicioCaro);
+        let servicio6 = new Servicio(null, "Cardiología", 60, 5000);
+        servicio6 = await servicioRepository.create(servicio6);
 
         let coberturaServicio1 = new CoberturaServicio(servicio1, NivelCobertura.TOTAL);
         let coberturaServicio2 = new CoberturaServicio(servicio2, NivelCobertura.PARCIAL);
         coberturaServicio1 = await coberturaRepository.create(coberturaServicio1);
         coberturaServicio2 = await coberturaRepository.create(coberturaServicio2);
+        let coberturaCara = new CoberturaServicio(servicioCaro, NivelCobertura.PARCIAL);
+        coberturaCara = await coberturaRepository.create(coberturaCara);
+        let coberturaEsp = new CoberturaServicio(servicio6, NivelCobertura.TOTAL);
+        coberturaEsp = await coberturaRepository.create(coberturaEsp);
 
-        let plan1 = new Plan(null, "Plan 100", [coberturaServicio1, coberturaServicio2]);
-        let plan2 = new Plan(null, "Plan 200", [coberturaServicio2]);
+        let plan1 = new Plan(null, "100", [coberturaServicio1, coberturaServicio2]);
+        let plan2 = new Plan(null, "200", [coberturaServicio2]);
         plan1 = await planRepository.create(plan1);
         plan2 = await planRepository.create(plan2);
         console.log("Planes creados:", plan1.id, plan2.id);
+        plan1.coberturasServicio.push(coberturaCara);
+        await planRepository.update(plan1, plan1.id);
+        plan2.coberturasServicio.push(coberturaEsp);
+        await planRepository.update(plan2, plan2.id);
 
         let obraSocial1 = new ObraSocial(null, "OSDE", [plan2]);
         let obraSocial2 = new ObraSocial(null, "IPS", [plan1, plan2]);
@@ -91,7 +103,7 @@ const seedDatabase = async () => {
         let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00",servicio1, sede1);
         console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
-        let medico1 = new Medico(null, usuario1, 456, "Dra. Valentina", "Arbarello", [servicio1, servicio2], [sede1],  [disponibilidad1]);
+        let medico1 = new Medico(null, usuario1, 456, "Dra. Valentina", "Arbarello", [servicio1, servicio2,servicioCaro, servicio6], [sede1],  [disponibilidad1]);
         let medico2 = new Medico(null, usuario2, 123, "Dra. Sofia", "Baudo", [servicio1], [sede2],  [disponibilidad1]);
         medico1 = await medicoRepository.create(medico1);
         medico2 = await medicoRepository.create(medico2);
@@ -104,7 +116,12 @@ const seedDatabase = async () => {
         console.log("Notificaciones creadas:", notificacion1.id, notificacion2.id);
 
         let turno1 = new Turno(null, medico1, "2026-04-19T20:00:00", "2026-04-19T21:00:00", paciente1, servicio1,sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], 2000);
-        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , paciente2, servicio2,sede2, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], 3000);
+        let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , null, servicio2,sede2, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], 3000);
+        let turno3 = new Turno(null, medico1, "2026-05-12T09:00:00", "2026-05-12T11:00:00", paciente1, servicioCaro, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 50000);
+        let turno4 = new Turno(null, medico1, "2026-05-20T15:00:00", "2026-05-20T16:00:00", paciente2, servicio6, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 5000);
+
+        turno3 = await turnoRepository.create(turno3);
+        turno4 = await turnoRepository.create(turno4);
         turno1 = await turnoRepository.create(turno1);
         turno2 = await turnoRepository.create(turno2);
         console.log("Turnos creados:", turno1.id, turno2.id);
@@ -114,32 +131,6 @@ const seedDatabase = async () => {
         cambioEstadoTurno1 = await cambioEstadoTurnoRepository.create(cambioEstadoTurno1);
         cambioEstadoTurno2 = await cambioEstadoTurnoRepository.create(cambioEstadoTurno2);
         console.log("Cambios de estado de turno creados:", cambioEstadoTurno1.id, cambioEstadoTurno2.id);
-
-
-        let servicioCaro = new Servicio(null, "Cirugía Compleja", 120, 50000);
-        servicioCaro = await servicioRepository.create(servicioCaro);
-
-        let coberturaCara = new CoberturaServicio(servicioCaro, NivelCobertura.PARCIAL);
-        coberturaCara = await coberturaRepository.create(coberturaCara);
-        
-        plan1.coberturasServicio.push(coberturaCara);
-        await planRepository.update(plan1, plan1.id);
-
-        let especialidad2 = new Servicio(null, "Cardiología", 60, 5000);
-        especialidad2 = await servicioRepository.create(especialidad2);
-
-        let coberturaEsp = new CoberturaServicio(especialidad2, NivelCobertura.TOTAL);
-        coberturaEsp = await coberturaRepository.create(coberturaEsp);
-        
-        plan2.coberturasServicio.push(coberturaEsp);
-        await planRepository.update(plan2, plan2.id);
-
-        let turno3 = new Turno(null, medico1, "2026-05-12T09:00:00", "2026-05-12T11:00:00", paciente1, servicioCaro, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 50000);
-        let turno4 = new Turno(null, medico1, "2026-05-20T15:00:00", "2026-05-20T16:00:00", paciente2, especialidad2, sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "CREACION")], 5000);
-
-        await turnoRepository.create(turno3);
-        await turnoRepository.create(turno4);
-
 
         console.log("Database populada correctamente.");
         process.exit(0);

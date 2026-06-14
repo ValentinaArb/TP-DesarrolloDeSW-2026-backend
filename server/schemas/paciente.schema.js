@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {Paciente} from "../domain/paciente.js";
 
 const pacienteSchema = new mongoose.Schema({
     usuario: {
@@ -35,4 +36,6 @@ const pacienteSchema = new mongoose.Schema({
     }
 });
 
-export const PacienteModel = mongoose.model("Paciente", pacienteSchema);
+pacienteSchema.loadClass(Paciente);
+
+export const PacienteModel = mongoose.model("Paciente", pacienteSchema, "pacientes");

@@ -442,7 +442,6 @@ router.put("/:medicoId/disponibilidades/:disponibilidadId", async(req, res, next
 router.put("/servicios/:servicioId", async(req, res, next) => await medicoController.modificarServicio(req, res, next));
 
 //PATCH
-router.patch("/:medicoId/turnos/:turnoId/estado", async(req, res, next) => await medicoController.marcarTurnoComo(req, res, next));
 router.patch("/:medicoId/turnos/:turnoId", async(req, res, next) => await medicoController.modificarTurno(req, res, next));
 
 export default router;

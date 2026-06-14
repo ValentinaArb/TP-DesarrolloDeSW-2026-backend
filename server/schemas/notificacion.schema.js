@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
+import {Notificacion} from "../domain/notificacion.js";
 
 const notificacionSchema = new mongoose.Schema({
     destinatario: {
-        id: {type: String, required: true},
+        _id: {type: String, required: true},
         nombre: { type: String, required: true },
         apellido: { type: String, required: true }
     },
     remitente: {
-        id: { type: String, required: true },
+        _id: { type: String, required: true },
         nombre: { type: String, required: true },
         apellido: { type: String, required: true }
     },
@@ -22,10 +23,12 @@ const notificacionSchema = new mongoose.Schema({
     fechaHoraLeida: {
         type: Date
     },
-    leida: {
+    estaLeida: {
         type: Boolean,
         default: false
     }
 });
 
-export const NotificacionModel = mongoose.model("Notificacion", notificacionSchema);
+notificacionSchema.loadClass(Notificacion);
+
+export const NotificacionModel = mongoose.model("Notificacion", notificacionSchema, "notificacions");

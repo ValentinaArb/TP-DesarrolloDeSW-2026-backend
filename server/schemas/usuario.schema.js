@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {Usuario} from "../domain/usuario.js";
 
 const usuarioSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
@@ -6,4 +7,6 @@ const usuarioSchema = new mongoose.Schema({
     password: { type: String, required: true }
 });
 
-export const UsuarioModel = mongoose.model("Usuario", usuarioSchema);
+usuarioSchema.loadClass(Usuario);
+
+export const UsuarioModel = mongoose.model("Usuario", usuarioSchema,"usuarios");

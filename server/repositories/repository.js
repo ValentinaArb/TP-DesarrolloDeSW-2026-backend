@@ -1,16 +1,13 @@
-import { NotFoundError } from "../errors/AppError.js";
+import {NotFoundError} from "../errors/AppError.js";
 
 export class Repository {
-    constructor(mongooseModel, mapper) {
+    constructor(mongooseModel) {
         this.mongooseModel = mongooseModel;
-        this.mapper = mapper;
     }
     
     // CREATE (POST)
     async create(objeto) {
-        const dataMongo = this.mapper.toPersistence(objeto);
-        const documentoGuardado = await this.mongooseModel.create(dataMongo);
-        return this.mapper.toDomain(documentoGuardado);
+        return await this.mongooseModel.create(objeto);
     }
 
     // DELETE (DELETE)
@@ -24,8 +21,7 @@ export class Repository {
     // READ (GET)
     // all
     async findAll() {
-        const documentos = await this.mongooseModel.find();
-        return documentos.map(doc => this.mapper.toDomain(doc));
+        return await this.mongooseModel.find();
     }
 
     async findPaginated(pagina, limitePorPagina) {
@@ -36,9 +32,8 @@ export class Repository {
                 .skip(skip)
                 .limit(limitePorPagina)
         ]);
-        const objetosDeDominio = documentos.map(doc => this.mapper.toDomain(doc));
         return {
-            objetos: objetosDeDominio,
+            objetos: documentos,
             totalObjetos: totalObjetos
         };
     }
@@ -46,21 +41,20 @@ export class Repository {
     // by ID
     async findById(objetoId) {
         const documento = await this.mongooseModel.findById(objetoId);
-        if (!documento) return this.errorNoEncontrado();
-        return this.mapper.toDomain(documento);
+        if (!documento) this.errorNoEncontrado();
+        return documento;
     }
 
     // UPDATE (PUT/PATCH)
     async update(nuevoObjeto, idObjetoViejo) {
-        const dataMongo = this.mapper.toPersistence(nuevoObjeto);
         const documentoActualizado = await this.mongooseModel.findByIdAndUpdate(
             idObjetoViejo, 
-            dataMongo, 
-            { returnDocument: 'after' } 
+            nuevoObjeto,
+            { returnDocument: "after", runValidators: true }
         );
         
         if (!documentoActualizado) return this.errorNoEncontrado();
-        return this.mapper.toDomain(documentoActualizado);
+        return documentoActualizado;
     }
 
     errorNoEncontrado() {

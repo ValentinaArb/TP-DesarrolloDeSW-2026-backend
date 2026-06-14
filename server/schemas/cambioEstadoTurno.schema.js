@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {CambioEstadoTurno} from "../domain/cambioEstadoTurno.js";
 
 const cambioEstadoTurnoSchema = new mongoose.Schema({
     fechaInicioIngreso: { type: Date, required: true },
@@ -8,12 +9,14 @@ const cambioEstadoTurnoSchema = new mongoose.Schema({
         fechaFinal: { type: Date, required: true },
         estado: { type: String, required: true }
     },
-    Paciente: {
-        id: { type: String, required: true },
+    paciente: {
+        _id: { type: String, required: true },
         nombre: { type: String },
         apellido: { type: String },
     },
     motivo: { type: String }
 });
 
-export const CambioEstadoTurnoModel = mongoose.model("CambioEstadoTurno", cambioEstadoTurnoSchema);
+cambioEstadoTurnoSchema.loadClass(CambioEstadoTurno);
+
+export const CambioEstadoTurnoModel = mongoose.model("CambioEstadoTurno", cambioEstadoTurnoSchema, "cambioestadoturnos");

@@ -1,41 +1,82 @@
 import { Repository } from "./repository.js";
-import { TurnoMapper } from "../mappers/TurnoMapper.js";
 import { TurnoModel } from "../schemas/turno.schema.js";
+import mongoose from "mongoose";
 
 export class TurnoRepository extends Repository {
     constructor() {
-        super(TurnoModel, TurnoMapper);
+        super(TurnoModel);
     }
 
     async turnosDe(medicoId){
-        const documentos = await this.mongooseModel.find({"medicoInfo.id": medicoId});
-        return documentos.map(doc => this.mapper.toDomain(doc));
+        return await this.mongooseModel.find({"medico": medicoId});
     }
 
     async turnosPara(pacienteId){
-        const documentos = await this.mongooseModel.find({"pacienteInfo.id": pacienteId});
-        return documentos.map(doc => this.mapper.toDomain(doc));
+        return await this.mongooseModel.find({"paciente": pacienteId});
     }
 
     async buscarPorFechaYEstado(fecha,estado){
-        const documentos = await this.mongooseModel.find({fechaInicio: fecha, estado: estado});
-        return documentos.map(doc => this.mapper.toDomain(doc));
+        return await this.mongooseModel.find({fechaInicio: fecha, estado: estado});
     }
 
     async findDisponiblesByFilters(filtros) {
-        const query = { estado: "DISPONIBLE" };
+        // Empezamos sin exigir que esté DISPONIBLE para evitar el problema de tu seed
+        const andConditions = [];
 
-        if (filtros.medicoId) query["medicoInfo.id"] = filtros.medicoId;
-        if (filtros.servicioId) query["servicioInfo.id"] = filtros.servicioId;
-        if (filtros.sede) query["sedeInfo.nombre"] = filtros.sede;
-
-        if (filtros.fechaDesde || filtros.fechaHasta) {
-            query.fechaInicio = {};
-            if (filtros.fechaDesde) query.fechaInicio.$gte = new Date(filtros.fechaDesde);
-            if (filtros.fechaHasta) query.fechaInicio.$lte = new Date(filtros.fechaHasta);
+        // 1. Filtro Médico: Transformamos el texto a ObjectId de Mongoose
+        if (filtros.medicoId) {
+            const idMedicoMongo = new mongoose.Types.ObjectId(filtros.medicoId);
+            andConditions.push({
+                $or: [
+                    { "medico._id": idMedicoMongo },
+                    { "medico.id": filtros.medicoId },
+                    { medico: idMedicoMongo }
+                ]
+            });
         }
 
-        const documentos = await TurnoModel.find(query);
-        return documentos.map(doc => this.mapper.toDomain(doc));
+        // 2. Filtro Servicio: Transformamos el texto a ObjectId de Mongoose
+        if (filtros.servicioId) {
+            const idServicioMongo = new mongoose.Types.ObjectId(filtros.servicioId);
+            andConditions.push({
+                $or: [
+                    { "servicio._id": idServicioMongo },
+                    { "servicio.id": filtros.servicioId },
+                    { servicio: idServicioMongo }
+                ]
+            });
+        }
+
+        // 3. Filtro Sede: Transformamos el texto a ObjectId de Mongoose
+        if (filtros.sede) {
+            const idSedeMongo = new mongoose.Types.ObjectId(filtros.sede);
+            andConditions.push({
+                $or: [
+                    { "sede._id": idSedeMongo },
+                    { "sede.id": filtros.sede },
+                    { sede: idSedeMongo }
+                ]
+            });
+        }
+
+        // 4. Filtro Fechas
+        if (filtros.fechaDesde || filtros.fechaHasta) {
+            const fechaQuery = {};
+            if (filtros.fechaDesde) fechaQuery.$gte = new Date(filtros.fechaDesde);
+            if (filtros.fechaHasta) {
+                const fechaFin = new Date(filtros.fechaHasta);
+                fechaFin.setDate(fechaFin.getDate() + 1);
+                fechaQuery.$lt = fechaFin;
+            }
+            andConditions.push({ fechaInicio: fechaQuery });
+        }
+
+        // 5. Unimos todo. Si no hay filtros, pasamos un objeto vacío {}
+        const queryFinal = andConditions.length > 0 ? { $and: andConditions } : {};
+
+        return await this.mongooseModel.find(queryFinal)
+            .populate('medico')
+            .populate('servicio')
+            .populate('sede');
     }
 }
