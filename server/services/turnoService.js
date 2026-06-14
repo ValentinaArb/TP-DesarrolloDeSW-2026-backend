@@ -216,13 +216,9 @@ export class TurnoService {
     const paciente = await this.pacienteRepository.findById(pacienteId);
 
     let plan = null;
-    try {
-      plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-
-      if (!plan) {
-        throw new Error("Plan no registrado en el sistema");
-      }
-    } catch (e) {
+    plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+    console.log("Plan encontrado:", plan);
+    if (!plan) {
       return {
         status: "success",
         data: [],
