@@ -49,43 +49,51 @@ const seedDatabase = async () => {
         await mongoose.connection.db.dropDatabase();
         console.log("🧹 Base de datos reseteada por completo.");
 
-        let usuario1 = new Usuario(null, "Pepe", "pepe@mail.com", "holaQueTal");
-        let usuario2 = new Usuario(null, "Pablo", "pablo@mail.com", "comoAndas");
+        let usuario1 = new Usuario(null, "Valentina", "valentina@mail.com", "Valentina");
+        let usuario2 = new Usuario(null, "Bautista", "bautista@mail.com", "Bautista");
+        let usuario3 = new Usuario(null, "Sofia", "sofia@mail.com", "Sofia");
+        let usuario4 = new Usuario(null, "Camila", "camila@mail.com", "Camila");
+        let usuario5 = new Usuario(null, "Olaf", "olaf@mail.com", "Olaf");
         usuario1 = await usuarioRepository.create(usuario1);
         usuario2 = await usuarioRepository.create(usuario2);
-        console.log("Usuarios creados:", usuario1.id, usuario2.id);
+        usuario3 = await usuarioRepository.create(usuario3);
+        usuario4 = await usuarioRepository.create(usuario4);
+        usuario5 = await usuarioRepository.create(usuario5);
+        console.log("Usuarios creados:", usuario1.id, usuario2.id, usuario3.id, usuario4.id, usuario5.id);
 
-        let sede1  = new Sede(null, "Sede 1", "Villa Urquiza");
-        let sede2 = new Sede(null, "Sede 2", "Caballito");
+        let sede1  = new Sede(null, "Av. Olazábal 5670", "Villa Urquiza");
+        let sede2 = new Sede(null, "Rosario 866", "Caballito");
         sede1 = await sedeRepository.create(sede1);
         sede2 = await sedeRepository.create(sede2);
 
-        let servicio1 = new Servicio(null, "operacion",60, 0);
-        let servicio2 = new Servicio(null, "odontologia", 60, 0);
+        let servicio1 = new Servicio(null, "Operación",60, 0);
+        let servicio2 = new Servicio(null, "Odontología", 60, 0);
+        let servicio3 = new Servicio(null, "Cirugía Compleja", 120, 50000);
+        let servicio4 = new Servicio(null, "Cardiología", 60, 5000);
         servicio1 = await servicioRepository.create(servicio1);
         servicio2 = await servicioRepository.create(servicio2);
-        let servicioCaro = new Servicio(null, "Cirugía Compleja", 120, 50000);
-        servicioCaro = await servicioRepository.create(servicioCaro);
-        let servicio6 = new Servicio(null, "Cardiología", 60, 5000);
-        servicio6 = await servicioRepository.create(servicio6);
+        servicio3 = await servicioRepository.create(servicio3);
+        servicio4 = await servicioRepository.create(servicio4);
 
         let coberturaServicio1 = new CoberturaServicio(servicio1, NivelCobertura.TOTAL);
         let coberturaServicio2 = new CoberturaServicio(servicio2, NivelCobertura.PARCIAL);
+        let coberturaServicio3 = new CoberturaServicio(servicio3, NivelCobertura.PARCIAL);
+        let coberturaServicio4 = new CoberturaServicio(servicio4, NivelCobertura.TOTAL);
         coberturaServicio1 = await coberturaRepository.create(coberturaServicio1);
         coberturaServicio2 = await coberturaRepository.create(coberturaServicio2);
-        let coberturaCara = new CoberturaServicio(servicioCaro, NivelCobertura.PARCIAL);
-        coberturaCara = await coberturaRepository.create(coberturaCara);
-        let coberturaEsp = new CoberturaServicio(servicio6, NivelCobertura.TOTAL);
-        coberturaEsp = await coberturaRepository.create(coberturaEsp);
+        coberturaServicio3 = await coberturaRepository.create(coberturaServicio3);
+        coberturaServicio4 = await coberturaRepository.create(coberturaServicio4);
 
-        let plan1 = new Plan(null, "100", [coberturaServicio1, coberturaServicio2]);
-        let plan2 = new Plan(null, "200", [coberturaServicio2]);
+        let plan1 = new Plan(null, "210", [coberturaServicio1, coberturaServicio2]);
+        let plan2 = new Plan(null, "310", [coberturaServicio2]);
+        let plan3 = new Plan(null, "410", [coberturaServicio3, coberturaServicio4]);
         plan1 = await planRepository.create(plan1);
         plan2 = await planRepository.create(plan2);
-        console.log("Planes creados:", plan1.id, plan2.id);
-        plan1.coberturasServicio.push(coberturaCara);
+        plan3 = await planRepository.create(plan3);
+        console.log("Planes creados:", plan1.id, plan2.id, plan3.id);
+        plan1.coberturasServicio.push(coberturaServicio3);
         await planRepository.update(plan1, plan1.id);
-        plan2.coberturasServicio.push(coberturaEsp);
+        plan2.coberturasServicio.push(coberturaServicio4);
         await planRepository.update(plan2, plan2.id);
 
         let obraSocial1 = new ObraSocial(null, "OSDE", [plan2]);
@@ -94,17 +102,19 @@ const seedDatabase = async () => {
         obraSocial2 = await obraSocialRepository.create(obraSocial2);
         console.log("Obras sociales creadas:", obraSocial1.id, obraSocial2.id);
 
-        let paciente1 = new Paciente(null, usuario1, "Juan", "Pérez", "12345678", "1990-01-01", obraSocial1, plan1, "M");
-        let paciente2 = new Paciente(null, usuario2, "Maria", "Gómez", "87654321", "1985-05-15", obraSocial2, plan2, "F");
+        let paciente1 = new Paciente(null, usuario1, "Valentina", "Arbarello", "12345678", "1990-01-01", obraSocial1, plan1, "F");
+        let paciente2 = new Paciente(null, usuario3, "Sofia", "Baudo", "12345678", "1990-01-01", obraSocial2, plan1, "F");
+        let paciente3 = new Paciente(null, usuario4, "Camila", "Ramos", "87654321", "1985-05-15", obraSocial2, plan2, "F");
         paciente1 = await pacienteRepository.create(paciente1);
         paciente2 = await pacienteRepository.create(paciente2);
-        console.log("Pacientes creados:", paciente1.id, paciente2.id);
+        paciente3 = await pacienteRepository.create(paciente3);
+        console.log("Pacientes creados:", paciente1.id, paciente2.id, paciente3.id);
 
         let disponibilidad1 = new DisponibilidadHoraria(null, 2, "08:00:00", "12:00:00",servicio1, sede1);
         console.log("Disponibilidades horarias creadas (embebidas en médicos");
 
-        let medico1 = new Medico(null, usuario1, 456, "Dra. Valentina", "Arbarello", [servicio1, servicio2,servicioCaro, servicio6], [sede1],  [disponibilidad1]);
-        let medico2 = new Medico(null, usuario2, 123, "Dra. Sofia", "Baudo", [servicio1], [sede2],  [disponibilidad1]);
+        let medico1 = new Medico(null, usuario2, 456, "Dr. Bautista", "Leguia", [servicio1, servicio2,servicio3, servicio4], [sede1],  [disponibilidad1]);
+        let medico2 = new Medico(null, usuario5, 123, "Dr. Olaf", "Querol", [servicio1], [sede2],  [disponibilidad1]);
         medico1 = await medicoRepository.create(medico1);
         medico2 = await medicoRepository.create(medico2);
         console.log("Médicos creados:", medico1.id, medico2.id);
