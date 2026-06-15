@@ -42,9 +42,10 @@ export class TurnoService {
       const turno = await this.turnoRepository.findById(turnoId);
       const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
       const haySuperposicion = listaTurnos.find(
-        (t) => !this.noSeSuperponen(t, turno),
+          (t) => t._id.toString() !== turnoId.toString() && !this.noSeSuperponen(t, turno)
       );
       if (haySuperposicion) {
+        console.log("en dar de alta")
         throw new ConflictError("El turno se superpone con uno existente.");
       }
       turno.darDeAlta(paciente);

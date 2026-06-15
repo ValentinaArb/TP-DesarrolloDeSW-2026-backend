@@ -11,7 +11,8 @@ class PacienteController{
     async reservarTurno(req, res, next){
         try{
             const {pacienteId, turnoId} = req.params;
-            await this.turnoService.darDeAlta(turnoId, pacienteId); // [FIX] turnoService.darDeAlta(...,...) y sacarlo de pacienteService
+            console.log("entra a dar de alta"); //DEBUG
+            await this.turnoService.darDeAlta(turnoId, pacienteId);
             res.status(200).json({mensaje: "Turno reservado exitosamente"});
         }
         catch(error){
