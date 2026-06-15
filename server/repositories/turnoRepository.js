@@ -20,8 +20,11 @@ export class TurnoRepository extends Repository {
     }
 
     async findDisponiblesByFilters(filtros) {
-        // Empezamos sin exigir que esté DISPONIBLE para evitar el problema de tu seed
         const andConditions = [];
+
+        // NUEVO: Exigimos estrictamente que el estado sea DISPONIBLE
+        // Asegurate de importar EstadoTurno si usás el enum, o pasá el string directamente.
+        andConditions.push({ estado: "DISPONIBLE" }); 
 
         // 1. Filtro Médico: Transformamos el texto a ObjectId de Mongoose
         if (filtros.medicoId) {
@@ -71,7 +74,7 @@ export class TurnoRepository extends Repository {
             andConditions.push({ fechaInicio: fechaQuery });
         }
 
-        // 5. Unimos todo. Si no hay filtros, pasamos un objeto vacío {}
+        // 5. Unimos todo. 
         const queryFinal = andConditions.length > 0 ? { $and: andConditions } : {};
 
         return await this.mongooseModel.find(queryFinal)
