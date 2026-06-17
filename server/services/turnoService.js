@@ -193,8 +193,10 @@ export class TurnoService {
     );
   }
 
-  async filtrarPor(medicoId) {
-    return await this.turnoRepository.turnosDe(medicoId);
+  async filtrarPor(medicoId, estadoPedido) {
+    const turnos = await this.turnoRepository.turnosDe(medicoId);
+    return turnos.filter(t => String(t.estado) === String(estadoPedido))
+
   }
 
   noSeSuperponen(turno1, turno2) {

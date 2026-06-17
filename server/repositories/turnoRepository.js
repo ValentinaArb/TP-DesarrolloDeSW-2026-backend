@@ -8,7 +8,7 @@ export class TurnoRepository extends Repository {
   }
 
   async turnosDe(medicoId) {
-    return await this.mongooseModel.find({ medico: medicoId });
+    return await this.mongooseModel.find({ "medico._id": medicoId });
   }
 
   async turnosPara(pacienteId) {

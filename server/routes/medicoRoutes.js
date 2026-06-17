@@ -426,6 +426,7 @@ router.get('/', async (req, res, next) => await medicoController.obtenerTodos(re
 router.get('/:id', async (req, res, next) => await medicoController.obtenerMedico(req, res, next));
 router.get("/:medicoId/pacientes/:pacienteId", async(req, res, next) => await medicoController.consultarHistorialTurnos(req, res, next));
 router.get("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.consultarDisponibilidad(req, res, next));
+router.get("/:medicoId/turnos", async(req, res, next) => await medicoController.turnosDeMedico(req, res, next));
 
 //POST
 router.post("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darAltaServicio(req, res, next));
