@@ -172,4 +172,6 @@ router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await pacie
 
 //PATCH
 router.patch('/:pacienteId/turnos/:turnoId', async(req, res, next) => await pacienteController.actualizarTurno(req, res, next));
+router.patch('/:pacienteId', async(req, res, next) => await pacienteController.actualizarPaciente(req, res, next));
+
 export default router;
