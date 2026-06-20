@@ -36,17 +36,34 @@ export class AuthController {
       if (!rol)
         return res.status(401).json({ error: "Usuario sin perfil asignado" });
 
-      // genera JWT
+      const payloadToken = {
+        id: usuario._id,
+        entidadId: entidad._id,
+        mail: usuario.mail,
+        nombre: entidad.nombre,
+        apellido: entidad.apellido,
+        rol,
+      };
+
+      if (rol === "paciente") {
+        payloadToken.dni = entidad.dni;
+        payloadToken.fechaNacimiento = entidad.fechaNacimiento;
+        payloadToken.obraSocial = entidad.obraSocial;
+        payloadToken.plan = entidad.plan;
+        payloadToken.sexo = entidad.sexo;
+      }
+
+      if (rol === "medico") {
+        payloadToken.matricula = entidad.matricula; 
+        payloadToken.servicios = entidad.servicios;
+        payloadToken.disponibilidades = entidad.disponibilidades;
+        payloadToken.disponibilidadesAnteriores = entidad.disponibilidadesAnteriores;
+      }
+
       const token = jwt.sign(
-        {
-          id: usuario._id,
-          entidadId: entidad._id,
-          mail: usuario.mail,
-          nombre: entidad.nombre,
-          rol,
-        },
+        payloadToken,
         process.env.JWT_SECRET,
-        { expiresIn: "8h" },
+        { expiresIn: "8h" }
       );
 
       res.json({ token });
@@ -86,7 +103,7 @@ async register(req, res, next) {
                     matricula,
                     servicios,
                     sedes,
-                    disponibilidades
+                    disponibilidades,
                 });
             } else {
                 const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
