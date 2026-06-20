@@ -166,6 +166,7 @@ const router = Router();
 
 //GET
 router.get('/:pacienteId/turnos', async( req, res, next) => await pacienteController.obtenerHistorialTurnos(req, res, next));
+router.get('/:obrasSociales', async( req, res, next) => await pacienteController.obtenerObrasSociales(req, res, next));
 
 //POST
 router.post('/:pacienteId/turnos/:turnoId', async (req, res,next) => await pacienteController.reservarTurno(req, res,next));

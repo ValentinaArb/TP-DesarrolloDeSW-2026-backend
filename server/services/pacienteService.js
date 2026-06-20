@@ -1,6 +1,8 @@
 import { TurnoRepository } from "../repositories/turnoRepository.js";
 import { MedicoRepository } from "../repositories/medicoRepository.js";
 import { PacienteRepository } from "../repositories/pacienteRepository.js";
+import { ObraSocialRepository } from "../repositories/obraSocialRepository.js";
+
 import { TurnoService } from "./turnoService.js";
 import { EstadoTurno } from "../domain/estadoTurno.js";
 import { ConflictError, NotFoundError } from "../errors/AppError.js";
@@ -12,6 +14,7 @@ export class PacienteService {
   constructor() {
     this.turnoService = new TurnoService();
     this.turnoRepository = new TurnoRepository();
+    this.obraSocialRepository = new ObraSocialRepository();
     this.pacienteRepository = new PacienteRepository();
     this.medicoRepository = new MedicoRepository();
   }
@@ -130,6 +133,11 @@ export class PacienteService {
     await this.turnoRepository.update(turno, turnoId);
     return turno;
   }
+
+  async obtenerobrasSociales() {
+    return await this.obraSocialRepository.findAll();
+  }
+
 
   async evaluarTurnoPendiente(turnoId, respuestaAceptar) {
     const turno = await this.turnoRepository.findById(turnoId);

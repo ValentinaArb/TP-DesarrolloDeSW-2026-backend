@@ -67,6 +67,16 @@ class PacienteController {
       return next(error);
     }
   }
+
+  async obtenerObrasSociales(req, res, next) {
+    try {
+      const obrasSociales = await this.pacienteService.obtenerobrasSociales();
+      res.status(200).json(obrasSociales);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   /*
     async evaluarTurnoPendiente(req, res, next){
         try{
