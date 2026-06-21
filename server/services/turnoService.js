@@ -29,6 +29,7 @@ export class TurnoService {
       }
       turno.darDeBaja(motivo);
       await this.turnoRepository.update(turno, turnoId);
+      await this.factoryNotificacion.crearNotificacion(turno);
       return turno;
     } catch (error) {
       console.error("Error al dar de baja el turno:", error);
@@ -42,13 +43,15 @@ export class TurnoService {
       const turno = await this.turnoRepository.findById(turnoId);
       const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
       const haySuperposicion = listaTurnos.find(
-        (t) => !this.noSeSuperponen(t, turno),
+          (t) => t._id.toString() !== turnoId.toString() && !this.noSeSuperponen(t, turno)
       );
       if (haySuperposicion) {
+        console.log("en dar de alta")
         throw new ConflictError("El turno se superpone con uno existente.");
       }
       turno.darDeAlta(paciente);
       await this.turnoRepository.update(turno, turnoId);
+      await this.factoryNotificacion.crearNotificacion(turno);
     } catch (error) {
       console.error("Error al dar de alta el turno:", error);
       throw error;
@@ -192,8 +195,10 @@ export class TurnoService {
     );
   }
 
-  async filtrarPor(medicoId) {
-    return await this.turnoRepository.turnosDe(medicoId);
+  async filtrarPor(medicoId, estadoPedido) {
+    const turnos = await this.turnoRepository.turnosDe(medicoId);
+    return turnos.filter(t => String(t.estado) === String(estadoPedido))
+
   }
 
   noSeSuperponen(turno1, turno2) {
@@ -313,7 +318,7 @@ export class TurnoService {
       turno.fechaFinal = horaFinalPropuesta;
       turno.estado = EstadoTurno.PENDIENTE;
       await this.turnoRepository.update(turno, turnoId);
-      return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
+      return await this.factoryNotificacion.crearNotificacion(turno);
     } else {
       throw new BadRequestError(
         "El turno no pertenece a este médico o la hora de inicio es la misma que la actual.",

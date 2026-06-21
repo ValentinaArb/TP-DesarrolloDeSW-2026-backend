@@ -165,6 +165,18 @@ class MedicoController {
             return next(error);
         }
     }
+
+    async turnosDeMedico(req, res, next){
+        try{
+            const {medicoId} = req.params;
+            const { estado } = req.query;
+            const turnos = await this.turnoService.filtrarPor(medicoId, estado);
+            res.status(200).json(turnos);
+        }
+        catch(error){
+            return next(error);
+        }
+    }
 }
 
 const medicoController = new MedicoController();
