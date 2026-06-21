@@ -11,7 +11,6 @@ export class Medico {
     disponibilidades
     disponibilidadesAnteriores
 
-
     constructor(id = null, usuario, matricula, nombre, apellido, servicios, sedes, disponibilidades) {
         this.id = id;
         this.usuario = usuario;
@@ -33,17 +32,31 @@ export class Medico {
         this.disponibilidades.splice(indice, 1);
         this.disponibilidadesAnteriores.push(disponibilidad);
     }
-    darDeAltaServicio(servicio){
+
+    darDeAltaServicio(servicio) {
         this.servicios.push(servicio);
     }
 
-    darDeBajaServicio(servicioId){
-        if(this.servicios.some(s => String(s.id) === String(servicioId))){
-            this.servicios.pop(this.servicios.find(s => String(s.id) === String(servicioId)));
-        }else{
+    darDeBajaServicio(servicioId) {
+        const indice = this.servicios.findIndex(s => String(s.id) === String(servicioId));
+        if (indice === -1) {
             throw new NotFoundError("no se encontró el servicio en la lista de servicios del médico");
         }
+        this.servicios.splice(indice, 1);
     }
+
+    darDeAltaSede(sede) {
+        this.sedes.push(sede);
+    }
+
+    darDeBajaSede(sedeId) {
+        const indice = this.sedes.findIndex(s => String(s.id) === String(sedeId));
+        if (indice === -1) {
+            throw new NotFoundError("No se encontró la sede en la lista de sedes del médico");
+        }
+        this.sedes.splice(indice, 1);
+    }
+
     tieneEsaDisponibilidad(disponibilidadId) {
         return this.disponibilidades.find(d => d.id === disponibilidadId);
     }

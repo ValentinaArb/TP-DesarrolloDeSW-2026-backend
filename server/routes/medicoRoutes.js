@@ -430,12 +430,14 @@ router.get("/:medicoId/turnos", async(req, res, next) => await medicoController.
 
 //POST
 router.post("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darAltaServicio(req, res, next));
+router.post("/:medicoId/sedes/:sedeId", async (req, res, next) => await medicoController.darAltaSede(req, res, next));
 router.post('/', async (req, res, next) => await medicoController.crearMedico(req, res, next));
 router.post('/:id/disponibilidad', async (req, res, next) => await medicoController.agregarDisponibilidad(req, res, next));
 
 //DELETE
 router.delete('/:id/disponibilidad/:idDisponibilidad', async (req, res, next) => await medicoController.eliminarDisponibilidad(req, res, next));
 router.delete("/:medicoId/servicios/:servicioId", async(req, res, next) => await medicoController.darDeBajaServicio(req, res, next));
+router.delete("/:medicoId/sedes/:sedeId", async (req, res, next) => await medicoController.darBajaSede(req, res, next));
 router.delete('/:id', async (req, res, next) => await medicoController.eliminarMedico(req, res, next));
 
 //PUT
