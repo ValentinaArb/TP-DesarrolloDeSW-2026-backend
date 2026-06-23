@@ -142,10 +142,14 @@ export class MedicoService {
         return turno;
     }
 
-    async consultarHistorialTurnos(pacienteId, medicoId, estado){
-        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
-        return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
-    }
+   async consultarHistorialTurnos(pacienteId, medicoId, estado) {
+    const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
+    
+    console.log("turnosPaciente:", turnosPaciente);
+    turnosPaciente.forEach(t => console.log("medico en turno:", t.medico));
+    
+    return turnosPaciente.filter(t => String(t.medico._id ?? t.medico.id) === String(medicoId));
+}
 
     async consultarDisponibilidad(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
