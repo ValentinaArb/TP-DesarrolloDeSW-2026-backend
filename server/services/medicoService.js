@@ -1,5 +1,6 @@
 import {TurnoRepository} from "../repositories/turnoRepository.js";
 import {ServicioRepository} from "../repositories/servicioRepository.js";
+import { SedeRepository } from "../repositories/sedeRepository.js";
 import {Medico} from "../domain/medico.js";
 import {DisponibilidadHoraria} from "../domain/disponibilidadHoraria.js";
 import {PacienteService} from "./pacienteService.js";
@@ -11,6 +12,7 @@ export class MedicoService {
         this.medicoRepository = medicoRepository;
         this.turnoRepository = new TurnoRepository();
         this.servicioRepository = new ServicioRepository();
+        this.sedeRepository = new SedeRepository();
     }
 
     get pacienteService() {
@@ -148,16 +150,31 @@ export class MedicoService {
         return (medico.servicios.filter(s => s.id === servicioId))
     }
 
-    async darDeBajaServicio(medicoId, servicioId){
-        const medico = await this.medicoRepository.findById(medicoId);
-        medico.darDeBajaServicio(servicioId);
-        return await this.medicoRepository.update(medico, medicoId);
-    }
     async darDeAltaServicio(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);
         const servicio = await this.servicioRepository.findById(servicioId);
 
         medico.darDeAltaServicio(servicio);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async darDeBajaServicio(medicoId, servicioId){
+        const medico = await this.medicoRepository.findById(medicoId);
+        medico.darDeBajaServicio(servicioId);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async darDeAltaSede(medicoId, sedeId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        const sede = await this.sedeRepository.findById(sedeId);
+ 
+        medico.darDeAltaSede(sede);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+ 
+    async darDeBajaSede(medicoId, sedeId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        medico.darDeBajaSede(sedeId);
         return await this.medicoRepository.update(medico, medicoId);
     }
 

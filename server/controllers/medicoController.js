@@ -142,6 +142,28 @@ class MedicoController {
         }
     }
 
+    // POST /medicos/:medicoId/sedes/:sedeId
+    async darAltaSede(req, res, next) {
+        try {
+            const { medicoId, sedeId } = req.params;
+            const resultado = await this.medicoService.darDeAltaSede(medicoId, sedeId);
+            res.status(201).json(resultado);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    // DELETE /medicos/:medicoId/sedes/:sedeId
+    async darBajaSede(req, res, next) {
+        try {
+            const { medicoId, sedeId } = req.params;
+            await this.medicoService.darDeBajaSede(medicoId, sedeId);
+            res.status(200).json({ mensaje: "Sede dada de baja" });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
     //PATCH /servicios/:id
     async modificarServicio(req, res, next){
         try{
