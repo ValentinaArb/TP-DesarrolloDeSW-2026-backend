@@ -331,7 +331,7 @@ export class TurnoService {
 
     return {
       turnoId: turno.id,
-      estado: turno.estado, // ← agregar esta línea
+      estado: turno.estado, 
       estadoPrestacion: cotizacion.estadoPrestacion,
       montoAAbonar: cotizacion.monto,
       profesional:
