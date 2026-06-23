@@ -97,7 +97,7 @@ async register(req, res, next) {
             if (rol === "medico") {
                 const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
                 entidad = await MedicoModel.create({
-                    usuario: { mail },
+                    usuario: nuevoUsuario,
                     nombre,
                     apellido,
                     matricula,
@@ -108,7 +108,7 @@ async register(req, res, next) {
             } else {
                 const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
                 entidad = await PacienteModel.create({
-                    usuario: { nombre, mail },
+                    usuario: nuevoUsuario,
                     nombre,
                     apellido,
                     dni,

@@ -4,7 +4,8 @@ import {Paciente} from "../domain/paciente.js";
 const pacienteSchema = new mongoose.Schema({
     usuario: {
         nombre: String,
-        mail: String
+        mail: String,
+        _id: {type: String, required: true}
     },
     nombre: {
         type: String,
