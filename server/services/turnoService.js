@@ -29,7 +29,7 @@ export class TurnoService {
       }
       turno.darDeBaja(motivo);
       await this.turnoRepository.update(turno, turnoId);
-      await this.factoryNotificacion.crearNotificacion(turno);
+      //await this.factoryNotificacion.crearNotificacion(turno);
       return turno;
     } catch (error) {
       console.error("Error al dar de baja el turno:", error);
