@@ -97,8 +97,9 @@ export class PacienteService {
 
   async obtenerTurnosPorEstado(pacienteId, estadoPedido) {
     const turnos = await this.turnoRepository.turnosPara(pacienteId);
-    return turnos.filter((t) => String(t.estado) === String(estadoPedido));
-  }
+    if (!estadoPedido) return turnos; 
+    return turnos.filter(t => String(t.estado) === String(estadoPedido));
+}
 
   async hacerCambioFecha(pacienteId, turnoId, horaInicio) {
     const turno = await this.turnoRepository.findById(turnoId);
