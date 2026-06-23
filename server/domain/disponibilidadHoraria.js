@@ -27,10 +27,9 @@ export class DisponibilidadHoraria{
         const [hastaH, hastaM] = this.horaHasta.split(':').map(Number);
         const desde = desdeH * 60 + desdeM;
         const hasta = hastaH * 60 + hastaM;
-
-        return (fecha.getDay() === this.diaSemana) &&
+        return ((fecha.getDay() === this.diaSemana) &&
             (horaFecha >= desde) &&
-            (horaFecha <= hasta);
+            (horaFecha <= hasta));
     }
 
     obtenerCosto() {

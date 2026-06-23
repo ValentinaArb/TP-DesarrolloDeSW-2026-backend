@@ -70,8 +70,10 @@ export class MedicoService {
         const fechaFinal = turno.fechaFinal;
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-
-        return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
+        return disponibilidadesMedico.some((d) => {
+            const dispoConMetodos = new DisponibilidadHoraria(null, d.diaSemana, d.horaDesde, d.horaHasta, null, null);
+            return dispoConMetodos.abarca(fechaInicio) || dispoConMetodos.abarca(fechaFinal)
+        });
     }
 
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {

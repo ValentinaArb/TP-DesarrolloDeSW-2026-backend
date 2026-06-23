@@ -1,6 +1,6 @@
 import {CambioEstadoTurno} from "./cambioEstadoTurno.js"
 import {EstadoTurno} from "./estadoTurno.js";
-import {ConflictError} from "../errors/AppError.js";
+import {BadRequestError, ConflictError} from "../errors/AppError.js";
 import {FactoryNotificacion} from "./factoryNotificacion.js";
 
 export class Turno{
@@ -28,38 +28,35 @@ export class Turno{
         this.costo = costo;
     }
 
-    darDeBaja(motivo) {
-        if(this.verificarBaja()) {
-            this.actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
-        }
-        else {
+    async darDeBaja(motivo) {
+        if (this.verificarBaja()) {
+            await this.actualizarEstado(EstadoTurno.DISPONIBLE, this.paciente, motivo);
+        } else {
             throw new ConflictError("Los turnos se deben cancelar con al menos una hora de antelación.");
         }
     }
     
-    darDeAlta(paciente) {
-        if(this.estado === EstadoTurno.DISPONIBLE) {
-            this.actualizarEstado(EstadoTurno.RESERVADO, paciente);
-        }
-        else{
+    async darDeAlta(paciente) {
+        if (this.estado === EstadoTurno.DISPONIBLE) {
+            await this.actualizarEstado(EstadoTurno.RESERVADO, paciente);
+        } else {
             throw new ConflictError("Whoops! El turno no está disponible.");
         }
     }
 
     async actualizarEstado(nuevoEstado, paciente, motivo) {
         let cambio = new CambioEstadoTurno(null, Date.now(), nuevoEstado, this.id, paciente, motivo);
+        const factoryNotificacion = new FactoryNotificacion();
         this.historialDeEstados.push(cambio);
         this.estado = nuevoEstado;
-        const turnoParaNotificar = { ...this };
-        if(nuevoEstado === EstadoTurno.DISPONIBLE) {
+        if (nuevoEstado === EstadoTurno.DISPONIBLE || nuevoEstado === EstadoTurno.CANCELADO) {
+            await factoryNotificacion.crearNotificacion(this);
             this.paciente = null;
-        }else{
+        } else {
             this.paciente = paciente;
+            await factoryNotificacion.crearNotificacion(this);
         }
-        // Descomentar cuando se arregle lo de notificaciones.
-        //const factoryNotificacion = new FactoryNotificacion();
-        //const notificacionCreada = await factoryNotificacion.crearNotificacion(turnoParaNotificar);
-        //return notificacionCreada;
+
         return null;
     }
 
@@ -77,7 +74,9 @@ export class Turno{
     }
 
     async servicioPerteneceAMedico(servicioId) {
-        return this.medico.servicios.some(s => s.id === servicioId);
+        return this.medico.servicios.some(s =>
+            s._id.toString() === servicioId
+        );
     }
 
     crearMensaje(){

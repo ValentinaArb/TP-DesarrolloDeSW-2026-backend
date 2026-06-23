@@ -7,8 +7,10 @@ export class NotificacionService {
     }
 
     async obtenerTodosFiltrados(usuarioId, estaLeida){
-        const notificaciones = await this.notificacionRepository.findAll()        
-        let notificacionesFiltradas = notificaciones.filter((n) => n.destinatario._id === usuarioId);
+        const notificaciones = await this.notificacionRepository.findAll();
+        let notificacionesFiltradas = notificaciones.filter((n) => {
+            return n.destinatario.usuario._id === usuarioId;
+        });
 
         if (estaLeida !== undefined){
             notificacionesFiltradas = notificacionesFiltradas.filter((n) => String(n.estaLeida) === String(estaLeida));

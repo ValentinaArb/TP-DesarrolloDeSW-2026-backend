@@ -137,7 +137,7 @@ class TurnoController {
       if (operacion === "baja" && esMedico) {
         const turno = await this.turnoService.obtenerTurno(id);
         
-        await turno.actualizarEstado(EstadoTurno.DISPONIBLE, null, motivo || "Cancelado por el médico");
+        await turno.actualizarEstado(EstadoTurno.CANCELADO, null, motivo || "Cancelado por el médico");
         
         await this.turnoService.turnoRepository.update(turno, id); 
 

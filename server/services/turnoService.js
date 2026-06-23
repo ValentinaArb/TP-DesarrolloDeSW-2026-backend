@@ -29,7 +29,6 @@ export class TurnoService {
       }
       turno.darDeBaja(motivo);
       await this.turnoRepository.update(turno, turnoId);
-      //await this.factoryNotificacion.crearNotificacion(turno);
       return turno;
     } catch (error) {
       console.error("Error al dar de baja el turno:", error);
@@ -51,7 +50,6 @@ export class TurnoService {
       }
       turno.darDeAlta(paciente);
       await this.turnoRepository.update(turno, turnoId);
-      await this.factoryNotificacion.crearNotificacion(turno);
     } catch (error) {
       console.error("Error al dar de alta el turno:", error);
       throw error;
@@ -94,7 +92,7 @@ export class TurnoService {
         new CambioEstadoTurno(
           null,
           Date.now(),
-          EstadoTurno.DISPRESERVADO,
+          EstadoTurno.DISPONIBLE,
           null,
           null,
           null,
@@ -109,14 +107,14 @@ export class TurnoService {
     );
     const perteneceASede = await medicoService.perteneceASede(
       medicoId,
-      sede.id,
+      sede._id,
     );
     if (!estaDisponible) {
       throw new UnprocessableEntityError(
         "El medico no esta disponible en la fecha y hora indicada.",
       );
     }
-    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio.id))) {
+    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio._id))) {
       throw new UnprocessableEntityError(
         "El medico no realiza ese servicio especifico",
       );
