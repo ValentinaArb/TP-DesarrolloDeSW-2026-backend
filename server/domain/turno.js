@@ -64,6 +64,10 @@ export class Turno {
   }
 
   async actualizarEstado(nuevoEstado, paciente, motivo) {
+    if (this.medico && typeof this.set === 'function') {
+      this.set('medico.usuario', { _id: this.medico._id });
+    }
+
     let cambio = new CambioEstadoTurno(
       null,
       Date.now(),
@@ -79,11 +83,11 @@ export class Turno {
       nuevoEstado === EstadoTurno.DISPONIBLE ||
       nuevoEstado === EstadoTurno.CANCELADO
     ) {
-      await factoryNotificacion.crearNotificacion(this);
-      this.paciente = null;
+       //await factoryNotificacion.crearNotificacion(this);
+      this.paciente = null; 
     } else {
       this.paciente = paciente;
-      await factoryNotificacion.crearNotificacion(this);
+       //await factoryNotificacion.crearNotificacion(this);
     }
 
     return null;
@@ -107,7 +111,6 @@ export class Turno {
   }
 
   crearMensaje() {
-    // Formateamos la fecha para que quede limpia (Ej: "29 de junio de 2026 a las 08:30")
     const fechaLimpia =
       this.fechaInicio.toLocaleDateString("es-AR", {
         day: "2-digit",
