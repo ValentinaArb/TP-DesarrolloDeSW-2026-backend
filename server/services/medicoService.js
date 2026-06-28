@@ -70,8 +70,10 @@ export class MedicoService {
         const fechaFinal = turno.fechaFinal;
         const medico = await this.medicoRepository.findById(medicoId);
         const disponibilidadesMedico = medico.disponibilidades;
-
-        return disponibilidadesMedico.some((d) => d.abarca(fechaInicio) || d.abarca(fechaFinal));
+        return disponibilidadesMedico.some((d) => {
+            const dispoConMetodos = new DisponibilidadHoraria(null, d.diaSemana, d.horaDesde, d.horaHasta, null, null);
+            return dispoConMetodos.abarca(fechaInicio) || dispoConMetodos.abarca(fechaFinal)
+        });
     }
 
     async yaTieneTurno(medicoId, turnoChequear, turnoService) {
@@ -140,10 +142,14 @@ export class MedicoService {
         return turno;
     }
 
-    async consultarHistorialTurnos(pacienteId, medicoId, estado){
-        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
-        return turnosPaciente.filter(t=> String(t.medico.id) === String(medicoId));
-    }
+   async consultarHistorialTurnos(pacienteId, medicoId, estado) {
+    const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
+    
+    console.log("turnosPaciente:", turnosPaciente);
+    turnosPaciente.forEach(t => console.log("medico en turno:", t.medico));
+    
+    return turnosPaciente.filter(t => String(t.medico._id ?? t.medico.id) === String(medicoId));
+}
 
     async consultarDisponibilidad(medicoId, servicioId){
         const medico = await this.medicoRepository.findById(medicoId);

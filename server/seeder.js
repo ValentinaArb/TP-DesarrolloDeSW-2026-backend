@@ -84,9 +84,12 @@ const seedDatabase = async () => {
         coberturaServicio3 = await coberturaRepository.create(coberturaServicio3);
         coberturaServicio4 = await coberturaRepository.create(coberturaServicio4);
 
+
+
         let plan1 = new Plan(null, "210", [coberturaServicio1, coberturaServicio2]);
         let plan2 = new Plan(null, "310", [coberturaServicio2]);
         let plan3 = new Plan(null, "410", [coberturaServicio3, coberturaServicio4]);
+
         plan1 = await planRepository.create(plan1);
         plan2 = await planRepository.create(plan2);
         plan3 = await planRepository.create(plan3);
@@ -124,6 +127,7 @@ const seedDatabase = async () => {
         notificacion1 = await notificacionRepository.create(notificacion1);
         notificacion2 = await notificacionRepository.create(notificacion2);
         console.log("Notificaciones creadas:", notificacion1.id, notificacion2.id);
+
 
         let turno1 = new Turno(null, medico1, "2027-04-19T20:00:00", "2027-04-19T21:00:00", paciente1, servicio1,sede1, EstadoTurno.RESERVADO, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.DISPONIBLE, null, null, "CREACION")], 2000);
         let turno2 = new Turno(null, medico2, "2027-03-10T15:30:00", "2027-03-10T16:30:00" , null, servicio2,sede2, EstadoTurno.DISPONIBLE, [new CambioEstadoTurno(null, Date.now(), EstadoTurno.RESERVADO, null, null, "ALTA")], 3000);

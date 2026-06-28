@@ -5,12 +5,14 @@ const notificacionSchema = new mongoose.Schema({
     destinatario: {
         _id: {type: String, required: true},
         nombre: { type: String, required: true },
-        apellido: { type: String, required: true }
+        apellido: { type: String, required: true },
+        usuario: { _id: { type: String, required: true }}
     },
     remitente: {
         _id: { type: String, required: true },
         nombre: { type: String, required: true },
-        apellido: { type: String, required: true }
+        apellido: { type: String, required: true },
+        usuario: { _id: { type: String, required: true }}
     },
     mensaje: {
         type: String,

@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 import {Medico} from "../domain/medico.js";
 
+const disponibilidadSchema = new mongoose.Schema({
+  diaSemana: { type: Number, required: true },
+  horaDesde: { type: String, required: true }, // Asumo que es String por tu .split(':')
+  horaHasta: { type: String, required: true }
+});
+
 const medicoSchema = new mongoose.Schema({
   usuario: {
       nombre: String,
-      mail: String
+      mail: String,
+      _id: {type: String, required: true}
   },
   nombre: {
     type: String,
@@ -25,11 +32,7 @@ const medicoSchema = new mongoose.Schema({
   sedes: [{
     nombre: { type: String, required: true }
   }],
-  disponibilidades: [{
-    diaSemana: { type: Number, required: true },
-    horaDesde: { type: String, required: true },
-    horaHasta: { type: String, required: true }
-  }],
+  disponibilidades: [disponibilidadSchema],
   disponibilidadesAnteriores: [{
     diaSemana: { type: Number, required: true },
     horaDesde: { type: String, required: true },

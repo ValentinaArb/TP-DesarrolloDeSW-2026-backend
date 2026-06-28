@@ -29,7 +29,6 @@ export class TurnoService {
       }
       turno.darDeBaja(motivo);
       await this.turnoRepository.update(turno, turnoId);
-      await this.factoryNotificacion.crearNotificacion(turno);
       return turno;
     } catch (error) {
       console.error("Error al dar de baja el turno:", error);
@@ -43,15 +42,16 @@ export class TurnoService {
       const turno = await this.turnoRepository.findById(turnoId);
       const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
       const haySuperposicion = listaTurnos.find(
-          (t) => t._id.toString() !== turnoId.toString() && !this.noSeSuperponen(t, turno)
+        (t) =>
+          t._id.toString() !== turnoId.toString() &&
+          !this.noSeSuperponen(t, turno),
       );
       if (haySuperposicion) {
-        console.log("en dar de alta")
+        console.log("en dar de alta");
         throw new ConflictError("El turno se superpone con uno existente.");
       }
       turno.darDeAlta(paciente);
       await this.turnoRepository.update(turno, turnoId);
-      await this.factoryNotificacion.crearNotificacion(turno);
     } catch (error) {
       console.error("Error al dar de alta el turno:", error);
       throw error;
@@ -94,7 +94,7 @@ export class TurnoService {
         new CambioEstadoTurno(
           null,
           Date.now(),
-          EstadoTurno.DISPRESERVADO,
+          EstadoTurno.DISPONIBLE,
           null,
           null,
           null,
@@ -109,14 +109,14 @@ export class TurnoService {
     );
     const perteneceASede = await medicoService.perteneceASede(
       medicoId,
-      sede.id,
+      sede._id,
     );
     if (!estaDisponible) {
       throw new UnprocessableEntityError(
         "El medico no esta disponible en la fecha y hora indicada.",
       );
     }
-    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio.id))) {
+    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio._id))) {
       throw new UnprocessableEntityError(
         "El medico no realiza ese servicio especifico",
       );
@@ -197,8 +197,7 @@ export class TurnoService {
 
   async filtrarPor(medicoId, estadoPedido) {
     const turnos = await this.turnoRepository.turnosDe(medicoId);
-    return turnos.filter(t => String(t.estado) === String(estadoPedido))
-
+    return turnos.filter((t) => String(t.estado) === String(estadoPedido));
   }
 
   noSeSuperponen(turno1, turno2) {
@@ -332,6 +331,7 @@ export class TurnoService {
 
     return {
       turnoId: turno.id,
+      estado: turno.estado, 
       estadoPrestacion: cotizacion.estadoPrestacion,
       montoAAbonar: cotizacion.monto,
       profesional:

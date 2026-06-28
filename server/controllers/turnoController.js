@@ -132,6 +132,18 @@ class TurnoController {
   async modificarEstado(req, res, next) {
     try {
       const { id } = req.params;
+      const { operacion, motivo, esMedico } = req.body; 
+
+      if (operacion === "baja" && esMedico) {
+        const turno = await this.turnoService.obtenerTurno(id);
+        
+        await turno.actualizarEstado(EstadoTurno.CANCELADO, null, motivo || "Cancelado por el médico");
+        
+        await this.turnoService.turnoRepository.update(turno, id); 
+
+        return res.status(200).json({ mensaje: "Turno cancelado por el médico con éxito" });
+      }
+
       await this.turnoService.modificarEstado(id, req.body);
       res
         .status(200)
@@ -141,6 +153,7 @@ class TurnoController {
     }
   }
 }
+
 
 const turnoController = new TurnoController();
 export default turnoController;
