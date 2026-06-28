@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { UsuarioModel } from "../schemas/usuario.schema.js";
 import { MedicoModel } from "../schemas/medico.schema.js";
 import { PacienteModel } from "../schemas/paciente.schema.js";
+import { ServicioModel } from "../schemas/servicio.schema.js";
+import { SedeModel } from "../schemas/sede.schema.js";
 
 export class AuthController {
   // POST /auth/login
@@ -54,7 +56,7 @@ export class AuthController {
       }
 
       if (rol === "medico") {
-        payloadToken.matricula = entidad.matricula; 
+        payloadToken.matricula = entidad.matricula;
         payloadToken.servicios = entidad.servicios;
         payloadToken.disponibilidades = entidad.disponibilidades;
         payloadToken.disponibilidadesAnteriores = entidad.disponibilidadesAnteriores;
@@ -73,63 +75,81 @@ export class AuthController {
   }
 
   // POST /auth/register
-async register(req, res, next) {
+  async register(req, res, next) {
     try {
-        console.log("BODY RECIBIDO:", req.body);
+      console.log("BODY RECIBIDO:", req.body);
 
-        const { nombre, mail, password, rol, ...datos } = req.body;
+      const { nombre, mail, password, rol, ...datos } = req.body;
 
-        const existe = await UsuarioModel.findOne({ mail });
-        if (existe)
-            return res.status(400).json({ error: "El mail ya está registrado" });
+      const existe = await UsuarioModel.findOne({ mail });
+      if (existe)
+        return res.status(400).json({ error: "El mail ya está registrado" });
 
-        if (!["medico", "paciente"].includes(rol)) {
-            console.log("ROL INVALIDO:", rol);
-            return res.status(400).json({ error: "Rol inválido" });
+      if (!["medico", "paciente"].includes(rol)) {
+        console.log("ROL INVALIDO:", rol);
+        return res.status(400).json({ error: "Rol inválido" });
+      }
+
+      const hash = await bcrypt.hash(password, 10);
+      const nuevoUsuario = await UsuarioModel.create({ nombre, mail, password: hash });
+      console.log("USUARIO CREADO:", nuevoUsuario);
+
+      let entidad;
+      try {
+        if (rol === "medico") {
+          const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
+          const serviciosResueltos = await Promise.all(
+            (servicios ?? []).map(async (s) => {
+              const nombre = typeof s === "string" ? s : s.nombre;
+              const existente = await ServicioModel.findOne({ nombre });
+              if (existente) return { nombre: existente.nombre, _id: existente._id };
+              const nuevo = await ServicioModel.create({ nombre, duracionTurno: 60, costo: 0 });
+              return { nombre: nuevo.nombre, _id: nuevo._id };
+            })
+          );
+          const sedesResueltas = await Promise.all(
+            (sedes ?? []).map(async (s) => {
+              const nombreSede = typeof s === "string" ? s : s.nombre;
+              const existente = await SedeModel.findOne({ nombre: nombreSede });
+              if (existente) return { nombre: existente.nombre, _id: existente._id };
+              const nueva = await SedeModel.create({ nombre: nombreSede, direccion: "" });
+              return { nombre: nueva.nombre, _id: nueva._id };
+            })
+          );
+
+          entidad = await MedicoModel.create({
+            usuario: nuevoUsuario,
+            nombre,
+            apellido,
+            matricula,
+            servicios: serviciosResueltos,
+            sedes: sedesResueltas,
+            disponibilidades,
+          });
+        } else {
+          const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
+          entidad = await PacienteModel.create({
+            usuario: nuevoUsuario,
+            nombre,
+            apellido,
+            dni,
+            fechaNacimiento,
+            obraSocial,
+            plan,
+            sexo,
+          });
         }
+        console.log("ENTIDAD CREADA:", entidad);
+      } catch (errEntidad) {
+        console.log("ERROR AL CREAR ENTIDAD:", errEntidad.message);
+        await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
+        return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
+      }
 
-        const hash = await bcrypt.hash(password, 10);
-        const nuevoUsuario = await UsuarioModel.create({ nombre, mail, password: hash });
-        console.log("USUARIO CREADO:", nuevoUsuario);
-
-        let entidad;
-        try {
-            if (rol === "medico") {
-                const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
-                entidad = await MedicoModel.create({
-                    usuario: nuevoUsuario,
-                    nombre,
-                    apellido,
-                    matricula,
-                    servicios,
-                    sedes,
-                    disponibilidades,
-                });
-            } else {
-                const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
-                entidad = await PacienteModel.create({
-                    usuario: nuevoUsuario,
-                    nombre,
-                    apellido,
-                    dni,
-                    fechaNacimiento,
-                    obraSocial,
-                    plan,
-                    sexo
-                });
-            }
-            console.log("ENTIDAD CREADA:", entidad);
-        } catch (errEntidad) {
-            console.log("ERROR AL CREAR ENTIDAD:", errEntidad.message);
-            await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
-            return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
-        }
-
-        res.status(201).json({ mensaje: "Usuario creado", id: nuevoUsuario._id, entidadId: entidad._id });
-
+      res.status(201).json({ mensaje: "Usuario creado", id: nuevoUsuario._id, entidadId: entidad._id });
     } catch (error) {
-        console.log("ERROR GENERAL:", error.message);
-        next(error);
+      console.log("ERROR GENERAL:", error.message);
+      next(error);
     }
-}
+  }
 }
