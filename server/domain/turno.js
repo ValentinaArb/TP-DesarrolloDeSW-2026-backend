@@ -83,11 +83,11 @@ export class Turno {
       nuevoEstado === EstadoTurno.DISPONIBLE ||
       nuevoEstado === EstadoTurno.CANCELADO
     ) {
-       //await factoryNotificacion.crearNotificacion(this);
+       await factoryNotificacion.crearNotificacion(this);
       this.paciente = null; 
     } else {
       this.paciente = paciente;
-       //await factoryNotificacion.crearNotificacion(this);
+       await factoryNotificacion.crearNotificacion(this);
     }
 
     return null;
