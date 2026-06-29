@@ -122,11 +122,15 @@ export class AuthController {
             })
           );
 
-          // 👇 Enriquecés las disponibilidades con servicio y sede completos
           const disponibilidadesResueltas = (disponibilidades ?? []).map((d) => {
-            const servicio = serviciosResueltos.find(s => s.nombre === d.servicio)
+            const nombreServicio = typeof d.servicio === "string" ? d.servicio : d.servicio?.nombre;
+            const nombreSede = typeof d.sede === "string" ? d.sede : d.sede?.nombre;
+            console.log("d.servicio:", d.servicio, "| d.sede:", d.sede);
+            console.log("serviciosResueltos:", serviciosResueltos.map(s => s.nombre));
+            console.log("sedesResueltas:", sedesResueltas.map(s => s.nombre));
+            const servicio = serviciosResueltos.find(s => s.nombre === nombreServicio)
               ?? serviciosResueltos[0];
-            const sede = sedesResueltas.find(se => se.nombre === d.sede)
+            const sede = sedesResueltas.find(se => se.nombre === nombreSede)
               ?? sedesResueltas[0];
             return {
               diaSemana: d.diaSemana,
@@ -144,7 +148,7 @@ export class AuthController {
             matricula,
             servicios: serviciosResueltos,
             sedes: sedesResueltas,
-            disponibilidades: disponibilidadesResueltas, // 👈
+            disponibilidades: disponibilidadesResueltas,
           });
 
           await agendaService.generarTurnosPara(entidad);
