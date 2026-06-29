@@ -34,6 +34,7 @@ class TurnoController {
         filtros,
         orden,
         ...paginacion,
+
       });
 
       if (resultado.errorNegocio) {
@@ -65,7 +66,7 @@ class TurnoController {
   extraerPaginacion(query) {
     const pagina = query?.page === undefined ? 1 : Number(query.page);
     const limitePorPagina =
-      query?.limit === undefined ? 10 : Number(query.limit);
+      query?.limit === undefined ? 12 : Number(query.limit);
 
     return { pagina, limitePorPagina };
   }
