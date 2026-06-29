@@ -44,7 +44,15 @@ export class MedicoService {
 
     async agregarDisponibilidad(id, diaSemana, horaDesde, horaHasta, servicio, sede) {
         const medico = await this.medicoRepository.findById(id);
-        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
+
+        const servicioCompleto = await this.servicioRepository.findById(servicio._id ?? servicio.id ?? servicio);
+        if (!servicioCompleto) throw new NotFoundError("El servicio no existe");
+
+        const sedeCompleta = await this.sedeRepository.findById(sede._id ?? sede.id ?? sede);
+        if (!sedeCompleta) throw new NotFoundError("La sede no existe");
+
+        const nuevaDisponibilidad = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicioCompleto, sedeCompleta);
+
         medico.agregarDisponibilidad(nuevaDisponibilidad);
 
         return await this.medicoRepository.update(medico, medico.id);
