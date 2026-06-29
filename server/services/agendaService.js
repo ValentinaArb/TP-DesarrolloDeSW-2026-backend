@@ -1,34 +1,79 @@
-import { TurnoService } from "./turnoService";
-import { TurnoRepository } from "../repositories/turnoRepository";
-import { UnprocessableEntityError } from "../errors/AppError"
-import { BadRequestError } from "../errors/AppError.js";
+import { TurnoService } from "./turnoService.js";
+import { TurnoRepository } from "../repositories/turnoRepository.js";
+import { MedicoService } from "./medicoService.js";
+import { Turno } from "../domain/turno.js";
+import { EstadoTurno } from "../domain/estadoTurno.js";
+import { UnprocessableEntityError, BadRequestError } from "../errors/AppError.js";
 
 class AgendaService {
-    constructor() {
+    constructor(medicoService = null) {
         this.turnoRepository = new TurnoRepository();
-        this.medicoService = new MedicoService();
+        this.medicoService = medicoService ?? new MedicoService(this);
         this.turnoService = new TurnoService();
     }
-    
-    async generarTurnosPara(medico){
-        const disponibilidadesMedico = medico.disponibilidades;
-        try{
-            disponibilidadesMedico.forEach(d  => {
-                const fechas = this.obtenerFechasPorDia(d.diaSemana);
-                fechas.forEach(fecha => {
-                    const fechaInicio = new Date(fecha.getFullYear(),fecha.getMonth(),fecha.getDate(),d.inicio.getHours(),d.inicio.getMinutes(),d.inicio.getSeconds());
-                    const fechaFin = new Date(fechaInicio.getTime() + d.duracion * 60000);
-                    const turno = new Turno(null, medico, fechaInicio, fechaFin, null, d.servicio, d.sede, EstadoTurno.DISPONIBLE, [], d.obtenerCosto()); 
-                    if(!this.medicoService.yaTieneTurno(medico.id, turno, this.turnoService)){
-                        this.turnoRepository.create(turno);
+
+    async generarTurnosPara(medico) {
+    const disponibilidadesMedico = medico.disponibilidades;
+    try {
+        for (const d of disponibilidadesMedico) {
+            const [horasDesde, minutosDesde] = d.horaDesde.split(':').map(Number);
+            const [horasHasta, minutosHasta] = d.horaHasta.split(':').map(Number);
+            const duracionMs = d.servicio.duracionTurno * 60000;
+            const fechas = this.obtenerFechasPorDia(d.diaSemana);
+
+            for (const fecha of fechas) {
+                let fechaInicio = new Date(
+                    fecha.getFullYear(),
+                    fecha.getMonth(),
+                    fecha.getDate(),
+                    horasDesde,
+                    minutosDesde,
+                    0
+                );
+                const fechaLimite = new Date(
+                    fecha.getFullYear(),
+                    fecha.getMonth(),
+                    fecha.getDate(),
+                    horasHasta,
+                    minutosHasta,
+                    0
+                );
+
+                while (fechaInicio < fechaLimite) {
+                    const fechaFin = new Date(fechaInicio.getTime() + duracionMs);
+
+                    if (fechaFin > fechaLimite) break;
+
+                    const turno = new Turno(
+                        null,
+                        medico,
+                        fechaInicio,
+                        fechaFin,
+                        null,
+                        d.servicio,
+                        d.sede,
+                        EstadoTurno.DISPONIBLE,
+                        [],
+                        d.servicio.costo
+                    );
+
+                    const yaTiene = await this.medicoService.yaTieneTurno(
+                        medico.id ?? medico._id,
+                        turno,
+                        this.turnoService
+                    );
+                    if (!yaTiene) {
+                        await this.turnoRepository.create(turno);
                     }
-                });
-            });
+
+                    fechaInicio = new Date(fechaInicio.getTime() + duracionMs);
+                }
+            }
         }
-        catch(error){
-            return next(error);
-        }
+    } catch (error) {
+        throw new UnprocessableEntityError(error.message);
     }
+}
 
     obtenerFechasPorDia(diaSemana) {
         const fechas = [];
@@ -45,19 +90,20 @@ class AgendaService {
         }
         return fechas;
     }
-    
-    refrescarTurnosSegunDisponibilidadDe(medico){
-        const turnosMedico = await this.turnoRepository.turnosDe(medico.id);       
+
+    async refrescarTurnosSegunDisponibilidadDe(medico) {
+        const turnosMedico = await this.turnoRepository.turnosDe(medico.id);
         try {
-            turnosMedico.forEach(turno => {
-                if(turno.estado !== EstadoTurno.RESERVADO){
-                    this.turnoRepository.delete(turno.id);
-                }   
-            });
-            this.generarTurnosPara(medico);
-        }
-        catch(error){
-            return next(error);
+            for (const turno of turnosMedico) {
+                if (turno.estado !== EstadoTurno.RESERVADO) {
+                    await this.turnoRepository.delete(turno.id);
+                }
+            }
+            await this.generarTurnosPara(medico);
+        } catch (error) {
+            throw new UnprocessableEntityError(error.message);
         }
     }
 }
+
+export { AgendaService };

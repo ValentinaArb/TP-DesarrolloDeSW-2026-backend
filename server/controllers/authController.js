@@ -5,6 +5,9 @@ import { MedicoModel } from "../schemas/medico.schema.js";
 import { PacienteModel } from "../schemas/paciente.schema.js";
 import { ServicioModel } from "../schemas/servicio.schema.js";
 import { SedeModel } from "../schemas/sede.schema.js";
+import { AgendaService } from "../services/agendaService.js";
+
+const agendaService = new AgendaService();
 
 export class AuthController {
   // POST /auth/login
@@ -98,24 +101,41 @@ export class AuthController {
       try {
         if (rol === "medico") {
           const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
+
           const serviciosResueltos = await Promise.all(
             (servicios ?? []).map(async (s) => {
               const nombre = typeof s === "string" ? s : s.nombre;
               const existente = await ServicioModel.findOne({ nombre });
-              if (existente) return { nombre: existente.nombre, _id: existente._id };
+              if (existente) return { nombre: existente.nombre, _id: existente._id, duracionTurno: existente.duracionTurno, costo: existente.costo };
               const nuevo = await ServicioModel.create({ nombre, duracionTurno: 60, costo: 0 });
-              return { nombre: nuevo.nombre, _id: nuevo._id };
+              return { nombre: nuevo.nombre, _id: nuevo._id, duracionTurno: nuevo.duracionTurno, costo: nuevo.costo };
             })
           );
+
           const sedesResueltas = await Promise.all(
             (sedes ?? []).map(async (s) => {
               const nombreSede = typeof s === "string" ? s : s.nombre;
               const existente = await SedeModel.findOne({ nombre: nombreSede });
-              if (existente) return { nombre: existente.nombre, _id: existente._id };
+              if (existente) return { nombre: existente.nombre, _id: existente._id, direccion: existente.direccion ?? "" };
               const nueva = await SedeModel.create({ nombre: nombreSede, direccion: "" });
-              return { nombre: nueva.nombre, _id: nueva._id };
+              return { nombre: nueva.nombre, _id: nueva._id, direccion: nueva.direccion ?? "" };
             })
           );
+
+          // 👇 Enriquecés las disponibilidades con servicio y sede completos
+          const disponibilidadesResueltas = (disponibilidades ?? []).map((d) => {
+            const servicio = serviciosResueltos.find(s => s.nombre === d.servicio)
+              ?? serviciosResueltos[0];
+            const sede = sedesResueltas.find(se => se.nombre === d.sede)
+              ?? sedesResueltas[0];
+            return {
+              diaSemana: d.diaSemana,
+              horaDesde: d.horaDesde,
+              horaHasta: d.horaHasta,
+              servicio,
+              sede,
+            };
+          });
 
           entidad = await MedicoModel.create({
             usuario: nuevoUsuario,
@@ -124,8 +144,11 @@ export class AuthController {
             matricula,
             servicios: serviciosResueltos,
             sedes: sedesResueltas,
-            disponibilidades,
+            disponibilidades: disponibilidadesResueltas, // 👈
           });
+
+          await agendaService.generarTurnosPara(entidad);
+
         } else {
           const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
           entidad = await PacienteModel.create({
@@ -143,6 +166,7 @@ export class AuthController {
       } catch (errEntidad) {
         console.log("ERROR AL CREAR ENTIDAD:", errEntidad.message);
         await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
+        if (entidad?._id) await MedicoModel.deleteOne({ _id: entidad._id });
         return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
       }
 
