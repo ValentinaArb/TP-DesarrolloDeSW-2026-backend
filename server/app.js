@@ -7,6 +7,8 @@ import { NotFoundHandler } from "./middlewaress/notFoundHandler.js";
 import { errorHandler } from "./middlewaress/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerDocs } from './swagger.js';
+import './cron/agendaCron.js';
+import './cron/recordatorioTurno.js';
 
 dotenv.config();
 
