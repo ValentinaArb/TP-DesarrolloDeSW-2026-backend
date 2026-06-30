@@ -80,8 +80,6 @@ export class AuthController {
   // POST /auth/register
   async register(req, res, next) {
     try {
-      console.log("BODY RECIBIDO:", req.body);
-
       const { nombre, mail, password, rol, ...datos } = req.body;
 
       const existe = await UsuarioModel.findOne({ mail });
@@ -89,13 +87,11 @@ export class AuthController {
         return res.status(400).json({ error: "El mail ya está registrado" });
 
       if (!["medico", "paciente"].includes(rol)) {
-        console.log("ROL INVALIDO:", rol);
         return res.status(400).json({ error: "Rol inválido" });
       }
 
       const hash = await bcrypt.hash(password, 10);
       const nuevoUsuario = await UsuarioModel.create({ nombre, mail, password: hash });
-      console.log("USUARIO CREADO:", nuevoUsuario);
 
       let entidad;
       try {
@@ -125,9 +121,6 @@ export class AuthController {
           const disponibilidadesResueltas = (disponibilidades ?? []).map((d) => {
             const nombreServicio = typeof d.servicio === "string" ? d.servicio : d.servicio?.nombre;
             const nombreSede = typeof d.sede === "string" ? d.sede : d.sede?.nombre;
-            console.log("d.servicio:", d.servicio, "| d.sede:", d.sede);
-            console.log("serviciosResueltos:", serviciosResueltos.map(s => s.nombre));
-            console.log("sedesResueltas:", sedesResueltas.map(s => s.nombre));
             const servicio = serviciosResueltos.find(s => s.nombre === nombreServicio)
               ?? serviciosResueltos[0];
             const sede = sedesResueltas.find(se => se.nombre === nombreSede)
@@ -166,9 +159,7 @@ export class AuthController {
             sexo,
           });
         }
-        console.log("ENTIDAD CREADA:", entidad);
       } catch (errEntidad) {
-        console.log("ERROR AL CREAR ENTIDAD:", errEntidad.message);
         await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
         if (entidad?._id) await MedicoModel.deleteOne({ _id: entidad._id });
         return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
@@ -176,7 +167,6 @@ export class AuthController {
 
       res.status(201).json({ mensaje: "Usuario creado", id: nuevoUsuario._id, entidadId: entidad._id });
     } catch (error) {
-      console.log("ERROR GENERAL:", error.message);
       next(error);
     }
   }

@@ -47,7 +47,6 @@ export class TurnoService {
           !this.noSeSuperponen(t, turno),
       );
       if (haySuperposicion) {
-        console.log("en dar de alta");
         throw new ConflictError("El turno se superpone con uno existente.");
       }
       turno.darDeAlta(paciente);
@@ -202,8 +201,8 @@ export class TurnoService {
 
   noSeSuperponen(turno1, turno2) {
     return (
-      turno2.fechaFinal < turno1.fechaInicio ||
-      turno2.fechaInicio > turno1.fechaFinal
+      turno2.fechaFinal <= turno1.fechaInicio ||
+      turno2.fechaInicio >= turno1.fechaFinal
     );
   }
 
@@ -221,7 +220,6 @@ export class TurnoService {
 
     let plan = null;
     plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-    console.log("Plan encontrado:", plan);
     if (!plan) {
       return {
         status: "success",
@@ -331,7 +329,7 @@ export class TurnoService {
 
     return {
       turnoId: turno.id,
-      estado: turno.estado, 
+      estado: turno.estado,
       estadoPrestacion: cotizacion.estadoPrestacion,
       montoAAbonar: cotizacion.monto,
       profesional:
