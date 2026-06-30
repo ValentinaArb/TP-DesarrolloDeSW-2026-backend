@@ -138,9 +138,6 @@ class AgendaService {
             const minutosDispInicio = hDesde * 60 + mDesde;
             const minutosDispFin = hHasta * 60 + mHasta;
 
-            console.log(`=== Iniciando borrado para Día: ${dispDia}, Servicio: ${dispServicioId}, Sede: ${dispSedeId} ===`);
-            console.log(`Rango horario de la disp: ${minutosDispInicio}min a ${minutosDispFin}min`);
-
             let contadorEliminados = 0;
 
             for (const turno of turnosMedico) {
@@ -159,13 +156,6 @@ class AgendaService {
                 const coincideServicio = turnoServicioId === dispServicioId;
                 const coincideSede = turnoSedeId === dispSedeId;
 
-                if (coincideDia) {
-                    console.log(`[Turno analizado] Hora inicio: ${fechaTurno.getHours()}:${fechaTurno.getMinutes()} (${minutosTurnoInicio}min)`);
-                    console.log(` -> Coincide Horario?: ${estaEnRangoHorario}`);
-                    console.log(` -> Servicio Turno: ${turnoServicioId} vs Disp: ${dispServicioId} (${coincideServicio})`);
-                    console.log(` -> Sede Turno: ${turnoSedeId} vs Disp: ${dispSedeId} (${coincideSede})`);
-                }
-
                 if (coincideDia && estaEnRangoHorario && coincideServicio && coincideSede) {
                     const idABorrar = turno.id ?? turno._id;
                     await this.turnoRepository.delete(idABorrar);
@@ -173,7 +163,7 @@ class AgendaService {
                 }
             }
 
-            console.log(`=== Proceso terminado. Se eliminaron ${contadorEliminados} turnos ===`);
+            console.log(`Proceso terminado. Se eliminaron ${contadorEliminados} turnos`);
 
         } catch (error) {
             console.error("Error en eliminarTurnosDisponiblesDeDisponibilidad:", error);

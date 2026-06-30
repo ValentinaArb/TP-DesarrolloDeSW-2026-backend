@@ -152,10 +152,6 @@ export class MedicoService {
 
     async consultarHistorialTurnos(pacienteId, medicoId, estado) {
         const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
-
-        console.log("turnosPaciente:", turnosPaciente);
-        turnosPaciente.forEach(t => console.log("medico en turno:", t.medico));
-
         return turnosPaciente.filter(t => String(t.medico._id ?? t.medico.id) === String(medicoId));
     }
 
