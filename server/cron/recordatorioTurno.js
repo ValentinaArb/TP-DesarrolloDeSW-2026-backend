@@ -6,19 +6,32 @@ import cron from 'node-cron';
 const turnoRepository = new TurnoRepository()
 const factoryNotificacion = new FactoryNotificacion()
 
-cron.schedule('0 8 * * *', async () => {
-    console.log("Ejecutando cron de recordatorios...");
-    
-    const maniana = new Date().setDate(new Date().getDate() + 1);
+export const recordatorioTurnoCron = () => {
+    cron.schedule('0 8 * * *', async () => {
+        console.log("Ejecutando cron de recordatorios...");
 
-    try {
-        const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'RESERVADO');
+        try {
+            const inicioManiana = new Date();
+            inicioManiana.setDate(inicioManiana.getDate() + 1);
+            inicioManiana.setHours(0, 0, 0, 0);
 
-        for (const turno of turnosParaRecordar) {
-            factoryNotificacion.crearRecordatorio(turno);
+            const finManiana = new Date(inicioManiana);
+            finManiana.setHours(23, 59, 59, 999);
+
+            const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(
+                inicioManiana, 
+                finManiana, 
+                'RESERVADO'
+            );
+
+            for (const turno of turnosParaRecordar) {
+                await factoryNotificacion.crearRecordatorio(turno); 
+            }
+
+            console.log(`Se procesaron ${turnosParaRecordar.length} recordatorios.`);
+
+        } catch (error) {
+            console.error("Error en cron de recordatorios:", error);
         }
-        console.log(`Cron finalizado con éxito. Se procesaron ${turnosParaRecordar.length} turnos.`);
-    } catch (error) {
-        console.error("Error al ejecutar el cron de recordatorios:", error);
-    }
-});
+    });
+};
