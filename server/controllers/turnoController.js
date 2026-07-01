@@ -119,6 +119,19 @@ class TurnoController {
       return next(error);
     }
   }
+
+  // PATCH /turnos/:id/horario
+  async editarHorario(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { medicoId, horaInicio } = req.body;
+      const turno = await this.turnoService.modificarTurno(medicoId, id, horaInicio);
+      res.status(200).json({ mensaje: "Horario del turno modificado, notificación enviada al paciente", data: turno });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   //DELETE turnos/:id
   async eliminarTurno(req, res, next) {
     try {
@@ -149,6 +162,20 @@ class TurnoController {
       res
         .status(200)
         .json({ mensaje: "Estado del turno modificado con éxito" });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async responderCambioHorario(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { pacienteId, aceptado } = req.body;
+      const turno = await this.turnoService.responderCambioHorario(id, pacienteId, aceptado);
+      res.status(200).json({
+        mensaje: aceptado ? "Cambio de horario aceptado" : "Cambio de horario rechazado",
+        data: turno,
+      });
     } catch (error) {
       return next(error);
     }

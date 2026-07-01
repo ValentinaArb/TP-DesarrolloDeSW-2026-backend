@@ -305,23 +305,35 @@ export class TurnoService {
     };
   }
 
-  async modificarTurno(turnoId, horaInicio) {
+  async modificarTurno(medicoId, turnoId, horaInicio) {
     const turno = await this.turnoRepository.findById(turnoId);
-    if (turno.horaHasta !== horaInicio) {
-      const horaFinalPropuesta = new Date(
-        horaInicio.getTime() + turno.servicio.duracionTurno * 60000,
-      );
-      turno.fechaInicio = horaInicio;
-      turno.fechaFinal = horaFinalPropuesta;
-      turno.estado = EstadoTurno.PENDIENTE;
-      await this.turnoRepository.update(turno, turnoId);
-      return await this.factoryNotificacion.crearNotificacion(turno);
-    } else {
-      throw new BadRequestError(
-        "El turno no pertenece a este médico o la hora de inicio es la misma que la actual.",
-      );
+    if (!turno) throw new NotFoundError("Turno no encontrado");
+    if (String(turno.medico._id ?? turno.medico.id) !== String(medicoId)) {
+      throw new BadRequestError("El turno no pertenece a este médico.");
     }
+    if (turno.fechaInicio.getTime() === new Date(horaInicio).getTime()) {
+      throw new BadRequestError("La hora de inicio es la misma que la actual.");
+    }
+    const nuevaFechaFinal = new Date(new Date(horaInicio).getTime() + turno.servicio.duracionTurno * 60000);
+    await turno.cambiarHorario(new Date(horaInicio), nuevaFechaFinal, "El médico modificó el horario del turno");
+    return await this.turnoRepository.update(turno, turnoId);
   }
+
+  async responderCambioHorario(turnoId, pacienteId, aceptado) {
+    const turno = await this.turnoRepository.findById(turnoId);
+    if (!turno) throw new NotFoundError("Turno no encontrado");
+
+    if (String(turno.paciente?._id ?? turno.paciente?.id) !== String(pacienteId)) {
+      throw new BadRequestError("El turno no pertenece a este paciente.");
+    }
+
+    const motivo = aceptado
+      ? "El paciente aceptó el cambio de horario"
+      : "El paciente rechazó el cambio de horario";
+
+    await turno.responderCambioHorario(aceptado, motivo);
+    return await this.turnoRepository.update(turno, turnoId);
+    }
 
   _cotizarTurno(turno, plan) {
     const cotizacion = plan.calcularCostoAbonar(turno.servicio.id, turno.costo);
