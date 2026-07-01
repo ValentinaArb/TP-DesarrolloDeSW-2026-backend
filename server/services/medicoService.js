@@ -302,6 +302,7 @@ export class MedicoService {
     return await this.medicoRepository.update(medico, medicoId);
   }
 
+<<<<<<< HEAD
   async modificarServicio(servicioId, nombre, duracionTurno, costo) {
     const servicio = await this.servicioRepository.findById(servicioId);
     servicio.modificarServicio(nombre, duracionTurno, costo);
@@ -309,3 +310,75 @@ export class MedicoService {
     return servicio;
   }
 }
+=======
+        const disponibilidadNueva = new DisponibilidadHoraria(null, diaSemana, horaDesde, horaHasta, servicio, sede);
+        medico.agregarDisponibilidad(disponibilidadNueva);
+
+        return await this.medicoRepository.update(medico, medico.id);
+    }
+
+    async marcarTurnoComo(turnoId, estado) {
+        const turno = await this.turnoRepository.findById(turnoId);
+        if (!turno) {
+            throw new NotFoundError("El turno no pertenece a este médico.");
+        }
+        if (estado === "CANCELADO") {
+            await turno.darDeBaja("El médico canceló el turno");
+        } else {
+            await turno.actualizarEstado(estado, turno.paciente, `El médico marcó el turno como ${estado}`);
+        }
+        await this.turnoRepository.update(turno, turnoId);
+        return turno;
+    }
+
+    async consultarHistorialTurnos(pacienteId, medicoId, estado) {
+        const turnosPaciente = await this.pacienteService.obtenerTurnosPorEstado(pacienteId, estado);
+        return turnosPaciente.filter(t => String(t.medico._id ?? t.medico.id) === String(medicoId));
+    }
+
+    async consultarDisponibilidad(medicoId, servicioId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        return (medico.servicios.filter(s => s.id === servicioId))
+    }
+
+    async darDeAltaServicio(medicoId, servicioId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        const servicio = await this.servicioRepository.findById(servicioId);
+        console.log("SERVICIO A AGREGAR:", servicio);
+        medico.darDeAltaServicio(servicio);
+        console.log("SERVICIOS ANTES DE UPDATE:", medico.servicios);
+        console.log("SERVICIOS DESPUES DE UPDATE:", medico.servicios);
+        const actualizado =  await this.medicoRepository.update(medico, medicoId);
+        console.log("SERVICIOS DESPUES DE UPDATE:", actualizado.servicios);
+
+        return actualizado;
+    }
+
+    async darDeBajaServicio(medicoId, servicioId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        medico.darDeBajaServicio(servicioId);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async darDeAltaSede(medicoId, sedeId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        const sede = await this.sedeRepository.findById(sedeId);
+
+        medico.darDeAltaSede(sede);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async darDeBajaSede(medicoId, sedeId) {
+        const medico = await this.medicoRepository.findById(medicoId);
+        medico.darDeBajaSede(sedeId);
+        return await this.medicoRepository.update(medico, medicoId);
+    }
+
+    async modificarServicio(servicioId, nombre, duracionTurno, costo) {
+        const servicio = await this.servicioRepository.findById(servicioId);
+        servicio.modificarServicio(nombre, duracionTurno, costo);
+        await this.servicioRepository.update(servicio, servicioId);
+        return servicio;
+    }
+}
+>>>>>>> 9106767d77fa467a89ceda32fbb63fb87a91f585
