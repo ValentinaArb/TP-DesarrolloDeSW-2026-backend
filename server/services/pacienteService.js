@@ -65,35 +65,39 @@ export class PacienteService {
     }
   }
 
-  async actualizarPaciente(pacienteId, obraSocial, plan, mail) {
-    const paciente = await this.pacienteRepository.findById(pacienteId);
-    if (!paciente) {
-      throw new NotFoundError("Paciente no encontrado");
-    }
-    const resultado = actualizarPacienteSchema.safeParse({
-      obraSocial,
-      plan,
-      mail,
-    });
-
-    if (!resultado.success) {
-      throw new BadRequestError(
-        resultado.error.errors.map((e) => e.message).join(", "),
-      );
-    }
-
-    const validado = resultado.data;
-
-    if (validado.obraSocial !== undefined) {
-      return await paciente.cambiarObraSocial(validado.obraSocial);
-    }
-    if (validado.plan !== undefined) {
-      return await paciente.cambiarPlan(validado.plan);
-    }
-    if (validado.mail !== undefined) {
-      return await paciente.cambiarMail(validado.mail);
-    }
+async actualizarPaciente(pacienteId, obraSocial, plan, mail) {
+  const paciente = await this.pacienteRepository.findById(pacienteId);
+  if (!paciente) {
+    throw new NotFoundError("Paciente no encontrado");
   }
+
+  const resultado = actualizarPacienteSchema.safeParse({
+    obraSocial,
+    plan,
+    mail,
+  });
+
+  if (!resultado.success) {
+    throw new BadRequestError(
+      resultado.error.errors.map((e) => e.message).join(", "),
+    );
+  }
+
+  const validado = resultado.data;
+
+  if (validado.obraSocial !== undefined) {
+    await paciente.cambiarObraSocial(validado.obraSocial);
+  }
+  if (validado.plan !== undefined) {
+    await paciente.cambiarPlan(validado.plan);
+  }
+  if (validado.mail !== undefined) {
+    await paciente.cambiarMail(validado.mail);
+  }
+  await this.pacienteRepository.update(paciente, pacienteId);
+
+  return paciente;
+}
 
   async obtenerTurnosPorEstado(pacienteId, estadoPedido) {
     const turnos = await this.turnoRepository.turnosPara(pacienteId);

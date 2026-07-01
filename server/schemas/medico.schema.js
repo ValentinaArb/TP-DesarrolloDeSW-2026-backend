@@ -10,7 +10,17 @@ const medicoSchema = new mongoose.Schema({
   },
   nombre: { type: String, required: true },
   apellido: { type: String, required: true },
-  matricula: { type: String, required: true, unique: true },
+  matricula: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    validate: {
+      validator: function(v) {
+        return /^\d+$/.test(v);
+      },
+      message: props => `La matrícula [${props.value}] es inválida. Solo se permiten números.`
+    }
+  },
   servicios: [{ nombre: { type: String, required: true } }],
   sedes: [{ nombre: { type: String, required: true } }],
   disponibilidades: [DisponibilidadModel.schema],

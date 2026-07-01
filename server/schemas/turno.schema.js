@@ -27,11 +27,11 @@ const turnoSchema = new mongoose.Schema({
         nombre: { type: String, required: true },
         direccion: { type: String, required: true }
     },
-    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO"], required: true },
+    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO", "PENDIENTE"], required: true },
     historialDeEstados: [
         {
             fechaInicioIngreso: { type: Date, required: true },
-            estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO"], required: true },
+            estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO", "PENDIENTE"], required: true },
             motivo: { type: String },
         }
     ],

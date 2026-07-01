@@ -32,14 +32,14 @@ export class Paciente {
   }
 
   cambiarObraSocial(obraSocial) {
-    this.obraSocial = obraSocial;
+    this.obraSocial.nombre = obraSocial;
   }
 
   cambiarPlan(plan) {
-    this.plan = plan;
+    this.plan.nombre = plan;
   }
 
   cambiarMail(mail) {
-    this.mail = mail;
+    this.usuario.mail = mail;
   }
 }
