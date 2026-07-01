@@ -7,7 +7,7 @@ const turnoRepository = new TurnoRepository()
 const factoryNotificacion = new FactoryNotificacion()
 
 export const recordatorioTurnoCron = () => {
-    cron.schedule('0 8 * * *', async () => {
+    cron.schedule('0 16 * * *', async () => {
         console.log("Ejecutando cron de recordatorios...");
 
         try {
@@ -33,5 +33,6 @@ export const recordatorioTurnoCron = () => {
         } catch (error) {
             console.error("Error en cron de recordatorios:", error);
         }
-    });
+    }, {scheduled: true,
+        timezone: "America/Argentina/Buenos_Aires"});
 };
