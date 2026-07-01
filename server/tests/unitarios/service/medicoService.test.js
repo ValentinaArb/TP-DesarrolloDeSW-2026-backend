@@ -1,12 +1,25 @@
-import { describe, expect, test, beforeEach, jest } from "@jest/globals"
-import { MedicoService } from "../../../services/medicoService.js";
-import { ConflictError, NotFoundError } from "../../../errors/AppError.js";
+import { describe, expect, test, beforeEach, jest } from "@jest/globals";
+
+jest.unstable_mockModule("../../../services/agendaService.js", () => {
+    return {
+        AgendaService: jest.fn().mockImplementation(() => {
+            return {
+                generarTurnosParaNuevaDisponibilidad: jest.fn().mockResolvedValue(true),
+                eliminarTurnosDisponiblesDeDisponibilidad: jest.fn().mockResolvedValue(true)
+            };
+        })
+    };
+});
+
+const { MedicoService } = await import("../../../services/medicoService.js");
+const { ConflictError, NotFoundError } = await import("../../../errors/AppError.js");
 
 describe("medicoService", () => {
     let medicoService;
     let mockMedicoRepository;
     let mockTurnoRepository;
     let mockServicioRepository;
+    let mockSedeRepository;
 
     beforeEach(() => {
         mockMedicoRepository = {
@@ -20,15 +33,20 @@ describe("medicoService", () => {
         mockTurnoRepository = {
             turnosDe: jest.fn(),
             findById: jest.fn(),
-            update: jest.fn()
+            update: jest.fn(),
+            filtrarPor: jest.fn()
         };
         mockServicioRepository = {
+            findById: jest.fn()
+        };
+        mockSedeRepository = {
             findById: jest.fn()
         };
 
         medicoService = new MedicoService(mockMedicoRepository);
         medicoService.turnoRepository = mockTurnoRepository;
         medicoService.servicioRepository = mockServicioRepository;
+        medicoService.sedeRepository = mockSedeRepository;
     });
 
     describe("crearMedico", () => {
@@ -50,6 +68,7 @@ describe("medicoService", () => {
         });
     });
 
+  
     describe("obtenerMedico", () => {
         test("debe obtener un medico por id", async () => {
             const medico = { id: 1, nombre: "Juan" };
@@ -85,15 +104,31 @@ describe("medicoService", () => {
     });
 
     describe("agregarDisponibilidad", () => {
-        test("debe agregar una disponibilidad a un medico", async () => {
-            const medico = { id: 1, disponibilidades: [], agregarDisponibilidad: jest.fn() };
+        test("debe agregar una disponibilidad a un medico exitosamente", async () => {
+            const mockServicio = { id: "srv-100", nombre: "Cardiología" };
+            const mockSede = { id: "sede-200", nombre: "Sede Central" };
+
+            mockServicioRepository.findById.mockResolvedValue(mockServicio);
+            mockSedeRepository.findById.mockResolvedValue(mockSede);
+
+            const medico = { 
+                id: 1, 
+                disponibilidades: [], 
+                servicios: [],
+                sedes: [],
+                agregarDisponibilidad: jest.fn(function(d) {
+                    this.disponibilidades.push(d);
+                }) 
+            };
             mockMedicoRepository.findById.mockResolvedValue(medico);
             mockMedicoRepository.update.mockResolvedValue(medico);
 
-            await medicoService.agregarDisponibilidad(1, "Lunes", "08:00", "12:00");
+            await medicoService.agregarDisponibilidad(1, "Lunes", "08:00", "12:00", mockServicio, mockSede);
             
             expect(medico.agregarDisponibilidad).toHaveBeenCalled();
-            expect(mockMedicoRepository.update).toHaveBeenCalled();
+            expect(mockMedicoRepository.update).toHaveBeenCalledWith(medico, medico.id);
+            expect(medico.servicios.length).toBe(1);
+            expect(medico.sedes.length).toBe(1);
         });
     });
 
@@ -140,20 +175,20 @@ describe("medicoService", () => {
             expect(resultado).toBe(false);
         });
     });
-
+    
     describe("marcarTurnoComo", () => {
         test("debe lanzar NotFoundError si el turno no pertenece al medico", async () => {
-            mockTurnoRepository.turnosDe.mockResolvedValue([]);
+            mockTurnoRepository.findById.mockResolvedValue(null);
 
             await expect(medicoService.marcarTurnoComo(1, "COMPLETADO")).rejects.toThrow(NotFoundError);
         });
 
         test("debe marcar un turno como cancelado", async () => {
-            const turno = { id: 1, darDeBaja: jest.fn(), actualizarEstado: jest.fn() };
+            const turno = { id: 1, darDeBaja: jest.fn(), actualizarEstado: jest.fn(), paciente: {} };
             mockTurnoRepository.findById.mockResolvedValue(turno);
             mockTurnoRepository.update.mockResolvedValue(turno);
 
-            await medicoService.marcarTurnoComo(1,"CANCELADO");
+            await medicoService.marcarTurnoComo(1, "CANCELADO");
             
             expect(turno.darDeBaja).toHaveBeenCalled();
             expect(mockTurnoRepository.update).toHaveBeenCalled();
