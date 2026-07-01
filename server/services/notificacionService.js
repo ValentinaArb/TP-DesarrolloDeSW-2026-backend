@@ -11,7 +11,7 @@ export class NotificacionService {
     
     let notificacionesFiltradas = notificaciones.filter((n) => {
   
-     return n.destinatario?.usuario?._id?.toString() === usuarioId;
+     return (n.destinatario?.usuario?._id?.toString() === usuarioId || n.destinatario?._id?.toString() === usuarioId);
     });
 
     

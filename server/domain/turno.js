@@ -79,15 +79,12 @@ export class Turno {
     const factoryNotificacion = new FactoryNotificacion();
     this.historialDeEstados.push(cambio);
     this.estado = nuevoEstado;
-    if (
-      nuevoEstado === EstadoTurno.DISPONIBLE ||
-      nuevoEstado === EstadoTurno.CANCELADO
-    ) {
-       await factoryNotificacion.crearNotificacion(this);
+    if (nuevoEstado === EstadoTurno.DISPONIBLE || nuevoEstado === EstadoTurno.CANCELADO) {
+      await factoryNotificacion.crearNotificacion(this);
       this.paciente = null; 
     } else {
       this.paciente = paciente;
-       await factoryNotificacion.crearNotificacion(this);
+      await factoryNotificacion.crearNotificacion(this);
     }
 
     return null;
