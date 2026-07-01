@@ -20,6 +20,8 @@ export class NotificacionController {
         }
     }
 
+    
+
     async obtenerTodos(req, res,next) {
         try {
             const notificacionesUsuario = await this.notificacionService.obtenerTodos();
