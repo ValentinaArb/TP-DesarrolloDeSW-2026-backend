@@ -10,19 +10,17 @@ export class NotificacionService {
     const notificaciones = await this.notificacionRepository.findAll();
     
     let notificacionesFiltradas = notificaciones.filter((n) => {
-    console.log("EL ID DEL USUARIO DE LA NOTIFICACION ES", n.destinatario?.usuario?._id?.toString())
-    console.log("EL ID DEL USUARIO2", usuarioId)
+  
      return n.destinatario?.usuario?._id?.toString() === usuarioId;
     });
-    console.log("LAS NOTIFICACIONES SON", notificaciones);
+
     
     if (estaLeida !== undefined) {
-      console.log("ENTRO AL IF JAJAJJA")
       notificacionesFiltradas = notificacionesFiltradas.filter(
         (n) => String(n.estaLeida) === String(estaLeida),
       );
     }
-    console.log("LAS NOTIFICAIONES FILTRADAS SON", notificacionesFiltradas);
+  
     return notificacionesFiltradas;
   }
 
