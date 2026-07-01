@@ -42,7 +42,9 @@ export class TurnoService {
       const turno = await this.turnoRepository.findById(turnoId);
       const listaTurnos = await this.turnoRepository.turnosPara(pacienteId);
       const haySuperposicion = listaTurnos.find(
-        (t) => !this.noSeSuperponen(t, turno),
+        (t) =>
+          t._id.toString() !== turnoId.toString() &&
+          !this.noSeSuperponen(t, turno),
       );
       if (haySuperposicion) {
         throw new ConflictError("El turno se superpone con uno existente.");
@@ -91,7 +93,7 @@ export class TurnoService {
         new CambioEstadoTurno(
           null,
           Date.now(),
-          EstadoTurno.DISPRESERVADO,
+          EstadoTurno.DISPONIBLE,
           null,
           null,
           null,
@@ -106,14 +108,14 @@ export class TurnoService {
     );
     const perteneceASede = await medicoService.perteneceASede(
       medicoId,
-      sede.id,
+      sede._id,
     );
     if (!estaDisponible) {
       throw new UnprocessableEntityError(
         "El medico no esta disponible en la fecha y hora indicada.",
       );
     }
-    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio.id))) {
+    if (!(await nuevoTurno.servicioPerteneceAMedico(servicio._id))) {
       throw new UnprocessableEntityError(
         "El medico no realiza ese servicio especifico",
       );
@@ -192,14 +194,15 @@ export class TurnoService {
     );
   }
 
-  async filtrarPor(medicoId) {
-    return await this.turnoRepository.turnosDe(medicoId);
+  async filtrarPor(medicoId, estadoPedido) {
+    const turnos = await this.turnoRepository.turnosDe(medicoId);
+    return turnos.filter((t) => String(t.estado) === String(estadoPedido));
   }
 
   noSeSuperponen(turno1, turno2) {
     return (
-      turno2.fechaFinal < turno1.fechaInicio ||
-      turno2.fechaInicio > turno1.fechaFinal
+      turno2.fechaFinal <= turno1.fechaInicio ||
+      turno2.fechaInicio >= turno1.fechaFinal
     );
   }
 
@@ -217,7 +220,6 @@ export class TurnoService {
 
     let plan = null;
     plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-    console.log("Plan encontrado:", plan);
     if (!plan) {
       return {
         status: "success",
@@ -303,23 +305,35 @@ export class TurnoService {
     };
   }
 
-  async modificarTurno(turnoId, horaInicio) {
+  async modificarTurno(medicoId, turnoId, horaInicio) {
     const turno = await this.turnoRepository.findById(turnoId);
-    if (turno.horaHasta !== horaInicio) {
-      const horaFinalPropuesta = new Date(
-        horaInicio.getTime() + turno.servicio.duracionTurno * 60000,
-      );
-      turno.fechaInicio = horaInicio;
-      turno.fechaFinal = horaFinalPropuesta;
-      turno.estado = EstadoTurno.PENDIENTE;
-      await this.turnoRepository.update(turno, turnoId);
-      return await this.factoryNotificacion.crearSegunEstadoTurno(turno);
-    } else {
-      throw new BadRequestError(
-        "El turno no pertenece a este médico o la hora de inicio es la misma que la actual.",
-      );
+    if (!turno) throw new NotFoundError("Turno no encontrado");
+    if (String(turno.medico._id ?? turno.medico.id) !== String(medicoId)) {
+      throw new BadRequestError("El turno no pertenece a este médico.");
     }
+    if (turno.fechaInicio.getTime() === new Date(horaInicio).getTime()) {
+      throw new BadRequestError("La hora de inicio es la misma que la actual.");
+    }
+    const nuevaFechaFinal = new Date(new Date(horaInicio).getTime() + turno.servicio.duracionTurno * 60000);
+    await turno.cambiarHorario(new Date(horaInicio), nuevaFechaFinal, "El médico modificó el horario del turno");
+    return await this.turnoRepository.update(turno, turnoId);
   }
+
+  async responderCambioHorario(turnoId, pacienteId, aceptado) {
+    const turno = await this.turnoRepository.findById(turnoId);
+    if (!turno) throw new NotFoundError("Turno no encontrado");
+
+    if (String(turno.paciente?._id ?? turno.paciente?.id) !== String(pacienteId)) {
+      throw new BadRequestError("El turno no pertenece a este paciente.");
+    }
+
+    const motivo = aceptado
+      ? "El paciente aceptó el cambio de horario"
+      : "El paciente rechazó el cambio de horario";
+
+    await turno.responderCambioHorario(aceptado, motivo);
+    return await this.turnoRepository.update(turno, turnoId);
+    }
 
   _cotizarTurno(turno, plan) {
     const cotizacion = plan.calcularCostoAbonar(turno.servicio.id, turno.costo);
@@ -327,6 +341,7 @@ export class TurnoService {
 
     return {
       turnoId: turno.id,
+      estado: turno.estado,
       estadoPrestacion: cotizacion.estadoPrestacion,
       montoAAbonar: cotizacion.monto,
       profesional:

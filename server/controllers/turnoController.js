@@ -34,6 +34,7 @@ class TurnoController {
         filtros,
         orden,
         ...paginacion,
+
       });
 
       if (resultado.errorNegocio) {
@@ -65,7 +66,7 @@ class TurnoController {
   extraerPaginacion(query) {
     const pagina = query?.page === undefined ? 1 : Number(query.page);
     const limitePorPagina =
-      query?.limit === undefined ? 10 : Number(query.limit);
+      query?.limit === undefined ? 12 : Number(query.limit);
 
     return { pagina, limitePorPagina };
   }
@@ -118,6 +119,19 @@ class TurnoController {
       return next(error);
     }
   }
+
+  // PATCH /turnos/:id/horario
+  async editarHorario(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { medicoId, horaInicio } = req.body;
+      const turno = await this.turnoService.modificarTurno(medicoId, id, horaInicio);
+      res.status(200).json({ mensaje: "Horario del turno modificado, notificación enviada al paciente", data: turno });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   //DELETE turnos/:id
   async eliminarTurno(req, res, next) {
     try {
@@ -132,6 +146,18 @@ class TurnoController {
   async modificarEstado(req, res, next) {
     try {
       const { id } = req.params;
+      const { operacion, motivo, esMedico } = req.body; 
+
+      if (operacion === "baja" && esMedico) {
+        const turno = await this.turnoService.obtenerTurno(id);
+        
+        await turno.actualizarEstado(EstadoTurno.CANCELADO, null, motivo || "Cancelado por el médico");
+        
+        await this.turnoService.turnoRepository.update(turno, id); 
+
+        return res.status(200).json({ mensaje: "Turno cancelado por el médico con éxito" });
+      }
+
       await this.turnoService.modificarEstado(id, req.body);
       res
         .status(200)
@@ -140,7 +166,22 @@ class TurnoController {
       return next(error);
     }
   }
+
+  async responderCambioHorario(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { pacienteId, aceptado } = req.body;
+      const turno = await this.turnoService.responderCambioHorario(id, pacienteId, aceptado);
+      res.status(200).json({
+        mensaje: aceptado ? "Cambio de horario aceptado" : "Cambio de horario rechazado",
+        data: turno,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
+
 
 const turnoController = new TurnoController();
 export default turnoController;

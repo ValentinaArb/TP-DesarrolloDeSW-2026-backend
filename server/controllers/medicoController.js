@@ -142,6 +142,28 @@ class MedicoController {
         }
     }
 
+    // POST /medicos/:medicoId/sedes/:sedeId
+    async darAltaSede(req, res, next) {
+        try {
+            const { medicoId, sedeId } = req.params;
+            const resultado = await this.medicoService.darDeAltaSede(medicoId, sedeId);
+            res.status(201).json(resultado);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    // DELETE /medicos/:medicoId/sedes/:sedeId
+    async darBajaSede(req, res, next) {
+        try {
+            const { medicoId, sedeId } = req.params;
+            await this.medicoService.darDeBajaSede(medicoId, sedeId);
+            res.status(200).json({ mensaje: "Sede dada de baja" });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
     //PATCH /servicios/:id
     async modificarServicio(req, res, next){
         try{
@@ -162,6 +184,18 @@ class MedicoController {
             await this.medicoService.orquestradorMedico(medicoId, turnoId, new Date(horaInicio), estado, this.turnoService);
             res.status(200).json("El turno fue modificado");
         }catch(error){
+            return next(error);
+        }
+    }
+
+    async turnosDeMedico(req, res, next){
+        try{
+            const {medicoId} = req.params;
+            const { estado } = req.query;
+            const turnos = await this.turnoService.filtrarPor(medicoId, estado);
+            res.status(200).json(turnos);
+        }
+        catch(error){
             return next(error);
         }
     }

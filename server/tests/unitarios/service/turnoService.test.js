@@ -93,12 +93,12 @@ describe("turnoService", () => {
         test("debe lanzar ConflictError si hay superposición", async () => {
             const paciente = { id: 1 };
             const turno = { 
-                id: 1,
+                _id: 1,
                 fechaInicio: new Date(Date.now() + 86400000),
                 fechaFinal: new Date(Date.now() + 87400000)
             };
             const turnoExistente = { 
-                id: 2,
+                _id: 2,
                 fechaInicio: new Date(Date.now() + 86400000),
                 fechaFinal: new Date(Date.now() + 87400000)
             };
@@ -112,19 +112,19 @@ describe("turnoService", () => {
 
     describe("crearTurno", () => {
         test("debe crear un turno exitosamente", async () => {
-            const medico = { id: 1, servicios: [{ id: 1 }] };
-            const servicio = { id: 1, duracionTurno: 30, costo: 100, nombre: "Consulta" };
-            const sede = { id: 1 };
+            const medico = { _id: "1", servicios: [{ _id: "1" }] }; 
+            const servicio = { _id: "1", duracionTurno: 30, costo: 100, nombre: "Consulta" };
+            const sede = { _id: 1 };
             const fechaInicio = new Date(Date.now() + 86400000);
             
             mockMedicoRepository.findById.mockResolvedValue(medico);
             mockMedicoService.estaDisponible.mockResolvedValue(true);
             mockMedicoService.yaTieneTurno.mockResolvedValue(false);
             mockMedicoService.perteneceASede.mockResolvedValue(true);
-            mockTurnoRepository.create.mockResolvedValue({ id: 1, estado: EstadoTurno.DISPONIBLE });
+            mockTurnoRepository.create.mockResolvedValue({ _id: "1", estado: EstadoTurno.DISPONIBLE });
 
             const resultado = await turnoService.crearTurno(
-                { medicoId: 1, fechaInicio, servicio, sede },
+                { medicoId: "1", fechaInicio, servicio, sede },
                 mockMedicoService
             );
 
@@ -182,9 +182,9 @@ describe("turnoService", () => {
         });
 
         test("debe lanzar error si el médico no pertenece a la sede", async () => {
-            const medico = { id: 1, servicios: [{ id: 1 }] };
-            const servicio = { id: 1, duracionTurno: 30, costo: 100 };
-            const sede = { id: 1 };
+            const medico = { _id: "1", servicios: [{ _id: "1" }] };
+            const servicio = { _id: "1", duracionTurno: 30, costo: 100 };
+            const sede = { _id: "1" };
             const fechaInicio = new Date(Date.now() + 86400000);
 
             mockMedicoRepository.findById.mockResolvedValue(medico);
@@ -192,7 +192,7 @@ describe("turnoService", () => {
             mockMedicoService.perteneceASede.mockResolvedValue(false);
 
             await expect(turnoService.crearTurno(
-                { medicoId: 1, fechaInicio, servicio, sede },
+                { medicoId: "1", fechaInicio, servicio, sede },
                 mockMedicoService
             )).rejects.toThrow(UnprocessableEntityError);
         });
@@ -329,7 +329,7 @@ describe("turnoService", () => {
 
     describe("buscarTurnosDisponibles", () => {
         test("debe buscar y cotizar turnos disponibles", async () => {
-            const paciente = { id: 1, plan: { nombre: "Plan A" } };
+            const paciente = { _id: "1", plan: { nombre: "Plan A" } };
             const plan = {
                 calcularCostoAbonar: jest.fn().mockReturnValue({
                     estadoPrestacion: "CUBIERTO",
@@ -338,9 +338,11 @@ describe("turnoService", () => {
             };
             const turnos = [
                 {
-                    _id: 1,
+                    id: "1", 
+                    _id: "1",
+                    costo: 100,
                     fechaInicio: new Date(Date.now() + 86400000),
-                    servicio: { id: 1, costo: 100, nombre: "Consulta" },
+                    servicio: { id: "1", _id: "1", costo: 100, nombre: "Consulta" }, 
                     medico: { nombre: "Juan", apellido: "Pérez" },
                     sede: { nombre: "Sede 1" }
                 }
@@ -350,11 +352,12 @@ describe("turnoService", () => {
             mockPlanRepository.findByNombre.mockResolvedValue(plan);
             mockTurnoRepository.findDisponiblesByFilters.mockResolvedValue(turnos);
 
-            const resultado = await turnoService.buscarTurnosDisponibles(1, {}, { sortBy: "fecha", sortOrder: "asc" });
-
-            expect(resultado.turno).toBeDefined();
-            expect(resultado.pagina).toBe(1);
-            expect(resultado.totalTurno).toBe(1);
+            const resultado = await turnoService.buscarTurnosDisponibles("1", {}, { sortBy: "fecha", sortOrder: "asc" });
+            expect(resultado.status).toBe("success");
+            expect(resultado.data).toBeDefined(); 
+            expect(resultado.data.length).toBe(1);
+            expect(resultado.paginacion.numeroPagina).toBe(1);
+            expect(resultado.paginacion.totalTurno).toBe(1);
         });
 
         test("debe lanzar error si la paginación es inválida", async () => {

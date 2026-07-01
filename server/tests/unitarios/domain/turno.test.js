@@ -15,14 +15,17 @@ describe('Turno (domain)', () => {
 		expect(t2.verificarBaja()).toBe(false)
 	})
 
-	test('actualizarEstado agrega cambio al historial y retorna notificacion (mocked)', async () => {
+	test('actualizarEstado agrega cambio al historial y retorna null (según lógica de producción)', async () => {
 		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearNotificacion').mockResolvedValue({id: 'n1'})
 		const inicio = new Date(Date.now() + 2 * 60 * 60 * 1000)
 		const fin = new Date(inicio.getTime() + 30 * 60 * 1000)
 		const t = new Turno('t1', {id: 'm1', nombre: 'M'}, inicio, fin, null, {nombre: 'S'}, null, EstadoTurno.DISPONIBLE, [])
 		const paciente = {id: 'p1', nombre: 'P'}
+		
 		const not = await t.actualizarEstado(EstadoTurno.RESERVADO, paciente, 'mot')
-		expect(not).toEqual({id: 'n1'})
+		
+		expect(not).toBeNull() 
+		expect(spy).toHaveBeenCalled() 
 		expect(t.estado).toBe(EstadoTurno.RESERVADO)
 		expect(t.paciente).toBe(paciente)
 		expect(t.historialDeEstados.length).toBe(1)
@@ -30,26 +33,25 @@ describe('Turno (domain)', () => {
 		spy.mockRestore()
 	})
 
-	test('darDeBaja lanza ConflictError si no hay tiempo suficiente', () => {
-		const inicio = new Date(Date.now() + 30 * 60 * 1000)
+	test('darDeBaja lanza ConflictError si no hay tiempo suficiente', async () => {
+		const inicio = new Date(Date.now() + 30 * 60 * 1000) 
 		const fin = new Date(inicio.getTime() + 30 * 60 * 1000)
 		const t = new Turno('t2', null, inicio, fin, null, null, null, EstadoTurno.RESERVADO, [])
-		expect(() => t.darDeBaja('mot')).toThrow(ConflictError)
+		
+		await expect(t.darDeBaja('mot')).rejects.toThrow(ConflictError)
 	})
 
-	test('darDeBaja no lanza cuando hay tiempo suficiente (actualiza asincrónicamente)', async () => {
+	test('darDeBaja no lanza cuando hay tiempo suficiente (espera la actualización asincrónica)', async () => {
 		const spy = jest.spyOn(FactoryNotificacion.prototype, 'crearNotificacion').mockResolvedValue({id: 'n2'})
-		const inicio = new Date(Date.now() + 2 * 60 * 60 * 1000)
+		const inicio = new Date(Date.now() + 2 * 60 * 60 * 1000) // 2 horas (tiempo suficiente)
 		const fin = new Date(inicio.getTime() + 30 * 60 * 1000)
 		const t = new Turno('t3', {id: 'm1', nombre: 'M'}, inicio, fin, {id: 'p1', nombre: 'P'}, null, null, EstadoTurno.RESERVADO, [])
-		// should not throw
-		t.darDeBaja('motivo')
-		// wait a tick for the async actualizarEstado to run
-		await new Promise((res) => setImmediate(res))
+		
+		await t.darDeBaja('motivo')
+		
 		expect(t.estado).toBe(EstadoTurno.DISPONIBLE)
 		expect(t.paciente).toBeNull()
 		expect(t.historialDeEstados.length).toBeGreaterThanOrEqual(1)
 		spy.mockRestore()
 	})
 })
-

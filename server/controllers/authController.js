@@ -3,6 +3,11 @@ import bcrypt from "bcryptjs";
 import { UsuarioModel } from "../schemas/usuario.schema.js";
 import { MedicoModel } from "../schemas/medico.schema.js";
 import { PacienteModel } from "../schemas/paciente.schema.js";
+import { ServicioModel } from "../schemas/servicio.schema.js";
+import { SedeModel } from "../schemas/sede.schema.js";
+import { AgendaService } from "../services/agendaService.js";
+
+const agendaService = new AgendaService();
 
 export class AuthController {
   // POST /auth/login
@@ -36,17 +41,34 @@ export class AuthController {
       if (!rol)
         return res.status(401).json({ error: "Usuario sin perfil asignado" });
 
-      // genera JWT
+      const payloadToken = {
+        id: usuario._id,
+        entidadId: entidad._id,
+        mail: usuario.mail,
+        nombre: entidad.nombre,
+        apellido: entidad.apellido,
+        rol,
+      };
+
+      if (rol === "paciente") {
+        payloadToken.dni = entidad.dni;
+        payloadToken.fechaNacimiento = entidad.fechaNacimiento;
+        payloadToken.obraSocial = entidad.obraSocial;
+        payloadToken.plan = entidad.plan;
+        payloadToken.sexo = entidad.sexo;
+      }
+
+      if (rol === "medico") {
+        payloadToken.matricula = entidad.matricula;
+        payloadToken.servicios = entidad.servicios;
+        payloadToken.disponibilidades = entidad.disponibilidades;
+        payloadToken.disponibilidadesAnteriores = entidad.disponibilidadesAnteriores;
+      }
+
       const token = jwt.sign(
-        {
-          id: usuario._id,
-          entidadId: entidad._id,
-          mail: usuario.mail,
-          nombre: entidad.nombre,
-          rol,
-        },
+        payloadToken,
         process.env.JWT_SECRET,
-        { expiresIn: "8h" },
+        { expiresIn: "8h" }
       );
 
       res.json({ token });
@@ -56,63 +78,96 @@ export class AuthController {
   }
 
   // POST /auth/register
-async register(req, res, next) {
+  async register(req, res, next) {
     try {
-        console.log("BODY RECIBIDO:", req.body);
+      const { nombre, mail, password, rol, ...datos } = req.body;
 
-        const { nombre, mail, password, rol, ...datos } = req.body;
+      const existe = await UsuarioModel.findOne({ mail });
+      if (existe)
+        return res.status(400).json({ error: "El mail ya está registrado" });
 
-        const existe = await UsuarioModel.findOne({ mail });
-        if (existe)
-            return res.status(400).json({ error: "El mail ya está registrado" });
+      if (!["medico", "paciente"].includes(rol)) {
+        return res.status(400).json({ error: "Rol inválido" });
+      }
 
-        if (!["medico", "paciente"].includes(rol)) {
-            console.log("ROL INVALIDO:", rol);
-            return res.status(400).json({ error: "Rol inválido" });
+      const hash = await bcrypt.hash(password, 10);
+      const nuevoUsuario = await UsuarioModel.create({ nombre, mail, password: hash });
+
+      let entidad;
+      try {
+        if (rol === "medico") {
+          const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
+
+          const serviciosResueltos = await Promise.all(
+            (servicios ?? []).map(async (s) => {
+              const nombre = typeof s === "string" ? s : s.nombre;
+              const existente = await ServicioModel.findOne({ nombre });
+              if (existente) return { nombre: existente.nombre, _id: existente._id, duracionTurno: existente.duracionTurno, costo: existente.costo };
+              const nuevo = await ServicioModel.create({ nombre, duracionTurno: 60, costo: 0 });
+              return { nombre: nuevo.nombre, _id: nuevo._id, duracionTurno: nuevo.duracionTurno, costo: nuevo.costo };
+            })
+          );
+
+          const sedesResueltas = await Promise.all(
+            (sedes ?? []).map(async (s) => {
+              const nombreSede = typeof s === "string" ? s : s.nombre;
+              const existente = await SedeModel.findOne({ nombre: nombreSede });
+              if (existente) return { nombre: existente.nombre, _id: existente._id, direccion: existente.direccion ?? "" };
+              const nueva = await SedeModel.create({ nombre: nombreSede, direccion: "" });
+              return { nombre: nueva.nombre, _id: nueva._id, direccion: nueva.direccion ?? "" };
+            })
+          );
+
+          const disponibilidadesResueltas = (disponibilidades ?? []).map((d) => {
+            const nombreServicio = typeof d.servicio === "string" ? d.servicio : d.servicio?.nombre;
+            const nombreSede = typeof d.sede === "string" ? d.sede : d.sede?.nombre;
+            const servicio = serviciosResueltos.find(s => s.nombre === nombreServicio)
+              ?? serviciosResueltos[0];
+            const sede = sedesResueltas.find(se => se.nombre === nombreSede)
+              ?? sedesResueltas[0];
+            return {
+              diaSemana: d.diaSemana,
+              horaDesde: d.horaDesde,
+              horaHasta: d.horaHasta,
+              servicio,
+              sede,
+            };
+          });
+
+          entidad = await MedicoModel.create({
+            usuario: nuevoUsuario,
+            nombre,
+            apellido,
+            matricula,
+            servicios: serviciosResueltos,
+            sedes: sedesResueltas,
+            disponibilidades: disponibilidadesResueltas,
+          });
+
+          await agendaService.generarTurnosPara(entidad);
+
+        } else {
+          const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
+          entidad = await PacienteModel.create({
+            usuario: nuevoUsuario,
+            nombre,
+            apellido,
+            dni,
+            fechaNacimiento,
+            obraSocial,
+            plan,
+            sexo,
+          });
         }
+      } catch (errEntidad) {
+        await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
+        if (entidad?._id) await MedicoModel.deleteOne({ _id: entidad._id });
+        return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
+      }
 
-        const hash = await bcrypt.hash(password, 10);
-        const nuevoUsuario = await UsuarioModel.create({ nombre, mail, password: hash });
-        console.log("USUARIO CREADO:", nuevoUsuario);
-
-        let entidad;
-        try {
-            if (rol === "medico") {
-                const { apellido, matricula, servicios, sedes, disponibilidades } = datos;
-                entidad = await MedicoModel.create({
-                    usuario: { mail },
-                    nombre,
-                    apellido,
-                    matricula,
-                    servicios,
-                    sedes,
-                    disponibilidades
-                });
-            } else {
-                const { apellido, dni, fechaNacimiento, obraSocial, plan, sexo } = datos;
-                entidad = await PacienteModel.create({
-                    usuario: { nombre, mail },
-                    nombre,
-                    apellido,
-                    dni,
-                    fechaNacimiento,
-                    obraSocial,
-                    plan,
-                    sexo
-                });
-            }
-            console.log("ENTIDAD CREADA:", entidad);
-        } catch (errEntidad) {
-            console.log("ERROR AL CREAR ENTIDAD:", errEntidad.message);
-            await UsuarioModel.deleteOne({ _id: nuevoUsuario._id });
-            return res.status(400).json({ error: "Datos inválidos para " + rol, detalle: errEntidad.message });
-        }
-
-        res.status(201).json({ mensaje: "Usuario creado", id: nuevoUsuario._id, entidadId: entidad._id });
-
+      res.status(201).json({ mensaje: "Usuario creado", id: nuevoUsuario._id, entidadId: entidad._id });
     } catch (error) {
-        console.log("ERROR GENERAL:", error.message);
-        next(error);
+      next(error);
     }
-}
+  }
 }

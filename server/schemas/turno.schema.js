@@ -6,6 +6,7 @@ const turnoSchema = new mongoose.Schema({
         _id: {type: String, required: true},
         nombre: { type: String, required: true },
         apellido: { type: String, required: true },
+        usuario: { _id: { type: String, required: true }}
     },
     fechaInicio: { type: Date, required: true },
     fechaFinal: { type: Date, required: true },
@@ -13,6 +14,7 @@ const turnoSchema = new mongoose.Schema({
         _id: {type: String},
         nombre: { type: String },
         apellido: { type: String },
+        usuario: { _id: { type: String }}
     },
     servicio: {
         _id: { type: String, required: true },
@@ -25,11 +27,11 @@ const turnoSchema = new mongoose.Schema({
         nombre: { type: String, required: true },
         direccion: { type: String, required: true }
     },
-    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO"], required: true },
+    estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO", "PENDIENTE"], required: true },
     historialDeEstados: [
         {
             fechaInicioIngreso: { type: Date, required: true },
-            estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO"], required: true },
+            estado: { type: String, enum: ["DISPONIBLE", "RESERVADO", "CANCELADO", "REALIZADO", "PENDIENTE"], required: true },
             motivo: { type: String },
         }
     ],
