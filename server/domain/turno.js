@@ -123,6 +123,16 @@ export class Turno {
         minute: "2-digit",
       });
 
+      // Caso especial: respuesta del paciente a un cambio de horario
+    if (this.origenNotificacion === "RESPUESTA_CAMBIO_HORARIO") {
+      const fueAceptado = this.estado === EstadoTurno.RESERVADO;
+      const mensaje = fueAceptado
+        ? `El paciente ${this.paciente?.nombre ?? ""} aceptó el cambio de horario para el turno del ${fechaLimpia}.`
+        : `El paciente rechazó el cambio de horario propuesto para el turno del ${fechaLimpia}. El turno quedó DISPONIBLE nuevamente.`;
+
+      return { mensaje, destinatario: this.medico, remitente: this.paciente };
+    }
+
     let mensaje = "";
     let destinatario;
     let remitente;
@@ -159,5 +169,24 @@ export class Turno {
         );
     }
     return { mensaje, destinatario, remitente };
+  }
+
+  async cambiarHorario(nuevaFechaInicio, nuevaFechaFinal, motivo) {
+    if (this.estado !== EstadoTurno.RESERVADO) {
+      throw new ConflictError("Solo se puede modificar el horario de un turno reservado.");
+    }
+    this.fechaInicio = nuevaFechaInicio;
+    this.fechaFinal = nuevaFechaFinal;
+    await this.actualizarEstado(EstadoTurno.PENDIENTE, this.paciente, motivo);
+  }
+
+  async responderCambioHorario(aceptado, motivo) {
+    if (this.estado !== EstadoTurno.PENDIENTE) {
+      throw new ConflictError("El turno no tiene un cambio de horario pendiente.");
+    }
+    const nuevoEstado = aceptado ? EstadoTurno.RESERVADO : EstadoTurno.DISPONIBLE;
+    this.origenNotificacion = "RESPUESTA_CAMBIO_HORARIO"; // flag transitorio, no se persiste
+    await this.actualizarEstado(nuevoEstado, this.paciente, motivo);
+    this.origenNotificacion = null;
   }
 }

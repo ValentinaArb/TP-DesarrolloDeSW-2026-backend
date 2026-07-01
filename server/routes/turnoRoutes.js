@@ -300,6 +300,8 @@ router.post('/', async (req, res,next) => await turnoController.crearTurno(req, 
 router.delete('/:id', async (req, res,next) => await turnoController.eliminarTurno(req, res,next));
 
 //PATCH
+router.patch('/:id/horario', async (req, res, next) => await turnoController.editarHorario(req, res, next));
+router.patch('/:id/respuesta-cambio', async (req, res,next) => await turnoController.responderCambioHorario(req, res,next));
 router.patch('/:id', async (req, res,next) => await turnoController.modificarEstado(req, res,next));
 
 export default router;
