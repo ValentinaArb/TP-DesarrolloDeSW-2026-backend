@@ -22,26 +22,26 @@ describe("notificacionService", () => {
     describe("obtenerTodosFiltrados", () => {
         test("debe obtener solo las notificaciones del usuario especificado", async () => {
             const notificaciones = [
-                { id: 1, destinatario: { id: 1, nombre: "Juan" }, mensaje: "Turno confirmado" },
-                { id: 2, destinatario: { id: 2, nombre: "Carlos" }, mensaje: "Turno cancelado" },
-                { id: 3, destinatario: { id: 1, nombre: "Juan" }, mensaje: "Recordatorio" }
+                { id: 1, destinatario: { usuario: { _id: 1, nombre: "Juan" } }, mensaje: "Turno confirmado" },
+                { id: 2, destinatario: { usuario: { _id: 2, nombre: "Carlos" } }, mensaje: "Turno cancelado" },
+                { id: 3, destinatario: { usuario: { _id: 1, nombre: "Juan" } }, mensaje: "Recordatorio" }
             ];
             mockNotificacionRepository.findAll.mockResolvedValue(notificaciones);
 
-            const resultado = await notificacionService.obtenerTodosFiltrados(1);
+            const resultado = await notificacionService.obtenerTodosFiltrados("1");
 
             expect(resultado.length).toBe(2);
-            expect(resultado.every(n => n.destinatario.id == 1)).toBe(true);
+            expect(resultado.every(n => n.destinatario.usuario._id.toString() === "1")).toBe(true);
             expect(mockNotificacionRepository.findAll).toHaveBeenCalled();
         });
 
         test("debe retornar lista vacía si el usuario no tiene notificaciones", async () => {
             const notificaciones = [
-                { id: 1, destinatario: { id: 2, nombre: "Carlos" }, mensaje: "Turno cancelado" }
+                { id: 1, destinatario: { usuario: { _id: 2, nombre: "Carlos" } }, mensaje: "Turno cancelado" }
             ];
             mockNotificacionRepository.findAll.mockResolvedValue(notificaciones);
 
-            const resultado = await notificacionService.obtenerTodosFiltrados(1);
+            const resultado = await notificacionService.obtenerTodosFiltrados("1");
 
             expect(resultado.length).toBe(0);
             expect(Array.isArray(resultado)).toBe(true);
@@ -50,34 +50,34 @@ describe("notificacionService", () => {
         test("debe retornar lista vacía si no hay notificaciones en el sistema", async () => {
             mockNotificacionRepository.findAll.mockResolvedValue([]);
 
-            const resultado = await notificacionService.obtenerTodosFiltrados(1);
+            const resultado = await notificacionService.obtenerTodosFiltrados("1");
 
             expect(resultado.length).toBe(0);
         });
 
         test("debe manejar IDs numéricos y strings de forma equivalente", async () => {
             const notificaciones = [
-                { id: 1, destinatario: { id: "1", nombre: "Juan" }, mensaje: "Turno confirmado" },
-                { id: 2, destinatario: { id: 2, nombre: "Carlos" }, mensaje: "Turno cancelado" }
+                { id: 1, destinatario: { usuario: { _id: "1", nombre: "Juan" } }, mensaje: "Turno confirmado" },
+                { id: 2, destinatario: { usuario: { _id: 2, nombre: "Carlos" } }, mensaje: "Turno cancelado" }
             ];
             mockNotificacionRepository.findAll.mockResolvedValue(notificaciones);
 
             const resultado = await notificacionService.obtenerTodosFiltrados("1");
 
             expect(resultado.length).toBe(1);
-            expect(resultado[0].destinatario.id).toBe("1");
+            expect(resultado[0].destinatario.usuario._id).toBe("1");
         });
 
         test("debe retornar todas las notificaciones del usuario si tiene múltiples", async () => {
             const notificaciones = [
-                { id: 1, destinatario: { id: 1 }, mensaje: "Notificación 1" },
-                { id: 2, destinatario: { id: 1 }, mensaje: "Notificación 2" },
-                { id: 3, destinatario: { id: 1 }, mensaje: "Notificación 3" },
-                { id: 4, destinatario: { id: 2 }, mensaje: "Notificación 4" }
+                { id: 1, destinatario: { usuario: { _id: 1 } }, mensaje: "Notificación 1" },
+                { id: 2, destinatario: { usuario: { _id: 1 } }, mensaje: "Notificación 2" },
+                { id: 3, destinatario: { usuario: { _id: 1 } }, mensaje: "Notificación 3" },
+                { id: 4, destinatario: { usuario: { _id: 2 } }, mensaje: "Notificación 4" }
             ];
             mockNotificacionRepository.findAll.mockResolvedValue(notificaciones);
 
-            const resultado = await notificacionService.obtenerTodosFiltrados(1);
+            const resultado = await notificacionService.obtenerTodosFiltrados("1");
 
             expect(resultado.length).toBe(3);
             expect(resultado.map(n => n.id)).toEqual([1, 2, 3]);
