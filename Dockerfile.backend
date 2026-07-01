@@ -2,9 +2,9 @@ FROM node:latest as dev
 
 WORKDIR /app
 
-COPY /2026-1c-backend-mn-grupo-05/package*.json ./
+COPY package*.json ./
 RUN npm install
 
-COPY /2026-1c-backend-mn-grupo-05/ .
+COPY . .
 
 CMD ["npm", "start"]
