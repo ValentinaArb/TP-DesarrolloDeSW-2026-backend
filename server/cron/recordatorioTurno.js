@@ -11,9 +11,14 @@ cron.schedule('0 8 * * *', async () => {
     
     const maniana = new Date().setDate(new Date().getDate() + 1);
 
-    const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'RESERVADO');
+    try {
+        const turnosParaRecordar = await turnoRepository.buscarPorFechaYEstado(maniana, 'RESERVADO');
 
-    for (const turno of turnosParaRecordar) {
-        factoryNotificacion.crearRecordatorio(turno);
+        for (const turno of turnosParaRecordar) {
+            factoryNotificacion.crearRecordatorio(turno);
+        }
+        console.log(`Cron finalizado con éxito. Se procesaron ${turnosParaRecordar.length} turnos.`);
+    } catch (error) {
+        console.error("Error al ejecutar el cron de recordatorios:", error);
     }
 });
