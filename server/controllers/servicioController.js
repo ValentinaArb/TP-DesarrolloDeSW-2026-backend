@@ -1,15 +1,15 @@
-import { ServicioRepository } from '../repositories/servicioRepository.js';
+import { ServicioService } from '../services/servicioService.js';
 import { Servicio } from '../domain/servicio.js';
 
 class ServicioController {
     constructor() {
-        this.servicioRepository = new ServicioRepository();
+        this.servicioService = new ServicioService();
     }
 
     // GET /servicios
     async obtenerTodos(req, res, next) {
         try {
-            const servicios = await this.servicioRepository.findAll();
+            const servicios = await this.servicioService.obtenerTodos();
             res.status(200).json(servicios);
         } catch (error) {
             return next(error);
@@ -21,20 +21,7 @@ class ServicioController {
     async crearServicio(req, res, next) {
         try {
             const { nombre, duracionTurno, costo } = req.body;
-
-            const todos = await this.servicioRepository.findAll();
-            const existente = todos.find(s =>
-                s.nombre === nombre &&
-                s.duracionTurno === Number(duracionTurno) &&
-                s.costo === Number(costo)
-            );
-
-            if (existente) {
-                return res.status(200).json(existente);
-            }
-
-            const nuevoServicio = new Servicio(null, nombre, Number(duracionTurno), Number(costo));
-            const creado = await this.servicioRepository.create(nuevoServicio);
+            const creado = await this.servicioService.crearNuevoServicio(nombre, duracionTurno, costo);
             res.status(201).json(creado);
         } catch (error) {
             return next(error);

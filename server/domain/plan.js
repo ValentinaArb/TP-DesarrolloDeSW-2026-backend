@@ -10,15 +10,6 @@ export class Plan{
         this.coberturasServicio = coberturasServicio;
     }
 
-    obtenerNivelDeLista(lista, propiedad, valorBuscado) {
-        const cobertura = lista.find((item) => item[propiedad] === valorBuscado);
-        return cobertura?.nivel || null;
-    }
-
-    obtenerCoberturaPorServicio(servicio) {
-        return this.obtenerNivelDeLista(this.coberturasServicio, 'servicio', servicio);
-    }
-
     calcularCostoAbonar(servicioId, costo) {
         // busco cobertura comparando por el id del servicio (practica o especialidad)
         const cobertura = this.coberturasServicio.find(item => item.servicio.id === servicioId);

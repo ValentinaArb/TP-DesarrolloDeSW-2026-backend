@@ -171,7 +171,16 @@ export class TurnoService {
     return { turno, pagina, limitePorPagina, totalPaginas, totalTurno };
   }
 
-  async modificarEstado(turnoId, { operacion, pacienteId, motivo }) {
+  async modificarEstado(turnoId, { operacion, pacienteId, motivo, esMedico }) {
+
+    if (operacion === "baja" && esMedico) {
+      const turno = await this.obtenerTurno(turnoId);
+
+      turno.actualizarEstado(EstadoTurno.CANCELADO, null, motivo || "Cancelado por el médico");
+
+      return await this.turnoRepository.update(turno, turnoId);
+    }
+
     if (operacion === "alta") {
       if (!pacienteId)
         throw new BadRequestError("Falta el pacienteId para dar de alta");
@@ -206,105 +215,6 @@ export class TurnoService {
     );
   }
 
-  async buscarTurnosDisponibles(
-    pacienteId,
-    filtros,
-    orden,
-    { pagina = 1, limitePorPagina = 10 } = {},
-  ) {
-    if (!this.validarPaginacion(pagina, limitePorPagina)) {
-      throw new BadRequestError("Paginación errónea");
-    }
-
-    const paciente = await this.pacienteRepository.findById(pacienteId);
-
-    let plan = null;
-    plan = await this.planRepository.findByNombre(paciente.plan.nombre);
-    if (!plan) {
-      return {
-        status: "success",
-        data: [],
-        errorNegocio: {
-          icono: "plan",
-          titulo: "Tu plan no cubre este servicio",
-          descripcion: `Tu plan "${paciente.plan?.nombre || "actual"}" no tiene cobertura disponible. Consultá con tu obra social o buscá otro servicio.`,
-        },
-      };
-    }
-
-    const turnosDB =
-      await this.turnoRepository.findDisponiblesByFilters(filtros);
-
-    if (!turnosDB || turnosDB.length === 0) {
-      return {
-        status: "success",
-        data: [],
-        errorNegocio: {
-          icono: "filtros",
-          titulo: "No encontramos turnos disponibles",
-          descripcion:
-            "No hay turnos que coincidan con tu búsqueda para los filtros seleccionados. Probá cambiando los filtros o buscando en otra sede.",
-        },
-      };
-    }
-
-    const turnosCotizados = turnosDB.map((turno) =>
-      this._cotizarTurno(turno, plan),
-    );
-
-    const turnosCubiertos = turnosCotizados.filter(
-      (t) => t.estadoPrestacion !== "NO_CUBIERTO",
-    );
-
-    if (turnosCubiertos.length === 0 && turnosCotizados.length > 0) {
-      return {
-        status: "success",
-        data: [],
-        errorNegocio: {
-          icono: "plan",
-          titulo: "Tu plan no cubre este servicio",
-          descripcion:
-            "No hay turnos disponibles con cobertura para tu obra social y plan actual. Consultá con tu obra social o buscá otro servicio.",
-        },
-      };
-    }
-
-    turnosCubiertos.sort((a, b) => {
-      let valorA =
-        orden.sortBy === "costo"
-          ? a.montoAAbonar
-          : new Date(`${a.fecha}T${a.hora}`).getTime();
-      let valorB =
-        orden.sortBy === "costo"
-          ? b.montoAAbonar
-          : new Date(`${b.fecha}T${b.hora}`).getTime();
-
-      if (valorA < valorB) return orden.sortOrder === "asc" ? -1 : 1;
-      if (valorA > valorB) return orden.sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    const totalTurno = turnosCubiertos.length;
-    const totalPaginas =
-      totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
-    const startIndex = (pagina - 1) * limitePorPagina;
-    const turno = turnosCubiertos.slice(
-      startIndex,
-      startIndex + limitePorPagina,
-    );
-
-    return {
-      status: "success",
-      data: turno,
-      paginacion: {
-        numeroPagina: pagina,
-        limitePorPagina,
-        totalPaginas,
-        totalTurno,
-      },
-    };
-  }
-
   async modificarTurno(medicoId, turnoId, horaInicio) {
     const turno = await this.turnoRepository.findById(turnoId);
     if (!turno) throw new NotFoundError("Turno no encontrado");
@@ -317,6 +227,98 @@ export class TurnoService {
     const nuevaFechaFinal = new Date(new Date(horaInicio).getTime() + turno.servicio.duracionTurno * 60000);
     await turno.cambiarHorario(new Date(horaInicio), nuevaFechaFinal, "El médico modificó el horario del turno");
     return await this.turnoRepository.update(turno, turnoId);
+  }
+
+  async buscarTurnosDisponibles(pacienteId, filtros, orden, { pagina = 1, limitePorPagina = 10 } = {}) {
+    if (!this.validarPaginacion(pagina, limitePorPagina)) {
+      throw new BadRequestError("Paginación errónea");
+    }
+
+    const paciente = await this.pacienteRepository.findById(pacienteId);
+
+    let plan = await this.planRepository.findByNombre(paciente.plan.nombre);
+    if (!plan) {
+      return {
+        status: "success",
+        data: [],
+        errorNegocio: {
+          icono: "plan",
+          titulo: "Tu plan no cubre este servicio",
+          descripcion: `Tu plan "${paciente.plan?.nombre || "actual"}" no tiene cobertura disponible. Consultá con tu obra social o buscá otro servicio.`,
+        },
+      };
+    }
+
+    const turnosDB = await this.turnoRepository.findDisponiblesByFilters(filtros);
+
+    if (!turnosDB || turnosDB.length === 0) {
+      return {
+        status: "success",
+        data: [],
+        errorNegocio: {
+          icono: "filtros",
+          titulo: "No encontramos turnos disponibles",
+          descripcion:
+              "No hay turnos que coincidan con tu búsqueda para los filtros seleccionados. Probá cambiando los filtros o buscando en otra sede.",
+        },
+      };
+    }
+
+    const turnosCotizados = turnosDB.map((turno) =>
+        this._cotizarTurno(turno, plan),
+    );
+
+    const turnosCubiertos = turnosCotizados.filter(
+        (t) => t.estadoPrestacion !== "NO_CUBIERTO",
+    );
+
+    if (turnosCubiertos.length === 0 && turnosCotizados.length > 0) {
+      return {
+        status: "success",
+        data: [],
+        errorNegocio: {
+          icono: "plan",
+          titulo: "Tu plan no cubre este servicio",
+          descripcion:
+              "No hay turnos disponibles con cobertura para tu obra social y plan actual. Consultá con tu obra social o buscá otro servicio.",
+        },
+      };
+    }
+
+    turnosCubiertos.sort((a, b) => {
+      let valorA =
+          orden.sortBy === "costo"
+              ? a.montoAAbonar
+              : new Date(`${a.fecha}T${a.hora}`).getTime();
+      let valorB =
+          orden.sortBy === "costo"
+              ? b.montoAAbonar
+              : new Date(`${b.fecha}T${b.hora}`).getTime();
+
+      if (valorA < valorB) return orden.sortOrder === "asc" ? -1 : 1;
+      if (valorA > valorB) return orden.sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    const totalTurno = turnosCubiertos.length;
+    const totalPaginas =
+        totalTurno === 0 ? 0 : Math.ceil(totalTurno / limitePorPagina);
+    const startIndex = (pagina - 1) * limitePorPagina;
+    const turno = turnosCubiertos.slice(
+        startIndex,
+        startIndex + limitePorPagina,
+    );
+
+    return {
+      status: "success",
+      data: turno,
+      paginacion: {
+        numeroPagina: pagina,
+        limitePorPagina,
+        totalPaginas,
+        totalTurno,
+      },
+    };
   }
 
   async responderCambioHorario(turnoId, pacienteId, aceptado) {
